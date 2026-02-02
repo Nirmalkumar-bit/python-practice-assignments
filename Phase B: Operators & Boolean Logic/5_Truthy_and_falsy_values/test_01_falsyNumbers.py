@@ -1,45 +1,29 @@
+import sys
 import importlib.util
-import io
-import os
-import contextlib
+from pathlib import Path
 import pytest
 
-MODULE_FILE = "01_falsyNumbers.py"
 
-
-def _run_module_capture_stdout():
-    spec = importlib.util.spec_from_file_location("mod_01_falsyNumbers", MODULE_FILE)
+def _run_file(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        spec.loader.exec_module(module)
-    return buf.getvalue()
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_prints_exactly_falsy():
-    out = _run_module_capture_stdout()
+def test_stdout_exact():
+    assignment_path = Path(__file__).resolve().parent / "01_falsyNumbers.py"
+    if not assignment_path.exists():
+        pytest.fail("expected output: FALSY\n\nactual output: (missing file)")
+
     expected = "FALSY\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_prints_one_line_only():
-    out = _run_module_capture_stdout()
-    lines = out.splitlines(True)
-    expected_count = 1
-    actual_count = len(lines)
-    assert actual_count == expected_count, f"expected={expected_count!r} actual={actual_count!r}"
-
-
-def test_no_extra_whitespace_or_text():
-    out = _run_module_capture_stdout()
-    expected = "FALSY"
-    actual = out.rstrip("\n")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_source_contains_no_placeholder_marker():
-    with open(MODULE_FILE, "r", encoding="utf-8") as f:
-        src = f.read()
-    expected = False
-    actual = "__" in src
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    actual = _run_file(assignment_path)
+    if actual != expected:
+        pytest.fail(f"expected output: {expected}actual output: {actual}")

@@ -1,52 +1,34 @@
-import importlib.util
-import pathlib
 import sys
-import pytest
+import importlib.util
+from pathlib import Path
 
+def _load_module_and_capture_stdout(module_path: Path):
+    if not module_path.exists():
+        raise FileNotFoundError(f"Missing assignment file: {module_path}")
 
-def load_module_from_path(path: pathlib.Path):
-    name = path.stem
-    spec = importlib.util.spec_from_file_location(name, str(path))
+    spec = importlib.util.spec_from_file_location(module_path.stem, str(module_path))
     module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    return module
 
-
-def test_module_imports_and_has_can_reset():
-    path = pathlib.Path(__file__).resolve().parent / "07_booleanExpressionWithParentheses.py"
+    old_stdout = sys.stdout
     try:
-        mod = load_module_from_path(path)
-    except SyntaxError as e:
-        pytest.fail(f"expected=valid_python actual=SyntaxError:{e.msg}")
-    except Exception as e:
-        pytest.fail(f"expected=import_success actual={type(e).__name__}")
-    assert hasattr(mod, "can_reset"), f"expected=attribute_can_reset actual={dir(mod)}"
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        output = buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
+    return module, output
 
-def test_can_reset_value_matches_rule():
-    path = pathlib.Path(__file__).resolve().parent / "07_booleanExpressionWithParentheses.py"
-    try:
-        mod = load_module_from_path(path)
-    except SyntaxError as e:
-        pytest.fail(f"expected=valid_python actual=SyntaxError:{e.msg}")
-    except Exception as e:
-        pytest.fail(f"expected=import_success actual={type(e).__name__}")
+def test_can_reset_result():
+    assignment_path = Path(__file__).resolve().parent / "07_booleanExpressionWithParentheses.py"
+    module, out = _load_module_and_capture_stdout(assignment_path)
 
-    expected = (mod.email_access or mod.phone_access) and (not mod.account_locked)
-    actual = mod.can_reset
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    expected_out = "False\n"
+    if out != expected_out:
+        raise AssertionError(f"expected output:\n{expected_out}actual output:\n{out}")
 
-
-def test_can_reset_is_boolean_type():
-    path = pathlib.Path(__file__).resolve().parent / "07_booleanExpressionWithParentheses.py"
-    try:
-        mod = load_module_from_path(path)
-    except SyntaxError as e:
-        pytest.fail(f"expected=valid_python actual=SyntaxError:{e.msg}")
-    except Exception as e:
-        pytest.fail(f"expected=import_success actual={type(e).__name__}")
-
-    actual = mod.can_reset
-    expected_type = bool
-    assert isinstance(actual, expected_type), f"expected={expected_type.__name__} actual={type(actual).__name__}"
+    assert hasattr(module, "can_reset"), "can_reset variable is missing"
+    assert type(module.can_reset) is bool
+    assert module.can_reset is False

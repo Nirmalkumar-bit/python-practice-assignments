@@ -1,62 +1,37 @@
-import importlib
-import io
-import contextlib
 import sys
-import types
-import pathlib
-import pytest
+import importlib.util
+from pathlib import Path
 
+def _load_module_and_capture_stdout(module_path: Path):
+    if not module_path.exists():
+        raise FileNotFoundError(f"Missing assignment file: {module_path}")
 
-MODULE_NAME = "03_booleanNegation"
+    spec = importlib.util.spec_from_file_location(module_path.stem, str(module_path))
+    module = importlib.util.module_from_spec(spec)
 
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        output = buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
-def _import_fresh():
-    if MODULE_NAME in sys.modules:
-        del sys.modules[MODULE_NAME]
-    return importlib.import_module(MODULE_NAME)
+    return module, output
 
+def test_negation_stdout_and_values():
+    assignment_path = Path(__file__).resolve().parent / "03_booleanNegation.py"
+    module, out = _load_module_and_capture_stdout(assignment_path)
 
-def _run_module_capture_stdout():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        mod = _import_fresh()
-    return mod, buf.getvalue()
+    expected_out = "True\nFalse\n"
+    if out != expected_out:
+        raise AssertionError(f"expected output:\n{expected_out}actual output:\n{out}")
 
-
-def test_module_imports_without_syntax_error():
-    _import_fresh()
-
-
-def test_is_raining_exists_and_is_bool():
-    mod = _import_fresh()
-    assert hasattr(mod, "is_raining")
-    assert isinstance(mod.is_raining, bool)
-
-
-def test_is_dry_exists_and_is_bool():
-    mod = _import_fresh()
-    assert hasattr(mod, "is_dry")
-    assert isinstance(mod.is_dry, bool)
-
-
-def test_is_dry_is_negation_of_is_raining():
-    mod = _import_fresh()
-    expected = (not mod.is_raining)
-    actual = mod.is_dry
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_printed_output_two_lines_boolean_values():
-    mod, out = _run_module_capture_stdout()
-    lines = [ln.strip() for ln in out.splitlines() if ln.strip() != ""]
-    assert len(lines) == 2, f"expected={2!r} actual={len(lines)!r}"
-    expected = [str(mod.is_raining), str(mod.is_dry)]
-    actual = lines
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_is_dry_is_not_same_object_as_is_raining_when_possible():
-    mod = _import_fresh()
-    expected = mod.is_dry is (not mod.is_raining)
-    actual = True
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    assert hasattr(module, "is_raining"), "is_raining variable is missing"
+    assert hasattr(module, "is_dry"), "is_dry variable is missing"
+    assert type(module.is_raining) is bool
+    assert type(module.is_dry) is bool
+    assert module.is_raining is True
+    assert module.is_dry is False

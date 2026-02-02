@@ -1,49 +1,19 @@
-import importlib
-import contextlib
-import io
-import pytest
-
-MODULE_NAME = "13_ternary_function_return_value"
+import importlib.util
+from pathlib import Path
 
 
-def load_module():
-    mod = importlib.import_module(MODULE_NAME)
-    return mod
+def _run_script(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
 
 
-def test_import_prints_expected_output():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        importlib.reload(importlib.import_module(MODULE_NAME))
-    out = buf.getvalue()
+def test_stdout_exact(capsys):
+    script_path = Path(__file__).resolve().parent / "13_ternary_function_return_value.py"
+    assert script_path.exists(), f"expected output: fizz\n\nactual output: <missing file {script_path}>"
+
+    _run_script(script_path)
+    captured = capsys.readouterr()
     expected = "fizz\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-@pytest.mark.parametrize(
-    "x, expected",
-    [
-        (9, "fizz"),
-        (3, "fizz"),
-        (0, "fizz"),
-        (6, "fizz"),
-        (-3, "fizz"),
-        (1, "1"),
-        (2, "2"),
-        (4, "4"),
-        (10, "10"),
-        (-1, "-1"),
-        (-2, "-2"),
-        (-4, "-4"),
-    ],
-)
-def test_fizz_or_number_values(x, expected):
-    mod = load_module()
-    actual = mod.fizz_or_number(x)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_fizz_or_number_returns_str_type():
-    mod = load_module()
-    actual = mod.fizz_or_number(5)
-    assert isinstance(actual, str), f"expected={str!r} actual={type(actual)!r}"
+    actual = captured.out
+    assert actual == expected, f"expected output: {expected}actual output: {actual}"

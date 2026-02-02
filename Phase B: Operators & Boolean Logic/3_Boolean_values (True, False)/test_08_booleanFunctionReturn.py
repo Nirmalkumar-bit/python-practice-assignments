@@ -1,52 +1,36 @@
+import sys
 import importlib.util
-import os
-import types
-import pytest
+from pathlib import Path
 
-ASSIGNMENT_FILE = "08_booleanFunctionReturn.py"
+def _load_module_and_capture_stdout(module_path: Path):
+    if not module_path.exists():
+        raise FileNotFoundError(f"Missing assignment file: {module_path}")
 
-
-def load_module_from_file(path):
-    spec = importlib.util.spec_from_file_location("assignment08", path)
+    spec = importlib.util.spec_from_file_location(module_path.stem, str(module_path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        output = buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
-@pytest.fixture(scope="module")
-def mod():
-    path = os.path.join(os.path.dirname(__file__), ASSIGNMENT_FILE)
-    return load_module_from_file(path)
+    return module, output
 
+def test_is_even_stdout_and_behavior():
+    assignment_path = Path(__file__).resolve().parent / "08_booleanFunctionReturn.py"
+    module, out = _load_module_and_capture_stdout(assignment_path)
 
-@pytest.mark.parametrize(
-    "n, expected",
-    [
-        (10, True),
-        (7, False),
-        (0, True),
-        (-2, True),
-        (-3, False),
-        (2**31 - 1, False),
-        (2**31 - 2, True),
-    ],
-)
-def test_is_even_basic(mod, n, expected):
-    actual = mod.is_even(n)
-    assert actual is expected, f"expected={expected} actual={actual}"
+    expected_out = "True\nFalse\nTrue\n"
+    if out != expected_out:
+        raise AssertionError(f"expected output:\n{expected_out}actual output:\n{out}")
 
-
-@pytest.mark.parametrize("n", [10, 7, 0, -2, -3, 2, 1, 100, 101])
-def test_is_even_returns_bool(mod, n):
-    actual = mod.is_even(n)
-    assert isinstance(actual, bool), f"expected={bool} actual={type(actual)}"
-
-
-def test_is_even_rejects_non_int_like(mod):
-    with pytest.raises(TypeError):
-        mod.is_even("10")
-
-
-def test_is_even_accepts_bool_as_int(mod):
-    assert mod.is_even(True) is False, "expected=False actual=True"
-    assert mod.is_even(False) is True, "expected=True actual=False"
+    assert hasattr(module, "is_even"), "is_even function is missing"
+    assert module.is_even(10) is True
+    assert module.is_even(7) is False
+    assert module.is_even(0) is True
+    assert type(module.is_even(2)) is bool

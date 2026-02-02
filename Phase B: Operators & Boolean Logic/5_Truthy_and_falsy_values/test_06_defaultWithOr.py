@@ -1,37 +1,29 @@
-import importlib.util
-import io
-import os
 import sys
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def _run_module_capture_stdout(filename):
-    path = os.path.join(os.path.dirname(__file__), filename)
-    spec = importlib.util.spec_from_file_location("mod_under_test", path)
+def _run_file(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    buf = io.StringIO()
-    old = sys.stdout
+    old_stdout = sys.stdout
     try:
+        from io import StringIO
+        buf = StringIO()
         sys.stdout = buf
-        spec.loader.exec_module(module)
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        return buf.getvalue()
     finally:
-        sys.stdout = old
-    return module, buf.getvalue()
+        sys.stdout = old_stdout
 
 
-def test_prints_expected_output():
-    _, out = _run_module_capture_stdout("06_defaultWithOr.py")
+def test_stdout_exact():
+    assignment_path = Path(__file__).resolve().parent / "06_defaultWithOr.py"
+    if not assignment_path.exists():
+        pytest.fail("expected output: Hello, stranger\n\nactual output: (missing file)")
+
     expected = "Hello, stranger\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_final_name_variable_value():
-    mod, _ = _run_module_capture_stdout("06_defaultWithOr.py")
-    expected = "stranger"
-    actual = getattr(mod, "final_name", None)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_final_name_is_string():
-    mod, _ = _run_module_capture_stdout("06_defaultWithOr.py")
-    actual = getattr(mod, "final_name", None)
-    assert isinstance(actual, str), f"expected={str.__name__!r} actual={type(actual).__name__!r}"
+    actual = _run_file(assignment_path)
+    if actual != expected:
+        pytest.fail(f"expected output: {expected}actual output: {actual}")

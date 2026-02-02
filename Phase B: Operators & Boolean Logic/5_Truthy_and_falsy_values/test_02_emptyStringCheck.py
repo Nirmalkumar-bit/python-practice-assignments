@@ -1,42 +1,29 @@
-import importlib.util
-import os
 import sys
-from contextlib import redirect_stdout
-from io import StringIO
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def load_module_from_path(module_name, path):
-    spec = importlib.util.spec_from_file_location(module_name, path)
+def _run_file(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
 
-def run_script_capture_output(path):
-    buf = StringIO()
-    with redirect_stdout(buf):
-        load_module_from_path("student_module_02_emptyStringCheck", path)
-    return buf.getvalue()
+def test_stdout_exact():
+    assignment_path = Path(__file__).resolve().parent / "02_emptyStringCheck.py"
+    if not assignment_path.exists():
+        pytest.fail("expected output: EMPTY\n\nactual output: (missing file)")
 
-
-def test_prints_empty_only():
-    path = os.path.join(os.path.dirname(__file__), "02_emptyStringCheck.py")
-    out = run_script_capture_output(path)
     expected = "EMPTY\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_no_nonempty_printed():
-    path = os.path.join(os.path.dirname(__file__), "02_emptyStringCheck.py")
-    out = run_script_capture_output(path)
-    expected = False
-    actual = "NONEMPTY" in out
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_exact_single_line():
-    path = os.path.join(os.path.dirname(__file__), "02_emptyStringCheck.py")
-    out = run_script_capture_output(path)
-    expected = 1
-    actual = len([line for line in out.splitlines() if line.strip() != ""])
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    actual = _run_file(assignment_path)
+    if actual != expected:
+        pytest.fail(f"expected output: {expected}actual output: {actual}")

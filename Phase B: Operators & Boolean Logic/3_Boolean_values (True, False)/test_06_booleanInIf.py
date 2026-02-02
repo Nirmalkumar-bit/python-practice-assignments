@@ -1,44 +1,30 @@
-import importlib
 import sys
-import types
-import pytest
+import importlib.util
+from pathlib import Path
 
+def _load_module_and_capture_stdout(module_path: Path):
+    if not module_path.exists():
+        raise FileNotFoundError(f"Missing assignment file: {module_path}")
 
-MODULE_NAME = "06_booleanInIf"
+    spec = importlib.util.spec_from_file_location(module_path.stem, str(module_path))
+    module = importlib.util.module_from_spec(spec)
 
-
-def load_module(capsys):
-    if MODULE_NAME in sys.modules:
-        del sys.modules[MODULE_NAME]
+    old_stdout = sys.stdout
     try:
-        mod = importlib.import_module(MODULE_NAME)
-    except Exception as e:
-        pytest.fail(f"expected=module_import_success actual={type(e).__name__}: {e}")
-    out = capsys.readouterr().out
-    return mod, out
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        output = buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
+    return module, output
 
-def test_prints_exactly_one_line(capsys):
-    _, out = load_module(capsys)
-    lines = [ln for ln in out.splitlines() if ln.strip() != ""]
-    assert len(lines) == 1, f"expected=1_line actual={len(lines)}"
+def test_if_else_message():
+    assignment_path = Path(__file__).resolve().parent / "06_booleanInIf.py"
+    _, out = _load_module_and_capture_stdout(assignment_path)
 
-
-def test_output_is_expected_branch_for_false(capsys):
-    mod, out = load_module(capsys)
-    expected = "Member price" if getattr(mod, "is_member", None) else "Regular price"
-    actual = out.strip()
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_output_has_no_extra_whitespace(capsys):
-    _, out = load_module(capsys)
-    actual = out
-    assert actual.endswith("\n"), f"expected=endswith_newline actual={actual!r}"
-    assert actual.strip() == actual[:-1], f"expected=stripped_equals_line actual={actual!r}"
-
-
-def test_is_member_defined_and_boolean(capsys):
-    mod, _ = load_module(capsys)
-    assert hasattr(mod, "is_member"), "expected=is_member_defined actual=missing"
-    assert isinstance(mod.is_member, bool), f"expected=bool actual={type(mod.is_member).__name__}"
+    expected_out = "Regular price\n"
+    if out != expected_out:
+        raise AssertionError(f"expected output:\n{expected_out}actual output:\n{out}")

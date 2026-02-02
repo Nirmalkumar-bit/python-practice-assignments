@@ -1,13 +1,29 @@
-import importlib.util
-import os
 import sys
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def test_output_no_value(capsys):
-    path = os.path.join(os.path.dirname(__file__), "03_noneCheck.py")
-    spec = importlib.util.spec_from_file_location("nonecheck03", path)
+def _run_file(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    out = capsys.readouterr().out
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
+
+
+def test_stdout_exact():
+    assignment_path = Path(__file__).resolve().parent / "03_noneCheck.py"
+    if not assignment_path.exists():
+        pytest.fail("expected output: NO VALUE\n\nactual output: (missing file)")
+
     expected = "NO VALUE\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
+    actual = _run_file(assignment_path)
+    if actual != expected:
+        pytest.fail(f"expected output: {expected}actual output: {actual}")
