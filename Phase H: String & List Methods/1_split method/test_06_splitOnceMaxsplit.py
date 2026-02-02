@@ -1,35 +1,35 @@
-import importlib
-import io
-import contextlib
+import sys
+import importlib.util
+from pathlib import Path
+
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output: header | a:b:c\nactual output: <file not found: {path.name}>")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    sys.stdout = _Cap()
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_split_once_maxsplit_output():
-    mod = importlib.import_module("06_splitOnceMaxsplit")
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        importlib.reload(mod)
-    out = buf.getvalue().strip()
-    expected = "header | a:b:c"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_split_once_maxsplit_no_extra_lines():
-    mod = importlib.import_module("06_splitOnceMaxsplit")
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        importlib.reload(mod)
-    lines = [ln for ln in buf.getvalue().splitlines() if ln.strip() != ""]
-    expected_count = 1
-    actual_count = len(lines)
-    assert actual_count == expected_count, f"expected={expected_count!r} actual={actual_count!r}"
-
-
-def test_split_once_maxsplit_preserves_additional_colons():
-    mod = importlib.import_module("06_splitOnceMaxsplit")
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        importlib.reload(mod)
-    out = buf.getvalue().strip()
-    expected_suffix = "a:b:c"
-    actual_suffix = out.split("|", 1)[1].strip() if "|" in out else ""
-    assert actual_suffix == expected_suffix, f"expected={expected_suffix!r} actual={actual_suffix!r}"
+def test_stdout_exact_match():
+    script_path = Path(__file__).resolve().parent / '06_splitOnceMaxsplit.py'
+    expected = "header | a:b:c\n"
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {actual}")

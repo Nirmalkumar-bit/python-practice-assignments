@@ -1,29 +1,35 @@
+import sys
 import importlib.util
-import io
-import os
-import contextlib
-import pytest
+from pathlib import Path
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output: mode -> debug\nactual output: <file not found: {path.name}>")
 
-def load_module(path, name):
-    spec = importlib.util.spec_from_file_location(name, path)
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    sys.stdout = _Cap()
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_split_key_value_pairs_prints_expected_output():
-    path = os.path.join(os.path.dirname(__file__), "05_splitKeyValuePairs.py")
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        load_module(path, "m05_splitKeyValuePairs")
-    out = buf.getvalue().strip()
-    expected = "mode -> debug"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_source_contains_no_placeholder():
-    path = os.path.join(os.path.dirname(__file__), "05_splitKeyValuePairs.py")
-    with open(path, "r", encoding="utf-8") as f:
-        src = f.read()
-    assert "___" not in src, f"expected={'no placeholder'} actual={'placeholder found'}"
+def test_stdout_exact_match():
+    script_path = Path(__file__).resolve().parent / '05_splitKeyValuePairs.py'
+    expected = "mode -> debug\n"
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {actual}")

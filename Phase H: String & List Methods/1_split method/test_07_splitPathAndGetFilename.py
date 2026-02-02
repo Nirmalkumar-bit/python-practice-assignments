@@ -1,46 +1,35 @@
-import importlib.util
-import os
 import sys
+import importlib.util
 from pathlib import Path
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output: notes.txt\nactual output: <file not found: {path.name}>")
 
-def _load_module_from_path(module_name, file_path):
-    spec = importlib.util.spec_from_file_location(module_name, str(file_path))
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    sys.stdout = _Cap()
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_prints_filename_only(capsys):
-    file_path = Path(__file__).resolve().parent / "07_splitPathAndGetFilename.py"
-    assert file_path.exists()
-
-    _load_module_from_path("mod07_splitPathAndGetFilename", file_path)
-    out = capsys.readouterr().out
-    got_lines = [line for line in out.splitlines() if line.strip() != ""]
-    assert len(got_lines) == 1
-    got = got_lines[0]
-    expected = os.path.basename("/home/alex/docs/notes.txt")
-    assert got == expected, f"expected={expected!r} actual={got!r}"
-
-
-def test_does_not_print_path_separators(capsys):
-    file_path = Path(__file__).resolve().parent / "07_splitPathAndGetFilename.py"
-    _load_module_from_path("mod07_splitPathAndGetFilename_2", file_path)
-    out = capsys.readouterr().out
-    got_lines = [line for line in out.splitlines() if line.strip() != ""]
-    got = got_lines[-1] if got_lines else ""
-    expected = False
-    actual = ("/" in got) or ("\\" in got)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_output_has_no_extra_whitespace(capsys):
-    file_path = Path(__file__).resolve().parent / "07_splitPathAndGetFilename.py"
-    _load_module_from_path("mod07_splitPathAndGetFilename_3", file_path)
-    out = capsys.readouterr().out
-    got_lines = [line for line in out.splitlines() if line.strip() != ""]
-    got = got_lines[0] if got_lines else ""
-    expected = got.strip()
-    actual = got
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+def test_stdout_exact_match():
+    script_path = Path(__file__).resolve().parent / '07_splitPathAndGetFilename.py'
+    expected = "notes.txt\n"
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {actual}")

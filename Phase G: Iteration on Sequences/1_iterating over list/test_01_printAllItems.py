@@ -1,35 +1,42 @@
-import importlib.util
-import io
-import os
 import sys
+import importlib.util
+from pathlib import Path
 import pytest
 
 
-def _load_module(path):
-    name = os.path.splitext(os.path.basename(path))[0]
-    spec = importlib.util.spec_from_file_location(name, path)
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+
+    captured = []
+
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def test_prints_each_fruit_on_own_line(capsys):
-    path = os.path.join(os.path.dirname(__file__), "01_printAllItems.py")
-    _load_module(path)
-    out = capsys.readouterr().out
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "01_printAllItems.py"
+    actual = _run_script(script_path)
     expected = "apple\nbanana\ncherry\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_no_extra_output(capsys):
-    path = os.path.join(os.path.dirname(__file__), "01_printAllItems.py")
-    _load_module(path)
-    out = capsys.readouterr().out
-    lines = [line for line in out.splitlines()]
-    expected_lines = ["apple", "banana", "cherry"]
-    assert lines == expected_lines, f"expected={expected_lines!r} actual={lines!r}"
-
-
-def test_import_executes_without_errors():
-    path = os.path.join(os.path.dirname(__file__), "01_printAllItems.py")
-    _load_module(path)
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

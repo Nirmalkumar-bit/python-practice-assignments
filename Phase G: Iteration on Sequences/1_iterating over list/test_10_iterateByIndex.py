@@ -1,51 +1,42 @@
-import importlib.util
-import os
 import sys
+import importlib.util
+from pathlib import Path
 import pytest
 
-MODULE_FILE = "10_iterateByIndex.py"
+
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def _run_module_capture_stdout():
-    spec = importlib.util.spec_from_file_location("mod_under_test_10", MODULE_FILE)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def test_no_placeholders_left():
-    with open(MODULE_FILE, "r", encoding="utf-8") as f:
-        src = f.read()
-    assert "____" not in src, "Expected no placeholders, found placeholders"
-
-
-def test_prints_even_index_letters_each_on_new_line(capsys):
-    _run_module_capture_stdout()
-    out = capsys.readouterr().out
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "10_iterateByIndex.py"
+    actual = _run_script(script_path)
     expected = "a\nc\ne\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_prints_exactly_three_lines(capsys):
-    _run_module_capture_stdout()
-    out = capsys.readouterr().out
-    lines = [ln for ln in out.splitlines() if ln != ""]
-    expected_count = 3
-    actual_count = len(lines)
-    assert actual_count == expected_count, f"expected={expected_count!r} actual={actual_count!r}"
-
-
-def test_printed_values_match_list_even_indices(capsys):
-    mod = _run_module_capture_stdout()
-    out = capsys.readouterr().out
-    printed = out.splitlines()
-    expected = [mod.letters[i] for i in range(len(mod.letters)) if i % 2 == 0]
-    assert printed == expected, f"expected={expected!r} actual={printed!r}"
-
-
-def test_no_extra_whitespace_on_lines(capsys):
-    _run_module_capture_stdout()
-    out = capsys.readouterr().out
-    lines = out.splitlines()
-    stripped = [ln.strip() for ln in lines]
-    assert lines == stripped, f"expected={stripped!r} actual={lines!r}"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

@@ -1,42 +1,21 @@
 import importlib.util
-import pathlib
+from pathlib import Path
 import sys
-import pytest
-
-MODULE_NAME = "05_mixedArgsDefaults"
-FILE_PATH = pathlib.Path(__file__).with_name("05_mixedArgsDefaults.py")
 
 
-def load_module():
-    spec = importlib.util.spec_from_file_location(MODULE_NAME, str(FILE_PATH))
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file exists>\nactual output\n<missing file: {path.name}>")
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    sys.modules.pop(MODULE_NAME, None)
+    sys.modules.pop(path.stem, None)
     spec.loader.exec_module(module)
-    return module
 
 
-def test_welcome_function_exists_and_is_callable():
-    mod = load_module()
-    assert hasattr(mod, "welcome")
-    assert callable(mod.welcome)
-
-
-def test_welcome_defaults_and_overrides():
-    mod = load_module()
-    assert mod.welcome("Sam") == "Hi, Sam."
-    assert mod.welcome("Sam", greeting="Hello", punctuation="!") == "Hello, Sam!"
-
-
-def test_welcome_keyword_only_mix():
-    mod = load_module()
-    assert mod.welcome(name="Sam") == "Hi, Sam."
-    assert mod.welcome("Sam", punctuation="?") == "Hi, Sam?"
-    assert mod.welcome("Sam", greeting="Hey") == "Hey, Sam."
-    assert mod.welcome(name="Sam", greeting="Yo", punctuation="!!!") == "Yo, Sam!!!"
-
-
-def test_file_prints_exact_expected_output(capsys):
-    load_module()
+def test_stdout_exact(capsys):
+    path = Path(__file__).resolve().parent / "05_mixedArgsDefaults.py"
+    _run_script(path)
     out = capsys.readouterr().out
     expected = "Hi, Sam.\nHello, Sam!\n"
-    assert expected == out, f"expected={expected!r} actual={out!r}"
+    if out != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{out}")

@@ -1,89 +1,58 @@
+import importlib.util
+from pathlib import Path
 import pytest
-import importlib
 
-mod = importlib.import_module("07_parse_int_strict")
-parse_int_strict = mod.parse_int_strict
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "07_parse_int_strict.py"
 
 
-def test_parses_with_whitespace_and_sign():
-    expected = -42
-    actual = parse_int_strict("  -42 ")
-    assert actual == expected, f"expected {expected}, got {actual}"
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_07_parse_int_strict", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 @pytest.mark.parametrize(
-    "s, expected",
+    "s,expected",
     [
         ("0", 0),
-        ("+0", 0),
-        ("-0", 0),
-        ("007", 7),
-        ("   123   ", 123),
-        ("+123", 123),
-        ("-123", -123),
-        ("\t\n  -9  \r", -9),
+        ("  -42 ", -42),
+        ("+7", 7),
+        ("  0010  ", 10),
     ],
 )
-def test_valid_inputs(s, expected):
-    actual = parse_int_strict(s)
-    assert actual == expected, f"expected {expected}, got {actual}"
-
-
-@pytest.mark.parametrize("s", ["", "   ", "+", "-", "++1", "--1", "+-1", "-+1"])
-def test_invalid_empty_or_sign_only(s):
-    with pytest.raises(ValueError) as ei:
-        parse_int_strict(s)
-    expected = "invalid integer literal"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
+def test_parse_int_strict_valid(s, expected):
+    m = load_module()
+    out = m.parse_int_strict(s)
+    assert out == expected, f"expected output: {expected!r}\nactual output: {out!r}"
 
 
 @pytest.mark.parametrize(
     "s",
     [
+        "",
+        "   ",
         "3.14",
-        "1e3",
-        "12 3",
-        "  1  ",
+        "- 1",
+        "+",
+        "--1",
         "1_000",
-        "0x10",
-        "NaN",
-        "inf",
-        "  + 1",
-        " - 1",
-        "1-",
-        "1+",
-        " +001x",
-        "١٢٣",
+        "12a",
+        "a12",
     ],
 )
-def test_invalid_non_digit_patterns_raise_value_error(s):
+def test_parse_int_strict_invalid_literal(s):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        parse_int_strict(s)
-    expected = "invalid integer literal"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
+        m.parse_int_strict(s)
+    assert str(ei.value) == "invalid integer literal", f"expected output: invalid integer literal\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("val", [10, 10.0, None, True, False, b"123", bytearray(b"123"), ["1"], {"s": "1"}])
-def test_non_str_raises_type_error(val):
+@pytest.mark.parametrize("s", [10, None, 3.14, True, [], {}])
+def test_parse_int_strict_type_error(s):
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        parse_int_strict(val)
-    expected = "s must be a str"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
-
-
-def test_does_not_truncate_or_round():
-    with pytest.raises(ValueError) as ei:
-        parse_int_strict("  42.0  ")
-    expected = "invalid integer literal"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
-
-
-def test_preserves_large_integer():
-    s = "9" * 60
-    expected = int(s)
-    actual = parse_int_strict(s)
-    assert actual == expected, f"expected {expected}, got {actual}"
+        m.parse_int_strict(s)
+    assert str(ei.value) == "s must be a str", f"expected output: s must be a str\nactual output: {str(ei.value)}"

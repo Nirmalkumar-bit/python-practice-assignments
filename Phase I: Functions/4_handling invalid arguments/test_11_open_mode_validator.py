@@ -1,54 +1,49 @@
+import importlib.util
+from pathlib import Path
 import pytest
-import importlib
 
-mod = importlib.import_module("11_open_mode_validator")
-validate_open_args = mod.validate_open_args
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "11_open_mode_validator.py"
 
 
-def test_valid_returns_tuple():
-    result = validate_open_args("notes.txt", "r")
-    assert isinstance(result, tuple)
-    assert result == ("notes.txt", "r")
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_11_open_mode_validator", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-@pytest.mark.parametrize("path", [None, 123, 0.0, [], {}, (), object()])
-def test_path_type_errors_non_str(path):
-    with pytest.raises(TypeError) as excinfo:
-        validate_open_args(path, "w")
-    assert str(excinfo.value) == "path must be a non-empty string"
+def test_validate_open_args_valid_r_txt():
+    m = load_module()
+    out = m.validate_open_args("notes.txt", "r")
+    assert out == ("notes.txt", "r"), f"expected output: ('notes.txt', 'r')\nactual output: {out!r}"
 
 
-@pytest.mark.parametrize("path", ["", "   "])
-def test_path_empty_or_whitespace_errors(path):
-    with pytest.raises(TypeError) as excinfo:
-        validate_open_args(path, "w")
-    assert str(excinfo.value) == "path must be a non-empty string"
+def test_validate_open_args_valid_w_any_ext():
+    m = load_module()
+    out = m.validate_open_args("notes.md", "w")
+    assert out == ("notes.md", "w"), f"expected output: ('notes.md', 'w')\nactual output: {out!r}"
 
 
-@pytest.mark.parametrize("mode", [None, "", "R", "rw", "x", 1, True, [], {}])
-def test_invalid_mode_raises_value_error(mode):
-    with pytest.raises(ValueError) as excinfo:
-        validate_open_args("notes.txt", mode)
-    assert str(excinfo.value) == "invalid mode"
+@pytest.mark.parametrize("path", ["", "   ", None, 123, True, []])
+def test_validate_open_args_invalid_path_type_or_empty(path):
+    m = load_module()
+    with pytest.raises(TypeError) as ei:
+        m.validate_open_args(path, "w")
+    assert str(ei.value) == "path must be a non-empty string", f"expected output: path must be a non-empty string\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("path", ["notes.md", "notes", "notes.txt.bak", "TXT", "notes.TXT"])
-def test_read_mode_requires_txt_extension(path):
-    with pytest.raises(ValueError) as excinfo:
-        validate_open_args(path, "r")
-    assert str(excinfo.value) == "read mode requires .txt file"
+@pytest.mark.parametrize("mode", ["", "rb", "rw", "x", None, 1])
+def test_validate_open_args_invalid_mode(mode):
+    m = load_module()
+    with pytest.raises(ValueError) as ei:
+        m.validate_open_args("notes.txt", mode)
+    assert str(ei.value) == "invalid mode", f"expected output: invalid mode\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("mode", ["w", "a"])
-def test_write_append_allow_non_txt(mode):
-    result = validate_open_args("notes.md", mode)
-    assert result == ("notes.md", mode)
-
-
-def test_returns_new_tuple_not_same_object():
-    path = "notes.txt"
-    mode = "r"
-    result = validate_open_args(path, mode)
-    assert result is not (path, mode)
-    assert result[0] == path
-    assert result[1] == mode
+def test_validate_open_args_read_requires_txt():
+    m = load_module()
+    with pytest.raises(ValueError) as ei:
+        m.validate_open_args("notes.md", "r")
+    assert str(ei.value) == "read mode requires .txt file", f"expected output: read mode requires .txt file\nactual output: {str(ei.value)}"

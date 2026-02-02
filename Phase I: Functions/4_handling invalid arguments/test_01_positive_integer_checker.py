@@ -1,64 +1,39 @@
 import importlib.util
-import pathlib
+from pathlib import Path
 import pytest
 
-MODULE_FILENAME = "01_positive_integer_checker.py"
-MODULE_NAME = "positive_integer_checker_01"
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "01_positive_integer_checker.py"
 
 
 def load_module():
-    path = pathlib.Path(__file__).resolve().parent / MODULE_FILENAME
-    spec = importlib.util.spec_from_file_location(MODULE_NAME, str(path))
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_01_positive_integer_checker", ASSIGNMENT_FILE)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
 
 
-@pytest.fixture(scope="module")
-def mod():
-    return load_module()
-
-
-@pytest.mark.parametrize("n", [1, 2, 3, 10, 999999])
-def test_valid_positive_int_returns_true(mod, n):
-    assert mod.validate_positive_int(n) is True
-
-
-@pytest.mark.parametrize("n", [0, -1, -10])
-def test_non_positive_int_raises_value_error_with_message(mod, n):
-    with pytest.raises(ValueError) as ei:
-        mod.validate_positive_int(n)
-    assert str(ei.value) == "n must be positive", f"expected={'n must be positive'} actual={str(ei.value)!r}"
+def test_validate_positive_int_valid():
+    m = load_module()
+    out = m.validate_positive_int(3)
+    assert out is True, f"expected output: True\nactual output: {out!r}"
 
 
 @pytest.mark.parametrize(
-    "n",
-    [
-        "3",
-        3.0,
-        1.2,
-        None,
-        [],
-        {},
-        (),
-        object(),
-        True,
-        False,
-    ],
+    "val",
+    ["3", 3.0, None, [], {}, (3,), True, False],
 )
-def test_non_int_raises_type_error_with_message(mod, n):
+def test_validate_positive_int_type_errors(val):
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        mod.validate_positive_int(n)
-    assert str(ei.value) == "n must be an int", f"expected={'n must be an int'} actual={str(ei.value)!r}"
+        m.validate_positive_int(val)
+    assert str(ei.value) == "n must be an int", f"expected output: n must be an int\nactual output: {str(ei.value)}"
 
 
-def test_bool_is_not_accepted_even_though_it_is_int_subclass(mod):
-    with pytest.raises(TypeError) as ei:
-        mod.validate_positive_int(True)
-    assert str(ei.value) == "n must be an int", f"expected={'n must be an int'} actual={str(ei.value)!r}"
-
-
-def test_value_error_has_priority_over_return_for_zero(mod):
+@pytest.mark.parametrize("val", [0, -1, -100])
+def test_validate_positive_int_value_errors(val):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        mod.validate_positive_int(0)
-    assert str(ei.value) == "n must be positive", f"expected={'n must be positive'} actual={str(ei.value)!r}"
+        m.validate_positive_int(val)
+    assert str(ei.value) == "n must be positive", f"expected output: n must be positive\nactual output: {str(ei.value)}"

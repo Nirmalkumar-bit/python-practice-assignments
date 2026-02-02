@@ -1,62 +1,27 @@
-import importlib.util
 import io
-import os
-import sys
-import ast
 import contextlib
-import pytest
+import importlib.util
+from pathlib import Path
 
-FILE_NAME = "03_sortedDoesNotMutate.py"
 
-
-def _load_module():
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    spec = importlib.util.spec_from_file_location("mod_03_sortedDoesNotMutate", path)
+def load_module_from_path(module_name: str, file_path: Path):
+    if not file_path.exists():
+        raise AssertionError(f"expected output: file to exist at {file_path}\nactual output: file does not exist")
+    spec = importlib.util.spec_from_file_location(module_name, str(file_path))
     module = importlib.util.module_from_spec(spec)
-    stdout = io.StringIO()
-    with contextlib.redirect_stdout(stdout):
-        spec.loader.exec_module(module)
-    return module, stdout.getvalue()
+    assert spec and spec.loader
+    spec.loader.exec_module(module)
+    return module
 
 
-def _parse_printed_lists(output):
-    lines = [line.strip() for line in output.splitlines() if line.strip() != ""]
-    assert len(lines) >= 2, f"expected={2} actual={len(lines)}"
-    a = ast.literal_eval(lines[-2])
-    b = ast.literal_eval(lines[-1])
-    return a, b
-
-
-def test_printed_outputs_are_expected_lists():
-    _, out = _load_module()
-    printed_original, printed_new = _parse_printed_lists(out)
-
-    exp_original = [3, 1, 2]
-    exp_new = [1, 2, 3]
-
-    assert printed_original == exp_original, f"expected={exp_original} actual={printed_original}"
-    assert printed_new == exp_new, f"expected={exp_new} actual={printed_new}"
-
-
-def test_original_not_mutated_and_new_list_sorted():
-    mod, _ = _load_module()
-
-    assert hasattr(mod, "original"), "expected=True actual=False"
-    assert hasattr(mod, "new_list"), "expected=True actual=False"
-
-    exp_original = [3, 1, 2]
-    exp_new = [1, 2, 3]
-
-    assert mod.original == exp_original, f"expected={exp_original} actual={mod.original}"
-    assert mod.new_list == exp_new, f"expected={exp_new} actual={mod.new_list}"
-    assert mod.new_list is not mod.original, f"expected={'different_objects'} actual={'same_object' if mod.new_list is mod.original else 'different_objects'}"
-
-
-def test_new_list_matches_sorted_original_and_original_unchanged_after_sorting_reference():
-    mod, _ = _load_module()
-
-    exp_original = [3, 1, 2]
-    exp_sorted = sorted(exp_original)
-
-    assert mod.original == exp_original, f"expected={exp_original} actual={mod.original}"
-    assert mod.new_list == exp_sorted, f"expected={exp_sorted} actual={mod.new_list}"
+def test_sorted_does_not_mutate_and_stdout_exact():
+    target = Path(__file__).resolve().parent / "03_sortedDoesNotMutate.py"
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        mod = load_module_from_path("a03", target)
+    expected_out = "[3, 1, 2]\n[1, 2, 3]\n"
+    actual_out = buf.getvalue()
+    if actual_out != expected_out:
+        raise AssertionError(f"expected output: {expected_out}actual output: {actual_out}")
+    if getattr(mod, "original", None) != [3, 1, 2] or getattr(mod, "new_list", None) != [1, 2, 3]:
+        raise AssertionError(f"expected output: {expected_out}actual output: {actual_out}")

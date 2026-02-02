@@ -1,53 +1,35 @@
-import ast
-import importlib.util
-import io
-import os
 import sys
+import importlib.util
+from pathlib import Path
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output: ['Python', 'is', 'fun']\nactual output: <file not found: {path.name}>")
 
-def _import_module_from_filename(filename):
-    module_name = os.path.splitext(os.path.basename(filename))[0]
-    spec = importlib.util.spec_from_file_location(module_name, filename)
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
+    captured = []
 
-def _run_file_capture_stdout(filepath):
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
     old_stdout = sys.stdout
+    sys.stdout = _Cap()
     try:
-        buf = io.StringIO()
-        sys.stdout = buf
-        _import_module_from_filename(filepath)
-        return buf.getvalue()
+        spec.loader.exec_module(module)
     finally:
         sys.stdout = old_stdout
 
-
-def test_prints_expected_list():
-    filepath = os.path.join(os.path.dirname(__file__), "01_splitWordsBasics.py")
-    out = _run_file_capture_stdout(filepath).strip()
-    expected = str(["Python", "is", "fun"])
-    assert out == expected, f"expected={expected} actual={out}"
+    return "".join(captured)
 
 
-def test_words_variable_is_list_of_words():
-    filepath = os.path.join(os.path.dirname(__file__), "01_splitWordsBasics.py")
-    mod = _import_module_from_filename(filepath)
-    expected = ["Python", "is", "fun"]
-    assert getattr(mod, "words", None) == expected, f"expected={expected} actual={getattr(mod, 'words', None)}"
-    assert isinstance(getattr(mod, "words", None), list), f"expected={list} actual={type(getattr(mod, 'words', None))}"
-
-
-def test_uses_split_method_call():
-    filepath = os.path.join(os.path.dirname(__file__), "01_splitWordsBasics.py")
-    with open(filepath, "r", encoding="utf-8") as f:
-        src = f.read()
-    tree = ast.parse(src)
-
-    split_calls = []
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr == "split":
-            split_calls.append(node)
-
-    assert len(split_calls) >= 1, f"expected>={1} actual={len(split_calls)}"
+def test_stdout_exact_match():
+    script_path = Path(__file__).resolve().parent / '01_splitWordsBasics.py'
+    expected = "['Python', 'is', 'fun']\n"
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {actual}")

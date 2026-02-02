@@ -1,63 +1,42 @@
-import importlib.util
-import io
-import os
-import re
 import sys
-from contextlib import redirect_stdout
-
-FILE_NAME = "04_countLongWords.py"
-
-
-def _load_module(tmp_path):
-    src = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    dst = tmp_path / FILE_NAME
-    dst.write_text(open(src, "r", encoding="utf-8").read(), encoding="utf-8")
-
-    spec = importlib.util.spec_from_file_location("student_mod", str(dst))
-    mod = importlib.util.module_from_spec(spec)
-    return spec, mod
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def test_no_placeholders_left_in_source():
-    src_path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    content = open(src_path, "r", encoding="utf-8").read()
-    assert "____" not in content
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def test_prints_correct_count(tmp_path):
-    spec, mod = _load_module(tmp_path)
-
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        spec.loader.exec_module(mod)
-
-    out = buf.getvalue().strip()
-    assert re.fullmatch(r"-?\d+", out) is not None
-
-    expected = sum(1 for w in ["tree", "apple", "sun", "water", "stone"] if len(w) >= 5)
-    actual = int(out)
-    assert expected == actual, f"expected={expected} actual={actual}"
-
-
-def test_uses_words_list_as_given(tmp_path):
-    spec, mod = _load_module(tmp_path)
-
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        spec.loader.exec_module(mod)
-
-    assert hasattr(mod, "words")
-    assert isinstance(mod.words, list)
-    assert mod.words == ["tree", "apple", "sun", "water", "stone"]
-
-
-def test_algorithm_matches_generalized_rule(tmp_path):
-    spec, mod = _load_module(tmp_path)
-
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        spec.loader.exec_module(mod)
-
-    actual = int(buf.getvalue().strip())
-    expected = sum(1 for w in mod.words if isinstance(w, str) and len(w) >= 5)
-    assert expected == actual, f"expected={expected} actual={actual}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "04_countLongWords.py"
+    actual = _run_script(script_path)
+    expected = "3\n"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

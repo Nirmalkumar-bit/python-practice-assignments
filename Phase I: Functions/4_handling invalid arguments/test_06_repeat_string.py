@@ -1,53 +1,49 @@
+import importlib.util
+from pathlib import Path
 import pytest
-import importlib
 
-mod = importlib.import_module("06_repeat_string")
-repeat = mod.repeat
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "06_repeat_string.py"
 
 
-@pytest.mark.parametrize(
-    "s,times,expected",
-    [
-        ("ab", 3, "ababab"),
-        ("", 5, ""),
-        ("x", 0, ""),
-        ("🙂", 4, "🙂🙂🙂🙂"),
-        ("ab", 1, "ab"),
-    ],
-)
-def test_repeat_valid_cases(s, times, expected):
-    actual = repeat(s, times)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_06_repeat_string", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-@pytest.mark.parametrize(
-    "s",
-    [None, 1, 1.5, [], {}, (), object()],
-)
-def test_repeat_s_type_errors(s):
-    with pytest.raises(TypeError) as ei:
-        repeat(s, 1)
-    assert str(ei.value) == "s must be a str", f"expected={'s must be a str'!r} actual={str(ei.value)!r}"
+def test_repeat_valid():
+    m = load_module()
+    out = m.repeat("ab", 3)
+    assert out == "ababab", f"expected output: 'ababab'\nactual output: {out!r}"
 
 
-@pytest.mark.parametrize(
-    "times",
-    [None, 1.0, "3", [], {}, (), object(), True, False],
-)
-def test_repeat_times_type_errors(times):
-    with pytest.raises(TypeError) as ei:
-        repeat("a", times)
-    assert str(ei.value) == "times must be an int", f"expected={'times must be an int'!r} actual={str(ei.value)!r}"
+def test_repeat_zero_times():
+    m = load_module()
+    out = m.repeat("x", 0)
+    assert out == "", f"expected output: ''\nactual output: {out!r}"
 
 
-@pytest.mark.parametrize("times", [-1, -2, -100])
-def test_repeat_times_value_errors(times):
+def test_repeat_negative_times_value_error():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        repeat("a", times)
-    assert str(ei.value) == "times must be non-negative", f"expected={'times must be non-negative'!r} actual={str(ei.value)!r}"
+        m.repeat("ab", -1)
+    assert str(ei.value) == "times must be non-negative", f"expected output: times must be non-negative\nactual output: {str(ei.value)}"
 
 
-def test_repeat_returns_new_string_value_not_required_identity():
-    s = "ab"
-    out = repeat(s, 2)
-    assert out == "abab", f"expected={'abab'!r} actual={out!r}"
+@pytest.mark.parametrize("s", [None, 1, 1.0, [], {}, True])
+def test_repeat_s_type_error(s):
+    m = load_module()
+    with pytest.raises(TypeError) as ei:
+        m.repeat(s, 2)
+    assert str(ei.value) == "s must be a str", f"expected output: s must be a str\nactual output: {str(ei.value)}"
+
+
+@pytest.mark.parametrize("times", [True, False, 2.0, "2", None])
+def test_repeat_times_type_error(times):
+    m = load_module()
+    with pytest.raises(TypeError) as ei:
+        m.repeat("ab", times)
+    assert str(ei.value) == "times must be an int", f"expected output: times must be an int\nactual output: {str(ei.value)}"

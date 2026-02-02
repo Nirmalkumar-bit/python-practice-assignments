@@ -1,40 +1,42 @@
-import importlib.util
-import os
 import sys
-import types
+import importlib.util
+from pathlib import Path
 import pytest
 
 
-FILE_NAME = "02_printWithIndexStart1.py"
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def _load_module(path):
-    name = "student_mod_02_printWithIndexStart1"
-    spec = importlib.util.spec_from_file_location(name, path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def test_prints_expected_lines(capsys):
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    mod = _load_module(path)
-    out = capsys.readouterr().out
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "02_printWithIndexStart1.py"
+    actual = _run_script(script_path)
     expected = "1: red\n2: green\n3: blue\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_no_traceback_printed(capsys):
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    _load_module(path)
-    err = capsys.readouterr().err
-    assert "Traceback" not in err, f"expected={False!r} actual={('Traceback' in err)!r}"
-
-
-def test_colors_list_unchanged(capsys):
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    mod = _load_module(path)
-    _ = capsys.readouterr()
-    expected = ["red", "green", "blue"]
-    actual = getattr(mod, "colors", None)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

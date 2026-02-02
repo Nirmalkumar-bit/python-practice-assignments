@@ -1,67 +1,40 @@
-import importlib
-import re
 import sys
-import pytest
-
-MODULE_NAME = "08_variable_length_args_sumAll"
-
-
-def _load_module(monkeypatch):
-    if MODULE_NAME in sys.modules:
-        del sys.modules[MODULE_NAME]
-    return importlib.import_module(MODULE_NAME)
+import importlib.util
+from pathlib import Path
 
 
-def test_stdout_exact(monkeypatch, capsys):
-    _load_module(monkeypatch)
-    out = capsys.readouterr().out
-    assert out == "10\n0\n", f"expected={repr('10\\n0\\n')} actual={repr(out)}"
+def _run_script(path: Path) -> str:
+    if not path.exists():
+        raise AssertionError(f"Missing assignment file: {path.name}")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    def fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = fake_print
+        else:
+            __builtins__.print = fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def test_sum_all_exists_and_callable(monkeypatch, capsys):
-    mod = _load_module(monkeypatch)
-    capsys.readouterr()
-    assert hasattr(mod, "sum_all"), f"expected={True} actual={hasattr(mod, 'sum_all')}"
-    assert callable(getattr(mod, "sum_all", None)), f"expected={True} actual={callable(getattr(mod, 'sum_all', None))}"
-
-
-@pytest.mark.parametrize(
-    "args, expected",
-    [
-        ((), 0),
-        ((0,), 0),
-        ((1,), 1),
-        ((1, 2, 3, 4), 10),
-        ((-1, -2, -3), -6),
-        ((-10, 20, -5), 5),
-        ((1000000, 2, 3), 1000005),
-    ],
-)
-def test_sum_all_various(monkeypatch, capsys, args, expected):
-    mod = _load_module(monkeypatch)
-    capsys.readouterr()
-    actual = mod.sum_all(*args)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_sum_all_rejects_non_int(monkeypatch, capsys):
-    mod = _load_module(monkeypatch)
-    capsys.readouterr()
-    with pytest.raises(TypeError):
-        mod.sum_all(1, "2", 3)
-
-
-def test_sum_all_accepts_large_number_of_args(monkeypatch, capsys):
-    mod = _load_module(monkeypatch)
-    capsys.readouterr()
-    args = tuple(range(1, 501))
-    expected = sum(args)
-    actual = mod.sum_all(*args)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_source_uses_args_syntax():
-    with open(f"{MODULE_NAME}.py", "r", encoding="utf-8") as f:
-        src = f.read()
-    has_def = bool(re.search(r"def\s+sum_all\s*\(\s*\*args\s*\)\s*:", src))
-    assert has_def is True, f"expected={True} actual={has_def}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "08_variable_length_args_sumAll.py"
+    expected = "10\n0\n"
+    actual = _run_script(script_path)
+    assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

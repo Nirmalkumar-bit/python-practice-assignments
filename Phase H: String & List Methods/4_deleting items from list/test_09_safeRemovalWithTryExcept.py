@@ -1,39 +1,30 @@
-import importlib.util
-import pathlib
+import io
 import sys
+import importlib.util
+from pathlib import Path
 
 
-def load_module():
-    path = pathlib.Path(__file__).resolve().parent / "09_safeRemovalWithTryExcept.py"
-    spec = importlib.util.spec_from_file_location("safeRemovalWithTryExcept_09", str(path))
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+def _run_script(path: Path):
+    if not path.exists():
+        raise FileNotFoundError(f"Missing assignment file: {path}")
+
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        spec = importlib.util.spec_from_file_location(path.stem, str(path))
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        except Exception:
+            raise
+        output = sys.stdout.getvalue()
+    finally:
+        sys.stdout = old_stdout
+    return output
 
 
-def test_import_does_not_crash():
-    load_module()
-
-
-def test_fruits_list_after_execution_is_correct(capsys):
-    module = load_module()
-    expected = ["apple", "banana", "mango"]
-    actual = getattr(module, "fruits", None)
-    assert actual == expected, f"expected={expected} actual={actual}"
-
-
-def test_printed_output_matches_expected(capsys):
-    load_module()
-    captured = capsys.readouterr()
+def test_output_exact():
+    assignment_path = Path(__file__).resolve().parent / "09_safeRemovalWithTryExcept.py"
     expected = "fruits: ['apple', 'banana', 'mango']\n"
-    actual = captured.out
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_no_unexpected_stderr(capsys):
-    load_module()
-    captured = capsys.readouterr()
-    expected = ""
-    actual = captured.err
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    actual = _run_script(assignment_path)
+    assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

@@ -1,49 +1,40 @@
-import importlib.util
-import os
 import sys
-import builtins
-import pytest
-
-MODULE_FILE = "02_greetByName.py"
+import importlib.util
+from pathlib import Path
 
 
-def load_module(monkeypatch):
-    spec = importlib.util.spec_from_file_location("mod_02_greetByName", MODULE_FILE)
+def _run_script(path: Path) -> str:
+    if not path.exists():
+        raise AssertionError(f"Missing assignment file: {path.name}")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
 
-
-def test_greet_function_exists_and_returns_expected(monkeypatch):
-    monkeypatch.setattr(builtins, "print", lambda *args, **kwargs: None)
-    mod = load_module(monkeypatch)
-    assert hasattr(mod, "greet")
-    assert callable(mod.greet)
-
-    expected = "Hello, Ava!"
-    actual = mod.greet("Ava")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_module_prints_expected_on_import(monkeypatch):
     captured = []
 
     def fake_print(*args, **kwargs):
-        captured.append(" ".join(str(a) for a in args))
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
 
-    monkeypatch.setattr(builtins, "print", fake_print)
-    load_module(monkeypatch)
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = fake_print
+        else:
+            __builtins__.print = fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
 
-    expected_lines = ["Hello, Ava!"]
-    actual_lines = captured[:1]
-    assert actual_lines == expected_lines, f"expected={expected_lines!r} actual={actual_lines!r}"
+    return "".join(captured)
 
 
-def test_greet_handles_other_name(monkeypatch):
-    monkeypatch.setattr(builtins, "print", lambda *args, **kwargs: None)
-    mod = load_module(monkeypatch)
-
-    expected = "Hello, Sam!"
-    actual = mod.greet("Sam")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "02_greetByName.py"
+    expected = "Hello, Ava!\n"
+    actual = _run_script(script_path)
+    assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

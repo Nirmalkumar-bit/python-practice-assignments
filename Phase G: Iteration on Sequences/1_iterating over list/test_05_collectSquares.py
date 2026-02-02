@@ -1,64 +1,42 @@
-import ast
-import importlib.util
-import io
-import os
 import sys
-import contextlib
+import importlib.util
+from pathlib import Path
 import pytest
 
-MODULE_FILENAME = "05_collectSquares.py"
 
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
 
-def _run_module_capture_stdout(path):
-    spec = importlib.util.spec_from_file_location("collectSquares_mod", path)
-    mod = importlib.util.module_from_spec(spec)
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        spec.loader.exec_module(mod)
-    return mod, buf.getvalue()
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
+    module = importlib.util.module_from_spec(spec)
 
+    captured = []
 
-def _parse_last_list_from_stdout(out):
-    lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
-    if not lines:
-        return None
-    last = lines[-1]
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
     try:
-        val = ast.literal_eval(last)
-    except Exception:
-        return None
-    return val
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def test_no_placeholders_left():
-    path = os.path.join(os.getcwd(), MODULE_FILENAME)
-    with open(path, "r", encoding="utf-8") as f:
-        src = f.read()
-    assert "____" not in src
-
-
-def test_prints_expected_list():
-    path = os.path.join(os.getcwd(), MODULE_FILENAME)
-    _, out = _run_module_capture_stdout(path)
-    got = _parse_last_list_from_stdout(out)
-    expected = [1, 4, 9, 16]
-    assert got == expected, f"expected={expected!r} actual={got!r}"
-
-
-def test_variables_present_and_correct():
-    path = os.path.join(os.getcwd(), MODULE_FILENAME)
-    mod, _ = _run_module_capture_stdout(path)
-    assert hasattr(mod, "nums")
-    assert hasattr(mod, "squares")
-    expected_nums = [1, 2, 3, 4]
-    expected_squares = [1, 4, 9, 16]
-    assert mod.nums == expected_nums, f"expected={expected_nums!r} actual={getattr(mod, 'nums', None)!r}"
-    assert mod.squares == expected_squares, f"expected={expected_squares!r} actual={getattr(mod, 'squares', None)!r}"
-
-
-def test_squares_is_new_list_not_alias_of_nums():
-    path = os.path.join(os.getcwd(), MODULE_FILENAME)
-    mod, _ = _run_module_capture_stdout(path)
-    assert isinstance(mod.nums, list)
-    assert isinstance(mod.squares, list)
-    assert mod.squares is not mod.nums, f"expected={'different_objects'} actual={'same_object' if mod.squares is mod.nums else 'different_objects'}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "05_collectSquares.py"
+    actual = _run_script(script_path)
+    expected = "[1, 4, 9, 16]\n"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

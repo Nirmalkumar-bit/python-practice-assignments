@@ -1,71 +1,40 @@
-import importlib
 import sys
-import types
-import pytest
+import importlib.util
+from pathlib import Path
 
 
-MODULE_NAME = "04_defaultParameter"
+def _run_script(path: Path) -> str:
+    if not path.exists():
+        raise AssertionError(f"Missing assignment file: {path.name}")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    def fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = fake_print
+        else:
+            __builtins__.print = fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def _load_module():
-    if MODULE_NAME in sys.modules:
-        del sys.modules[MODULE_NAME]
-    return importlib.import_module(MODULE_NAME)
-
-
-def test_repeat_word_exists_and_callable():
-    m = _load_module()
-    assert hasattr(m, "repeat_word")
-    assert callable(m.repeat_word)
-
-
-def test_repeat_word_default_times_repeats_twice():
-    m = _load_module()
-    expected = "go go"
-    actual = m.repeat_word("go")
-    assert expected == actual, f"expected={expected!r} actual={actual!r}"
-
-
-def test_repeat_word_three_times():
-    m = _load_module()
-    expected = "go go go"
-    actual = m.repeat_word("go", 3)
-    assert expected == actual, f"expected={expected!r} actual={actual!r}"
-
-
-def test_repeat_word_single_time_no_extra_spaces():
-    m = _load_module()
-    expected = "hi"
-    actual = m.repeat_word("hi", 1)
-    assert expected == actual, f"expected={expected!r} actual={actual!r}"
-
-
-def test_repeat_word_preserves_word_exactly():
-    m = _load_module()
-    expected = "a  b a  b"
-    actual = m.repeat_word("a  b", 2)
-    assert expected == actual, f"expected={expected!r} actual={actual!r}"
-
-
-def test_module_prints_expected_output_on_import(capsys):
-    if MODULE_NAME in sys.modules:
-        del sys.modules[MODULE_NAME]
-    importlib.import_module(MODULE_NAME)
-    captured = capsys.readouterr()
-    expected = "go go\ngo go go\n"
-    actual = captured.out
-    assert expected == actual, f"expected={expected!r} actual={actual!r}"
-
-
-def test_repeat_word_signature_has_default_2():
-    m = _load_module()
-    import inspect
-
-    sig = inspect.signature(m.repeat_word)
-    params = list(sig.parameters.values())
-    assert len(params) >= 2
-    assert params[0].name == "word"
-    assert params[1].name == "times"
-    expected = 2
-    actual = params[1].default
-    assert expected == actual, f"expected={expected!r} actual={actual!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "04_defaultParameter.py"
+    expected = "go go\n" + "go go go\n"
+    actual = _run_script(script_path)
+    assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

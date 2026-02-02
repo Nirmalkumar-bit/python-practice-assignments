@@ -1,41 +1,30 @@
-import importlib.util
-import os
+import io
 import sys
+import importlib.util
+from pathlib import Path
 
-import pytest
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise FileNotFoundError(f"Missing assignment file: {path}")
 
-def load_module_and_capture_stdout(path, module_name):
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        spec.loader.exec_module(module)
-    except Exception as e:
-        raise
-    return module
+        spec = importlib.util.spec_from_file_location(path.stem, str(path))
+        module = importlib.util.module_from_spec(spec)
+        try:
+            spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        except Exception:
+            raise
+        output = sys.stdout.getvalue()
+    finally:
+        sys.stdout = old_stdout
+    return output
 
 
-def test_letters_list_modified_correctly(capsys):
-    file_path = os.path.join(os.path.dirname(__file__), "05_deleteSliceRange.py")
-    module_name = "deleteSliceRange_05_testmod"
-    module = load_module_and_capture_stdout(file_path, module_name)
-
-    assert hasattr(module, "letters")
-    expected = ["a", "e", "f"]
-    actual = module.letters
-    assert actual == expected, f"expected={expected} actual={actual}"
-
-    out = capsys.readouterr().out.strip()
-    assert out == f"letters: {expected}", f"expected={f'letters: {expected}'} actual={out}"
-
-
-def test_no_extra_elements_or_missing_elements():
-    file_path = os.path.join(os.path.dirname(__file__), "05_deleteSliceRange.py")
-    module_name = "deleteSliceRange_05_testmod2"
-    module = load_module_and_capture_stdout(file_path, module_name)
-
-    expected = ["a", "e", "f"]
-    actual = module.letters
-    assert len(actual) == len(expected), f"expected={len(expected)} actual={len(actual)}"
-    assert set(actual) == set(expected), f"expected={set(expected)} actual={set(actual)}"
+def test_output_exact():
+    assignment_path = Path(__file__).resolve().parent / "05_deleteSliceRange.py"
+    expected = "letters: ['a', 'e', 'f']\n"
+    actual = _run_script(assignment_path)
+    assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

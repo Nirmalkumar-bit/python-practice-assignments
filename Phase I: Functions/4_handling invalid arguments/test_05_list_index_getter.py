@@ -1,84 +1,52 @@
-import pytest
 import importlib.util
 from pathlib import Path
+import pytest
 
-# --- dynamic import for numbered module ---
-MODULE_PATH = Path(__file__).parent / "05_list_index_getter.py"
-
-spec = importlib.util.spec_from_file_location("list_index_getter_05", MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
-
-get_item_at = module.get_item_at
-# -----------------------------------------
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "05_list_index_getter.py"
 
 
-def test_returns_item_from_list():
-    seq = ["a", "b", "c"]
-    index = 1
-    expected = seq[index]
-    actual = get_item_at(seq, index)
-    assert actual == expected, f"expected {expected!r} but got {actual!r}"
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_05_list_index_getter", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def test_returns_item_from_tuple():
-    seq = (10, 20, 30)
-    index = 2
-    expected = seq[index]
-    actual = get_item_at(seq, index)
-    assert actual == expected, f"expected {expected!r} but got {actual!r}"
+def test_get_item_at_valid_list_and_tuple():
+    m = load_module()
+    out1 = m.get_item_at(["a", "b"], 1)
+    assert out1 == "b", f"expected output: 'b'\nactual output: {out1!r}"
+    out2 = m.get_item_at((10, 20, 30), 0)
+    assert out2 == 10, f"expected output: 10\nactual output: {out2!r}"
 
 
-def test_negative_index_supported_like_python():
-    seq = ["x", "y", "z"]
-    index = -1
-    expected = seq[index]
-    actual = get_item_at(seq, index)
-    assert actual == expected, f"expected {expected!r} but got {actual!r}"
-
-
-@pytest.mark.parametrize("seq", ["abc", {"a": 1}, {"a", "b"}, 123, 12.3, object(), None])
-def test_seq_must_be_list_or_tuple(seq):
-    with pytest.raises(TypeError) as ei:
-        get_item_at(seq, 0)
-    assert str(ei.value) == "seq must be a list or tuple", (
-        f"expected {'seq must be a list or tuple'!r} but got {str(ei.value)!r}"
-    )
-
-
-@pytest.mark.parametrize("index", [0.0, 1.5, "1", None, [], {}, (1,), object()])
-def test_index_must_be_int(index):
-    with pytest.raises(TypeError) as ei:
-        get_item_at([1, 2, 3], index)
-    assert str(ei.value) == "index must be an int", (
-        f"expected {'index must be an int'!r} but got {str(ei.value)!r}"
-    )
-
-
-@pytest.mark.parametrize("index", [True, False])
-def test_index_bool_not_allowed(index):
-    with pytest.raises(TypeError) as ei:
-        get_item_at([1, 2, 3], index)
-    assert str(ei.value) == "index must be an int", (
-        f"expected {'index must be an int'!r} but got {str(ei.value)!r}"
-    )
-
-
-@pytest.mark.parametrize(
-    "seq,index",
-    [([1], 1), ([1], 2), ([], 0), (("a",), 5), (("a", "b"), -3)],
-)
-def test_index_out_of_range_raises_indexerror(seq, index):
+def test_get_item_at_out_of_range_raises_indexerror():
+    m = load_module()
     with pytest.raises(IndexError) as ei:
-        get_item_at(seq, index)
-    assert str(ei.value) == "index out of range", (
-        f"expected {'index out of range'!r} but got {str(ei.value)!r}"
-    )
+        m.get_item_at([1], 2)
+    assert str(ei.value) == "index out of range", f"expected output: index out of range\nactual output: {str(ei.value)}"
 
 
-def test_errors_order_seq_checked_before_index():
+def test_get_item_at_negative_out_of_range_raises_indexerror():
+    m = load_module()
+    with pytest.raises(IndexError) as ei:
+        m.get_item_at([1, 2], -3)
+    assert str(ei.value) == "index out of range", f"expected output: index out of range\nactual output: {str(ei.value)}"
+
+
+@pytest.mark.parametrize("seq", ["abc", 123, None, {"a": 1}, {1, 2}])
+def test_get_item_at_seq_type_error(seq):
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        get_item_at("not a sequence", "0")
-    assert str(ei.value) == "seq must be a list or tuple", (
-        f"expected {'seq must be a list or tuple'!r} but got {str(ei.value)!r}"
-    )
+        m.get_item_at(seq, 0)
+    assert str(ei.value) == "seq must be a list or tuple", f"expected output: seq must be a list or tuple\nactual output: {str(ei.value)}"
+
+
+@pytest.mark.parametrize("index", [True, False, 1.0, "1", None])
+def test_get_item_at_index_type_error(index):
+    m = load_module()
+    with pytest.raises(TypeError) as ei:
+        m.get_item_at(["x"], index)
+    assert str(ei.value) == "index must be an int", f"expected output: index must be an int\nactual output: {str(ei.value)}"

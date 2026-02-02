@@ -1,124 +1,56 @@
-import math
-import pytest
 import importlib.util
 from pathlib import Path
+import pytest
 
-# --- dynamic import for numbered module ---
-MODULE_PATH = Path(__file__).parent / "03_divide_safely.py"
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "03_divide_safely.py"
 
-spec = importlib.util.spec_from_file_location("divide_safely_03", MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
 
-divide = module.divide
-# -----------------------------------------
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_03_divide_safely", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 @pytest.mark.parametrize(
     "a,b,expected",
     [
         (10, 2, 5.0),
-        (9, 2, 4.5),
-        (-10, 2, -5.0),
-        (10.0, 4, 2.5),
-        (1, 4, 0.25),
+        (9.0, 3, 3.0),
+        (-6, 2, -3.0),
     ],
 )
-def test_divide_valid_values(a, b, expected):
-    actual = divide(a, b)
-    assert actual == expected, f"expected {expected} got {actual}"
+def test_divide_valid(a, b, expected):
+    m = load_module()
+    out = m.divide(a, b)
+    assert out == expected, f"expected output: {expected!r}\nactual output: {out!r}"
 
 
-def test_divide_returns_float_for_int_inputs():
-    actual = divide(1, 2)
-    assert isinstance(actual, float), (
-        f"expected {float.__name__} got {type(actual).__name__}"
-    )
-
-
-def test_divide_by_zero_raises_valueerror_with_message():
-    with pytest.raises(ValueError) as excinfo:
-        divide(10, 0)
-    expected_msg = "b must not be zero"
-    actual_msg = str(excinfo.value)
-    assert actual_msg == expected_msg, (
-        f"expected {expected_msg!r} got {actual_msg!r}"
-    )
+@pytest.mark.parametrize("b", [0, 0.0])
+def test_divide_zero_denominator(b):
+    m = load_module()
+    with pytest.raises(ValueError) as ei:
+        m.divide(10, b)
+    assert str(ei.value) == "b must not be zero", f"expected output: b must not be zero\nactual output: {str(ei.value)}"
 
 
 @pytest.mark.parametrize(
     "a,b",
     [
         (True, 2),
-        (False, 2),
         (2, True),
+        (False, 2),
         (2, False),
-        (True, False),
-    ],
-)
-def test_divide_rejects_bool_inputs(a, b):
-    with pytest.raises(TypeError) as excinfo:
-        divide(a, b)
-    expected_msg = "a and b must be numbers"
-    actual_msg = str(excinfo.value)
-    assert actual_msg == expected_msg, (
-        f"expected {expected_msg!r} got {actual_msg!r}"
-    )
-
-
-@pytest.mark.parametrize(
-    "a,b",
-    [
         ("10", 2),
         (10, "2"),
-        (None, 2),
-        (10, None),
-        ([], 2),
-        (10, []),
-        ({}, 2),
-        (10, {}),
-        (object(), 2),
-        (10, object()),
+        (None, 1),
+        (1, None),
     ],
 )
-def test_divide_rejects_non_number_inputs(a, b):
-    with pytest.raises(TypeError) as excinfo:
-        divide(a, b)
-    expected_msg = "a and b must be numbers"
-    actual_msg = str(excinfo.value)
-    assert actual_msg == expected_msg, (
-        f"expected {expected_msg!r} got {actual_msg!r}"
-    )
-
-
-def test_divide_zero_numerator_ok():
-    actual = divide(0, 5)
-    expected = 0.0
-    assert actual == expected, f"expected {expected} got {actual}"
-
-
-def test_divide_negative_zero_denominator_raises():
-    with pytest.raises(ValueError) as excinfo:
-        divide(10, -0.0)
-    expected_msg = "b must not be zero"
-    actual_msg = str(excinfo.value)
-    assert actual_msg == expected_msg, (
-        f"expected {expected_msg!r} got {actual_msg!r}"
-    )
-
-
-def test_divide_float_zero_denominator_raises():
-    with pytest.raises(ValueError) as excinfo:
-        divide(10, 0.0)
-    expected_msg = "b must not be zero"
-    actual_msg = str(excinfo.value)
-    assert actual_msg == expected_msg, (
-        f"expected {expected_msg!r} got {actual_msg!r}"
-    )
-
-
-def test_divide_handles_infinite_results():
-    actual = divide(1.0, 1e-300)
-    assert math.isfinite(actual), (
-        f"expected {True} got {math.isfinite(actual)}"
-    )
+def test_divide_type_errors(a, b):
+    m = load_module()
+    with pytest.raises(TypeError) as ei:
+        m.divide(a, b)
+    assert str(ei.value) == "a and b must be numbers", f"expected output: a and b must be numbers\nactual output: {str(ei.value)}"

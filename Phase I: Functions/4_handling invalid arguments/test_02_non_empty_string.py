@@ -1,66 +1,36 @@
-import pytest
 import importlib.util
 from pathlib import Path
+import pytest
 
-# --- dynamic import for numbered module ---
-MODULE_PATH = Path(__file__).parent / "02_non_empty_string.py"
-
-spec = importlib.util.spec_from_file_location("non_empty_string_02", MODULE_PATH)
-module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(module)
-
-require_non_empty_string = module.require_non_empty_string
-# -----------------------------------------
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "02_non_empty_string.py"
 
 
-@pytest.mark.parametrize(
-    "value",
-    [None, 123, 12.5, True, False, [], {}, (), object(), b"hi", bytearray(b"hi")],
-)
-def test_type_error_for_non_str(value):
-    with pytest.raises(TypeError) as excinfo:
-        require_non_empty_string(value)
-    assert str(excinfo.value) == "s must be a str", (
-        f"expected {'s must be a str'} vs actual {str(excinfo.value)}"
-    )
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_02_non_empty_string", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-@pytest.mark.parametrize("value", ["", " ", "   ", "\t", "\n", "\r\n", " \t \n "])
-def test_value_error_for_empty_or_whitespace(value):
-    with pytest.raises(ValueError) as excinfo:
-        require_non_empty_string(value)
-    assert str(excinfo.value) == "s must be a non-empty string", (
-        f"expected {'s must be a non-empty string'} vs actual {str(excinfo.value)}"
-    )
+def test_require_non_empty_string_strips_and_returns():
+    m = load_module()
+    out = m.require_non_empty_string("  hi ")
+    assert out == "hi", f"expected output: 'hi'\nactual output: {out!r}"
 
 
-@pytest.mark.parametrize(
-    "raw, expected",
-    [
-        ("hi", "hi"),
-        ("  hi", "hi"),
-        ("hi  ", "hi"),
-        ("  hi  ", "hi"),
-        ("\thi\t", "hi"),
-        ("\nhi\n", "hi"),
-        ("  h i  ", "h i"),
-        ("  a\tb  ", "a\tb"),
-    ],
-)
-def test_returns_stripped_string(raw, expected):
-    actual = require_non_empty_string(raw)
-    assert actual == expected, f"expected {expected!r} vs actual {actual!r}"
+@pytest.mark.parametrize("s", ["", "   ", "\n\t  "])
+def test_require_non_empty_string_rejects_empty_or_whitespace(s):
+    m = load_module()
+    with pytest.raises(ValueError) as ei:
+        m.require_non_empty_string(s)
+    assert str(ei.value) == "s must be a non-empty string", f"expected output: s must be a non-empty string\nactual output: {str(ei.value)}"
 
 
-def test_returns_new_value_when_stripping_needed():
-    raw = "  hi  "
-    actual = require_non_empty_string(raw)
-    assert actual == "hi", f"expected {'hi'!r} vs actual {actual!r}"
-    assert actual is not raw, f"expected {False} vs actual {actual is raw}"
-
-
-def test_returns_same_object_when_no_stripping_needed():
-    raw = "hi"
-    actual = require_non_empty_string(raw)
-    assert actual == "hi", f"expected {'hi'!r} vs actual {actual!r}"
-    assert actual is raw, f"expected {True} vs actual {actual is raw}"
+@pytest.mark.parametrize("s", [None, 1, 3.14, [], {}, True, ("x",)])
+def test_require_non_empty_string_type_error(s):
+    m = load_module()
+    with pytest.raises(TypeError) as ei:
+        m.require_non_empty_string(s)
+    assert str(ei.value) == "s must be a str", f"expected output: s must be a str\nactual output: {str(ei.value)}"

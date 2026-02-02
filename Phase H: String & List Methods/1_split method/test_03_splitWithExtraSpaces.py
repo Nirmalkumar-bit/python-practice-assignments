@@ -1,49 +1,35 @@
-import ast
-import importlib
-import io
-import os
 import sys
-import contextlib
-import pytest
+import importlib.util
+from pathlib import Path
 
-MODULE_NAME = "03_splitWithExtraSpaces"
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output: ['Too', 'many', 'spaces']\nactual output: <file not found: {path.name}>")
 
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
 
-def run_module_capture_stdout():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        importlib.invalidate_caches()
-        if MODULE_NAME in sys.modules:
-            del sys.modules[MODULE_NAME]
-        importlib.import_module(MODULE_NAME)
-    return buf.getvalue()
+    captured = []
 
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
 
-def test_prints_expected_list():
-    out = run_module_capture_stdout().strip()
+    old_stdout = sys.stdout
+    sys.stdout = _Cap()
     try:
-        val = ast.literal_eval(out)
-    except Exception as e:
-        pytest.fail(f"expected={['Too','many','spaces']} actual={out}")
-    expected = ["Too", "many", "spaces"]
-    assert val == expected, f"expected={expected} actual={val}"
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_words_variable_created_and_correct():
-    importlib.invalidate_caches()
-    if MODULE_NAME in sys.modules:
-        del sys.modules[MODULE_NAME]
-    with contextlib.redirect_stdout(io.StringIO()):
-        mod = importlib.import_module(MODULE_NAME)
-    expected = ["Too", "many", "spaces"]
-    actual = getattr(mod, "words", None)
-    assert actual == expected, f"expected={expected} actual={actual}"
-
-
-def test_source_has_placeholder_to_fill():
-    here = os.path.dirname(__file__)
-    path = os.path.join(here, f"{MODULE_NAME}.py")
-    if not os.path.exists(path):
-        pytest.skip(f"expected={path} actual=missing")
-    src = open(path, "r", encoding="utf-8").read()
-    assert "___" in src, f"expected=placeholder actual=absent"
+def test_stdout_exact_match():
+    script_path = Path(__file__).resolve().parent / '03_splitWithExtraSpaces.py'
+    expected = "['Too', 'many', 'spaces']\n"
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {actual}")

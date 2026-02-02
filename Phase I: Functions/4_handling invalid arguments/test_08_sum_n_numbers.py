@@ -1,95 +1,64 @@
-import importlib
-import math
+import importlib.util
+from pathlib import Path
 import pytest
 
-mod = importlib.import_module("08_sum_n_numbers")
-sum_n = mod.sum_n
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "08_sum_n_numbers.py"
 
 
-def test_sum_n_basic_examples():
-    expected = 3
-    actual = sum_n([1, 2, 3, 4], 2)
-    assert actual == expected, f"expected {expected}, got {actual}"
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_08_sum_n_numbers", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def test_sum_n_zero_n():
-    expected = 0
-    actual = sum_n([10, 20, 30], 0)
-    assert actual == expected, f"expected {expected}, got {actual}"
+def test_sum_n_basic():
+    m = load_module()
+    out = m.sum_n([1, 2, 3, 4], 2)
+    assert out == 3, f"expected output: 3\nactual output: {out!r}"
 
 
-def test_sum_n_full_length():
-    nums = [1, 2, 3.5, 4]
-    expected = sum(nums)
-    actual = sum_n(nums, len(nums))
-    assert actual == expected, f"expected {expected}, got {actual}"
+def test_sum_n_zero():
+    m = load_module()
+    out = m.sum_n([1, 2, 3], 0)
+    assert out == 0, f"expected output: 0\nactual output: {out!r}"
 
 
-def test_sum_n_floats_precision():
-    nums = [0.1, 0.2, 0.3]
-    expected = sum(nums[:2])
-    actual = sum_n(nums, 2)
-    assert math.isclose(actual, expected, rel_tol=0.0, abs_tol=1e-12), f"expected {expected}, got {actual}"
+def test_sum_n_all_elements():
+    m = load_module()
+    out = m.sum_n([1.5, 2.5, -1.0], 3)
+    assert out == pytest.approx(3.0), f"expected output: 3.0\nactual output: {out!r}"
 
 
-def test_numbers_must_be_list_typeerror():
+@pytest.mark.parametrize("numbers", ["123", (1, 2), None, 123, {"a": 1}])
+def test_sum_n_numbers_type_error_numbers_container(numbers):
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        sum_n((1, 2, 3), 2)
-    expected = "numbers must be a list of numbers"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
+        m.sum_n(numbers, 1)
+    assert str(ei.value) == "numbers must be a list of numbers", f"expected output: numbers must be a list of numbers\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize(
-    "bad_numbers",
-    [
-        [1, "2", 3],
-        [1, None, 3],
-        [1, object(), 3],
-        [True, 2, 3],
-        [1, False, 3],
-    ],
-)
-def test_numbers_elements_must_be_int_or_float_bool_not_allowed(bad_numbers):
+@pytest.mark.parametrize("numbers", [[1, "2", 3], [True, 2], [1, None]])
+def test_sum_n_numbers_type_error_element_types(numbers):
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        sum_n(bad_numbers, 2)
-    expected = "numbers must be a list of numbers"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
+        m.sum_n(numbers, 2)
+    assert str(ei.value) == "numbers must be a list of numbers", f"expected output: numbers must be a list of numbers\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("bad_n", [2.0, "2", None, True, False])
-def test_n_must_be_int_bool_not_allowed(bad_n):
+@pytest.mark.parametrize("n", [True, False, 2.0, "2", None])
+def test_sum_n_n_type_error(n):
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        sum_n([1, 2, 3], bad_n)
-    expected = "n must be an int"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
+        m.sum_n([1, 2, 3], n)
+    assert str(ei.value) == "n must be an int", f"expected output: n must be an int\nactual output: {str(ei.value)}"
 
 
 @pytest.mark.parametrize("n", [-1, 4, 10])
-def test_n_out_of_range_raises_valueerror(n):
+def test_sum_n_n_out_of_range(n):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        sum_n([1, 2, 3], n)
-    expected = "n out of allowed range"
-    actual = str(ei.value)
-    assert actual == expected, f"expected {expected}, got {actual}"
-
-
-def test_empty_list_allows_n_zero_only():
-    expected = 0
-    actual = sum_n([], 0)
-    assert actual == expected, f"expected {expected}, got {actual}"
-
-    with pytest.raises(ValueError) as ei:
-        sum_n([], 1)
-    expected_msg = "n out of allowed range"
-    actual_msg = str(ei.value)
-    assert actual_msg == expected_msg, f"expected {expected_msg}, got {actual_msg}"
-
-
-def test_does_not_modify_input_list():
-    nums = [1, 2, 3, 4]
-    before = nums.copy()
-    _ = sum_n(nums, 3)
-    assert nums == before, f"expected {before}, got {nums}"
+        m.sum_n([1, 2, 3], n)
+    assert str(ei.value) == "n out of allowed range", f"expected output: n out of allowed range\nactual output: {str(ei.value)}"

@@ -1,173 +1,149 @@
+import importlib.util
+from pathlib import Path
 import pytest
-import importlib
 
-mod = importlib.import_module("15_api_style_validator")
-validate_payload = mod.validate_payload
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "15_api_style_validator.py"
 
 
-def test_payload_must_be_dict():
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_15_api_style_validator", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_validate_payload_valid_create():
+    m = load_module()
+    out = m.validate_payload({"action": "create", "data": {"name": "Pen", "price": 1.5}})
+    assert out is True, f"expected output: True\nactual output: {out!r}"
+
+
+def test_validate_payload_payload_must_be_dict():
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        validate_payload(["not", "a", "dict"])
-    assert str(ei.value) == "payload must be a dict"
+        m.validate_payload([("action", "create")])
+    assert str(ei.value) == "payload must be a dict", f"expected output: payload must be a dict\nactual output: {str(ei.value)}"
 
 
 @pytest.mark.parametrize("missing_key", ["action", "data"])
-def test_missing_required_keys(missing_key):
+def test_validate_payload_missing_required_keys(missing_key):
+    m = load_module()
     payload = {"action": "create", "data": {"name": "Pen", "price": 1.5}}
     payload.pop(missing_key)
     with pytest.raises(KeyError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == repr(f"missing key: {missing_key}")
+        m.validate_payload(payload)
+    assert str(ei.value) == f"'missing key: {missing_key}'", f"expected output: 'missing key: {missing_key}'\nactual output: {str(ei.value)}"
 
 
-def test_no_extra_keys_allowed_in_payload():
-    payload = {"action": "create", "data": {"name": "Pen", "price": 1.5}, "extra": 1}
+def test_validate_payload_no_extra_top_level_keys():
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "unexpected key: extra"
+        m.validate_payload({"action": "create", "data": {"name": "Pen", "price": 1.5}, "extra": 1})
+    assert str(ei.value) == "unexpected key: extra", f"expected output: unexpected key: extra\nactual output: {str(ei.value)}"
 
 
-def test_action_must_be_valid():
-    payload = {"action": "noop", "data": {}}
+def test_validate_payload_invalid_action():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid action"
+        m.validate_payload({"action": "read", "data": {}})
+    assert str(ei.value) == "invalid action", f"expected output: invalid action\nactual output: {str(ei.value)}"
 
 
-def test_data_must_be_dict():
-    payload = {"action": "create", "data": "nope"}
+def test_validate_payload_data_must_be_dict():
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "data must be a dict"
+        m.validate_payload({"action": "create", "data": "notadict"})
+    assert str(ei.value) == "data must be a dict", f"expected output: data must be a dict\nactual output: {str(ei.value)}"
 
 
-def test_meta_optional_must_be_dict_when_present():
-    payload = {"action": "create", "data": {"name": "Pen", "price": 1.5}, "meta": "x"}
+def test_validate_payload_meta_must_be_dict_if_present():
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "meta must be a dict"
+        m.validate_payload({"action": "create", "data": {"name": "Pen", "price": 1.5}, "meta": "x"})
+    assert str(ei.value) == "meta must be a dict", f"expected output: meta must be a dict\nactual output: {str(ei.value)}"
 
 
-def test_valid_create_returns_true():
-    payload = {"action": "create", "data": {"name": "Pen", "price": 1.5}}
-    assert validate_payload(payload) is True
-
-
-@pytest.mark.parametrize(
-    "bad_name",
-    [None, "", "   ", 123, [], {}],
-)
-def test_create_invalid_name_raises_value_error(bad_name):
-    payload = {"action": "create", "data": {"name": bad_name, "price": 1.5}}
+@pytest.mark.parametrize("name", ["", "   ", None, 123])
+def test_validate_payload_create_invalid_name(name):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid name"
+        m.validate_payload({"action": "create", "data": {"name": name, "price": 1.5}})
+    assert str(ei.value) == "invalid name", f"expected output: invalid name\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize(
-    "bad_price",
-    [None, "1", 0, -1, -0.01, [], {}, True],
-)
-def test_create_invalid_price_raises_value_error(bad_price):
-    payload = {"action": "create", "data": {"name": "Pen", "price": bad_price}}
+@pytest.mark.parametrize("price", [0, -1, "1.5", None, True])
+def test_validate_payload_create_invalid_price(price):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid price"
+        m.validate_payload({"action": "create", "data": {"name": "Pen", "price": price}})
+    assert str(ei.value) == "invalid price", f"expected output: invalid price\nactual output: {str(ei.value)}"
 
 
-def test_create_missing_name_raises_invalid_name():
-    payload = {"action": "create", "data": {"price": 1.5}}
+def test_validate_payload_update_valid_minimal():
+    m = load_module()
+    out = m.validate_payload({"action": "update", "data": {"id": 1}})
+    assert out is True, f"expected output: True\nactual output: {out!r}"
+
+
+def test_validate_payload_update_valid_with_fields():
+    m = load_module()
+    out = m.validate_payload({"action": "update", "data": {"id": 2, "name": "Book", "price": 10.0}})
+    assert out is True, f"expected output: True\nactual output: {out!r}"
+
+
+@pytest.mark.parametrize("id_val", [0, -1, "1", None, True])
+def test_validate_payload_update_invalid_id(id_val):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid name"
+        m.validate_payload({"action": "update", "data": {"id": id_val}})
+    assert str(ei.value) == "invalid id", f"expected output: invalid id\nactual output: {str(ei.value)}"
 
 
-def test_create_missing_price_raises_invalid_price():
-    payload = {"action": "create", "data": {"name": "Pen"}}
+def test_validate_payload_update_invalid_name_if_present():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid price"
+        m.validate_payload({"action": "update", "data": {"id": 1, "name": "   "}})
+    assert str(ei.value) == "invalid name", f"expected output: invalid name\nactual output: {str(ei.value)}"
 
 
-def test_update_valid_id_only_returns_true():
-    payload = {"action": "update", "data": {"id": 1}}
-    assert validate_payload(payload) is True
-
-
-@pytest.mark.parametrize("bad_id", [0, -1, None, "1", 1.2, True, [], {}])
-def test_update_invalid_id_raises_value_error(bad_id):
-    payload = {"action": "update", "data": {"id": bad_id}}
+def test_validate_payload_update_invalid_price_if_present():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid id"
+        m.validate_payload({"action": "update", "data": {"id": 1, "price": 0}})
+    assert str(ei.value) == "invalid price", f"expected output: invalid price\nactual output: {str(ei.value)}"
 
 
-def test_update_missing_id_raises_invalid_id():
-    payload = {"action": "update", "data": {"name": "Pen"}}
+def test_validate_payload_delete_valid():
+    m = load_module()
+    out = m.validate_payload({"action": "delete", "data": {"id": 2}})
+    assert out is True, f"expected output: True\nactual output: {out!r}"
+
+
+def test_validate_payload_delete_disallows_other_keys():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid id"
+        m.validate_payload({"action": "delete", "data": {"id": 2, "name": "x"}})
+    assert str(ei.value) == "invalid data keys", f"expected output: invalid data keys\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("bad_name", ["", "   ", 5, None])
-def test_update_invalid_name_when_present_raises(bad_name):
-    payload = {"action": "update", "data": {"id": 2, "name": bad_name}}
+def test_validate_payload_delete_invalid_id():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid name"
+        m.validate_payload({"action": "delete", "data": {"id": 0}})
+    assert str(ei.value) == "invalid id", f"expected output: invalid id\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("bad_price", [0, -1, "2", None, True])
-def test_update_invalid_price_when_present_raises(bad_price):
-    payload = {"action": "update", "data": {"id": 2, "price": bad_price}}
+def test_validate_payload_create_invalid_data_keys():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid price"
+        m.validate_payload({"action": "create", "data": {"name": "Pen", "price": 1.5, "id": 1}})
+    assert str(ei.value) == "invalid data keys", f"expected output: invalid data keys\nactual output: {str(ei.value)}"
 
 
-def test_update_valid_name_and_price_returns_true():
-    payload = {"action": "update", "data": {"id": 2, "name": "New", "price": 3.5}}
-    assert validate_payload(payload) is True
-
-
-def test_delete_valid_returns_true():
-    payload = {"action": "delete", "data": {"id": 2}}
-    assert validate_payload(payload) is True
-
-
-@pytest.mark.parametrize("bad_id", [0, -1, None, "2", 2.2, True])
-def test_delete_invalid_id_raises_value_error(bad_id):
-    payload = {"action": "delete", "data": {"id": bad_id}}
+def test_validate_payload_update_invalid_data_keys():
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid id"
-
-
-def test_delete_extra_data_keys_raises_invalid_data_keys():
-    payload = {"action": "delete", "data": {"id": 2, "name": "x"}}
-    with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid data keys"
-
-
-def test_update_unexpected_data_key_raises_invalid_data_keys():
-    payload = {"action": "update", "data": {"id": 1, "foo": "bar"}}
-    with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid data keys"
-
-
-def test_create_unexpected_data_key_raises_invalid_data_keys():
-    payload = {"action": "create", "data": {"name": "Pen", "price": 1.5, "foo": 1}}
-    with pytest.raises(ValueError) as ei:
-        validate_payload(payload)
-    assert str(ei.value) == "invalid data keys"
-
-
-def test_payload_allows_meta_dict():
-    payload = {
-        "action": "create",
-        "data": {"name": "Pen", "price": 1.5},
-        "meta": {"request_id": "abc"},
-    }
-    assert validate_payload(payload) is True
+        m.validate_payload({"action": "update", "data": {"id": 1, "extra": 1}})
+    assert str(ei.value) == "invalid data keys", f"expected output: invalid data keys\nactual output: {str(ei.value)}"

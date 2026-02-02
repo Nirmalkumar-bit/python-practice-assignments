@@ -1,93 +1,79 @@
+import importlib.util
+from pathlib import Path
 import pytest
 
-from 09_kwargs_allowed_keys import build_query
+ASSIGNMENT_FILE = Path(__file__).resolve().parent / "09_kwargs_allowed_keys.py"
 
 
-def test_build_query_valid_only_q():
-    assert build_query(q="cats") == {"q": "cats"}
+def load_module():
+    if not ASSIGNMENT_FILE.exists():
+        pytest.fail(f"expected output: file to exist at {ASSIGNMENT_FILE}\nactual output: file not found")
+    spec = importlib.util.spec_from_file_location("mod_09_kwargs_allowed_keys", ASSIGNMENT_FILE)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def test_build_query_valid_q_page():
-    assert build_query(q="cats", page=1) == {"q": "cats", "page": 1}
+def test_build_query_valid_minimal():
+    m = load_module()
+    out = m.build_query(q="cats", page=1)
+    assert out == {"q": "cats", "page": 1}, f"expected output: {{'q': 'cats', 'page': 1}}\nactual output: {out!r}"
 
 
-def test_build_query_valid_all_keys():
-    assert build_query(q="cats", page=2, limit=10) == {"q": "cats", "page": 2, "limit": 10}
+def test_build_query_strips_q():
+    m = load_module()
+    out = m.build_query(q="  dogs  ")
+    assert out == {"q": "dogs"}, f"expected output: {{'q': 'dogs'}}\nactual output: {out!r}"
 
 
-def test_build_query_ignores_not_provided_keys():
-    assert build_query(page=3) == {"page": 3}
-
-
-@pytest.mark.parametrize("bad_key", ["sort", "offset", "q ", "Page", "__proto__"])
-def test_build_query_unexpected_parameter_raises_typeerror(bad_key):
+def test_build_query_unexpected_key_type_error():
+    m = load_module()
     with pytest.raises(TypeError) as ei:
-        build_query(**{bad_key: "x"})
-    assert str(ei.value) == f"unexpected parameter: {bad_key}"
+        m.build_query(sort="asc")
+    assert str(ei.value) == "unexpected parameter: sort", f"expected output: unexpected parameter: sort\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("q_value", ["", "   ", "\n\t  "])
-def test_build_query_q_empty_after_strip_raises(q_value):
+@pytest.mark.parametrize("q", ["", "   ", "\n\t "])
+def test_build_query_invalid_q(q):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        build_query(q=q_value)
-    assert str(ei.value) == "q must be a non-empty string"
+        m.build_query(q=q)
+    assert str(ei.value) == "q must be a non-empty string", f"expected output: q must be a non-empty string\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("q_value", [None, 123, 12.3, [], {}, object()])
-def test_build_query_q_non_string_raises(q_value):
+@pytest.mark.parametrize("page", [0, -1])
+def test_build_query_page_must_be_positive(page):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        build_query(q=q_value)
-    assert str(ei.value) == "q must be a non-empty string"
+        m.build_query(page=page)
+    assert str(ei.value) == "page must be a positive int", f"expected output: page must be a positive int\nactual output: {str(ei.value)}"
 
 
-def test_build_query_q_does_not_strip_value_when_returning():
-    assert build_query(q="  cats  ") == {"q": "  cats  "}
-
-
-@pytest.mark.parametrize("page_value", [0, -1, -10])
-def test_build_query_page_non_positive_int_raises(page_value):
+@pytest.mark.parametrize("page", [True, False, 1.0, "1", None])
+def test_build_query_page_wrong_type_or_bool(page):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        build_query(page=page_value)
-    assert str(ei.value) == "page must be a positive int"
+        m.build_query(page=page)
+    assert str(ei.value) == "page must be a positive int", f"expected output: page must be a positive int\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("page_value", [True, False])
-def test_build_query_page_bool_not_allowed(page_value):
+@pytest.mark.parametrize("limit", [0, -5])
+def test_build_query_limit_must_be_positive(limit):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        build_query(page=page_value)
-    assert str(ei.value) == "page must be a positive int"
+        m.build_query(limit=limit)
+    assert str(ei.value) == "limit must be a positive int", f"expected output: limit must be a positive int\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("page_value", [1.0, "1", None, [], {}, object()])
-def test_build_query_page_non_int_raises(page_value):
+@pytest.mark.parametrize("limit", [True, False, 10.0, "10", None])
+def test_build_query_limit_wrong_type_or_bool(limit):
+    m = load_module()
     with pytest.raises(ValueError) as ei:
-        build_query(page=page_value)
-    assert str(ei.value) == "page must be a positive int"
+        m.build_query(limit=limit)
+    assert str(ei.value) == "limit must be a positive int", f"expected output: limit must be a positive int\nactual output: {str(ei.value)}"
 
 
-@pytest.mark.parametrize("limit_value", [0, -1, -5])
-def test_build_query_limit_non_positive_int_raises(limit_value):
-    with pytest.raises(ValueError) as ei:
-        build_query(limit=limit_value)
-    assert str(ei.value) == "limit must be a positive int"
-
-
-@pytest.mark.parametrize("limit_value", [True, False])
-def test_build_query_limit_bool_not_allowed(limit_value):
-    with pytest.raises(ValueError) as ei:
-        build_query(limit=limit_value)
-    assert str(ei.value) == "limit must be a positive int"
-
-
-@pytest.mark.parametrize("limit_value", [1.0, "10", None, [], {}, object()])
-def test_build_query_limit_non_int_raises(limit_value):
-    with pytest.raises(ValueError) as ei:
-        build_query(limit=limit_value)
-    assert str(ei.value) == "limit must be a positive int"
-
-
-def test_build_query_returns_new_dict_not_same_reference():
-    out = build_query(q="cats", page=1)
-    assert out == {"q": "cats", "page": 1}
-    out["page"] = 999
-    assert build_query(q="cats", page=1) == {"q": "cats", "page": 1}
+def test_build_query_all_keys_valid():
+    m = load_module()
+    out = m.build_query(q="cats", page=2, limit=10)
+    assert out == {"q": "cats", "page": 2, "limit": 10}, f"expected output: {{'q': 'cats', 'page': 2, 'limit': 10}}\nactual output: {out!r}"

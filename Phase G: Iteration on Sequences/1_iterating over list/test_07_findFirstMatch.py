@@ -1,68 +1,42 @@
-import importlib.util
-import os
 import sys
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def _run_module_capture_stdout(path):
-    spec = importlib.util.spec_from_file_location("mod_under_test", path)
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
     module = importlib.util.module_from_spec(spec)
 
-    old_stdout = sys.stdout
+    captured = []
+
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
     try:
-        from io import StringIO
-
-        buf = StringIO()
-        sys.stdout = buf
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
         spec.loader.exec_module(module)
-        output = buf.getvalue()
     finally:
-        sys.stdout = old_stdout
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
 
-    return module, output
-
-
-def test_prints_expected_first_match(capsys):
-    path = os.path.join(os.path.dirname(__file__), "07_findFirstMatch.py")
-    module, out = _run_module_capture_stdout(path)
-    printed = out.strip().splitlines()[-1] if out.strip().splitlines() else ""
-    expected = str(getattr(module, "result", ""))
-    assert printed == expected, f"expected={expected!r} actual={printed!r}"
+    return "".join(captured)
 
 
-def test_result_is_first_number_greater_than_10_and_from_list():
-    path = os.path.join(os.path.dirname(__file__), "07_findFirstMatch.py")
-    module, _ = _run_module_capture_stdout(path)
-
-    nums = getattr(module, "nums", None)
-    result = getattr(module, "result", None)
-
-    expected = None
-    for n in nums:
-        if n > 10:
-            expected = n
-            break
-
-    assert result == expected, f"expected={expected!r} actual={result!r}"
-
-
-def test_result_is_not_none_and_greater_than_10():
-    path = os.path.join(os.path.dirname(__file__), "07_findFirstMatch.py")
-    module, _ = _run_module_capture_stdout(path)
-
-    result = getattr(module, "result", None)
-    expected = True
-    actual = result is not None and result > 10
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_result_is_first_match_not_any_later_match():
-    path = os.path.join(os.path.dirname(__file__), "07_findFirstMatch.py")
-    module, _ = _run_module_capture_stdout(path)
-
-    nums = getattr(module, "nums", None)
-    result = getattr(module, "result", None)
-
-    first_index = next((i for i, n in enumerate(nums) if n > 10), None)
-    result_index = nums.index(result) if result in nums else None
-
-    assert result_index == first_index, f"expected={first_index!r} actual={result_index!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "07_findFirstMatch.py"
+    actual = _run_script(script_path)
+    expected = "12\n"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

@@ -1,53 +1,42 @@
-import ast
-import importlib.util
-import pathlib
 import sys
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def _load_module(mod_name, file_path):
-    spec = importlib.util.spec_from_file_location(mod_name, str(file_path))
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
     module = importlib.util.module_from_spec(spec)
-    sys.modules[mod_name] = module
-    spec.loader.exec_module(module)
-    return module
 
+    captured = []
 
-def test_prints_expected_row_sums(capsys):
-    import importlib
-    import 12_nestedListSumRows as m  # noqa: E999,F401
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
 
-
-def test_runtime_output_matches_expected(capsys):
-    file_path = pathlib.Path(__file__).with_name("12_nestedListSumRows.py")
-    mod_name = "mod12_nestedListSumRows_runtime"
-    _load_module(mod_name, file_path)
-    out = capsys.readouterr().out.strip()
-    expected = str([6, 9, 6])
-    assert out == expected, f"expected={expected} actual={out}"
-
-
-def test_row_sums_variable_is_correct_when_present():
-    file_path = pathlib.Path(__file__).with_name("12_nestedListSumRows.py")
-    mod_name = "mod12_nestedListSumRows_vars"
-    m = _load_module(mod_name, file_path)
-    if hasattr(m, "row_sums"):
-        actual = m.row_sums
-        expected = [6, 9, 6]
-        assert actual == expected, f"expected={expected} actual={actual}"
-
-
-def test_no_blanks_left_in_source():
-    file_path = pathlib.Path(__file__).with_name("12_nestedListSumRows.py")
-    src = file_path.read_text(encoding="utf-8")
-    assert "____" not in src, f"expected={'no blanks'} actual={'blanks found'}"
-
-
-def test_source_is_valid_python():
-    file_path = pathlib.Path(__file__).with_name("12_nestedListSumRows.py")
-    src = file_path.read_text(encoding="utf-8")
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
     try:
-        ast.parse(src)
-        ok = True
-    except SyntaxError:
-        ok = False
-    assert ok, f"expected={'valid'} actual={'invalid'}"
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
+
+
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "12_nestedListSumRows.py"
+    actual = _run_script(script_path)
+    expected = "[6, 9, 6]\n"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

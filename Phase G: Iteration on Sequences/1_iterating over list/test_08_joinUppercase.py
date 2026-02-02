@@ -1,50 +1,42 @@
-import importlib
-import io
-import contextlib
-import os
 import sys
+import importlib.util
+from pathlib import Path
 import pytest
 
-MODULE_NAME = "08_joinUppercase"
+
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
+    try:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
+
+    return "".join(captured)
 
 
-def run_module_capture():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        if MODULE_NAME in sys.modules:
-            del sys.modules[MODULE_NAME]
-        importlib.import_module(MODULE_NAME)
-    return buf.getvalue()
-
-
-def test_prints_expected_output_exact():
-    out = run_module_capture()
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "08_joinUppercase.py"
+    actual = _run_script(script_path)
     expected = "CAT-DOG-FISH\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_no_extra_output_whitespace():
-    out = run_module_capture()
-    expected = "CAT-DOG-FISH"
-    actual = out.rstrip("\n")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-    assert out.count("\n") == 1, f"expected={1!r} actual={out.count('\n')!r}"
-
-
-def test_module_executes_without_input(monkeypatch):
-    monkeypatch.setenv("PYTHONIOENCODING", "utf-8")
-    out = run_module_capture()
-    expected = "CAT-DOG-FISH\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_source_has_no_blanks_remaining():
-    here = os.path.dirname(__file__)
-    path = os.path.join(here, f"{MODULE_NAME}.py")
-    if not os.path.exists(path):
-        path = f"{MODULE_NAME}.py"
-    with open(path, "r", encoding="utf-8") as f:
-        src = f.read()
-    expected = 0
-    actual = src.count("____")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")

@@ -1,54 +1,42 @@
-import importlib.util
-import os
 import sys
-import types
+import importlib.util
+from pathlib import Path
 import pytest
 
-MODULE_NAME = "13_flattenList"
-FILE_NAME = "13_flattenList.py"
 
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n<file exists>\nactual output:\nMissing file: {script_path}")
 
-def load_module(path):
-    spec = importlib.util.spec_from_file_location(MODULE_NAME, path)
+    spec = importlib.util.spec_from_file_location(script_path.stem, str(script_path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
+    captured = []
 
-def test_runs_and_prints_expected_flattened_list(capsys):
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
+    def _fake_print(*args, **kwargs):
+        sep = kwargs.get("sep", " ")
+        end = kwargs.get("end", "\n")
+        captured.append(sep.join(str(a) for a in args) + end)
+
+    old_print = __builtins__["print"] if isinstance(__builtins__, dict) else __builtins__.print
     try:
-        load_module(path)
-    except Exception as e:
-        pytest.fail(f"{type(e).__name__}: {e}")
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = _fake_print
+        else:
+            __builtins__.print = _fake_print
+        spec.loader.exec_module(module)
+    finally:
+        if isinstance(__builtins__, dict):
+            __builtins__["print"] = old_print
+        else:
+            __builtins__.print = old_print
 
-    out = capsys.readouterr().out.strip()
-    expected = str([1, 2, 3, 4, 5, 6])
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_flat_variable_exists_and_is_correct_when_importable(capsys):
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    try:
-        mod = load_module(path)
-    except Exception as e:
-        pytest.fail(f"{type(e).__name__}: {e}")
-
-    assert hasattr(mod, "flat"), "expected=attribute 'flat' present actual=missing"
-    expected = [1, 2, 3, 4, 5, 6]
-    actual = getattr(mod, "flat")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-    assert isinstance(actual, list), f"expected={list.__name__} actual={type(actual).__name__}"
+    return "".join(captured)
 
 
-def test_uses_given_nested_data_if_exposed():
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    try:
-        mod = load_module(path)
-    except Exception as e:
-        pytest.fail(f"{type(e).__name__}: {e}")
-
-    if hasattr(mod, "nested"):
-        expected_nested = [[1, 2], [3], [4, 5, 6]]
-        actual_nested = mod.nested
-        assert actual_nested == expected_nested, f"expected={expected_nested!r} actual={actual_nested!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "13_flattenList.py"
+    actual = _run_script(script_path)
+    expected = "[1, 2, 3, 4, 5, 6]\n"
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
