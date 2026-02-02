@@ -1,43 +1,31 @@
+import io
+import sys
 import importlib.util
-import pathlib
+from pathlib import Path
+import pytest
 
 
-def _load_module():
-    path = pathlib.Path(__file__).resolve().parent / "10_sequenceWindowMaxSum.py"
-    spec = importlib.util.spec_from_file_location("seqwinmaxsum_mod", str(path))
+def _run_script(path: Path):
+    if not path.exists():
+        pytest.fail(f"expected output:\n(python file exists)\nactual output:\nmissing file: {path}")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        pytest.fail("expected output:\n(script imports)\nactual output:\nimport failure")
+
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    old_stdout = sys.stdout
+    buf = io.StringIO()
+    sys.stdout = buf
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+    return buf.getvalue()
 
 
-def test_max_sum_value_matches_expected():
-    m = _load_module()
-    expected = max(sum(m.data[i : i + m.k]) for i in range(0, len(m.data) - m.k + 1))
-    assert m.max_sum == expected, f"expected={expected} actual={m.max_sum}"
-
-
-def test_max_sum_is_int():
-    m = _load_module()
-    assert isinstance(m.max_sum, int), f"expected={int} actual={type(m.max_sum)}"
-
-
-def test_max_sum_changes_with_modified_data_and_k():
-    m = _load_module()
-
-    m.data = [10, -1, -1, -1]
-    m.k = 2
-
-    expected = max(sum(m.data[i : i + m.k]) for i in range(0, len(m.data) - m.k + 1))
-
-    assert m.max_sum != expected, f"expected_not={expected} actual={m.max_sum}"
-
-
-def test_handles_all_negative_numbers():
-    m = _load_module()
-
-    m.data = [-5, -2, -3, -4]
-    m.k = 2
-    expected = max(sum(m.data[i : i + m.k]) for i in range(0, len(m.data) - m.k + 1))
-
-    assert expected == -5
-    assert m.max_sum != expected, f"expected_not={expected} actual={m.max_sum}"
+def test_stdout_exact():
+    path = Path(__file__).resolve().parent / "10_sequenceWindowMaxSum.py"
+    out = _run_script(path)
+    expected = "12\n"
+    assert out == expected, f"expected output:\n{expected}\nactual output:\n{out}" 

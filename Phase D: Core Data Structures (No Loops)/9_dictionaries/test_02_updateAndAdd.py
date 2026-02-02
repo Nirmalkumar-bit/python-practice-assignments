@@ -1,37 +1,32 @@
-import ast
-import importlib.util
 import io
-import pathlib
-import contextlib
+import sys
+import importlib.util
+from pathlib import Path
 
-FILE_NAME = "02_updateAndAdd.py"
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
 
-def load_module():
-    path = pathlib.Path(FILE_NAME)
-    spec = importlib.util.spec_from_file_location("mod_02_updateAndAdd", str(path))
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
+
     module = importlib.util.module_from_spec(spec)
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
         spec.loader.exec_module(module)
-    return module, buf.getvalue()
+        return sys.stdout.getvalue()
+    except Exception as e:
+        raise AssertionError(f"expected output\n{{'status': 'active', 'points': 15}}\nactual output\n<exception: {type(e).__name__}: {e}>")
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_printed_profile_matches_expected_dict():
-    module, out = load_module()
-    printed = out.strip()
-    expected = {"status": "active", "points": 15}
-    assert ast.literal_eval(printed) == expected
-
-
-def test_profile_variable_updated_in_module():
-    module, _ = load_module()
-    expected = {"status": "active", "points": 15}
-    assert getattr(module, "profile", None) == expected
-
-
-def test_profile_contains_only_expected_keys():
-    module, _ = load_module()
-    profile = getattr(module, "profile", None)
-    assert isinstance(profile, dict)
-    assert set(profile.keys()) == {"status", "points"}
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "02_updateAndAdd.py"
+    actual = _run_script(script_path)
+    expected = "{'status': 'active', 'points': 15}\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

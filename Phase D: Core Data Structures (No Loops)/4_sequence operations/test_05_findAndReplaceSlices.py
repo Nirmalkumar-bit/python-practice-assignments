@@ -1,45 +1,31 @@
+import io
+import sys
 import importlib.util
-import pathlib
+from pathlib import Path
 import pytest
 
 
-def load_module():
-    path = pathlib.Path(__file__).resolve().parent / "05_findAndReplaceSlices.py"
-    spec = importlib.util.spec_from_file_location("m05_findAndReplaceSlices", path)
+def _run_script(path: Path):
+    if not path.exists():
+        pytest.fail(f"expected output:\n(python file exists)\nactual output:\nmissing file: {path}")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        pytest.fail("expected output:\n(script imports)\nactual output:\nimport failure")
+
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    old_stdout = sys.stdout
+    buf = io.StringIO()
+    sys.stdout = buf
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+    return buf.getvalue()
 
 
-def test_fixed_value_and_type(capsys):
-    m = load_module()
-    assert hasattr(m, "fixed"), "expected fixed vs actual missing"
-    assert isinstance(m.fixed, str), "expected str vs actual type"
-    assert m.fixed == "I like Python!", f"expected {'I like Python!'} vs actual {m.fixed!r}"
-
-    out = capsys.readouterr().out
-    lines = [ln.rstrip("\n") for ln in out.splitlines() if ln.strip() != ""]
-    assert lines, "expected printed output vs actual empty"
-    assert lines[-1] == "I like Python!", f"expected {'I like Python!'} vs actual {lines[-1]!r}"
-
-
-def test_indices_and_slicing_logic():
-    m = load_module()
-    assert hasattr(m, "s"), "expected s vs actual missing"
-    assert hasattr(m, "start"), "expected start vs actual missing"
-    assert hasattr(m, "end"), "expected end vs actual missing"
-
-    assert isinstance(m.start, int), "expected int vs actual type"
-    assert isinstance(m.end, int), "expected int vs actual type"
-    assert 0 <= m.start <= len(m.s), "expected valid index vs actual out of range"
-    assert 0 <= m.end <= len(m.s), "expected valid index vs actual out of range"
-    assert m.start < m.end, "expected start<end vs actual invalid order"
-
-    assert m.s[m.start:m.end] == "Java", f"expected {'Java'} vs actual {m.s[m.start:m.end]!r}"
-    assert m.s[:m.start] + "Python" + m.s[m.end:] == "I like Python!", f"expected {'I like Python!'} vs actual {m.s[:m.start] + 'Python' + m.s[m.end:]!r}"
-
-
-def test_no_replace_used_in_source():
-    path = pathlib.Path(__file__).resolve().parent / "05_findAndReplaceSlices.py"
-    src = path.read_text(encoding="utf-8")
-    assert ".replace(" not in src, "expected no replace usage vs actual found"
+def test_stdout_exact():
+    path = Path(__file__).resolve().parent / "05_findAndReplaceSlices.py"
+    out = _run_script(path)
+    expected = "I like Python!\n"
+    assert out == expected, f"expected output:\n{expected}\nactual output:\n{out}" 

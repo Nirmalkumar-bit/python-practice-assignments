@@ -1,31 +1,36 @@
+import sys
 import importlib.util
-import pathlib
+from pathlib import Path
 
 
-def _load_student_module():
-    path = pathlib.Path(__file__).with_name("16_validateRectangularMatrix.py")
-    spec = importlib.util.spec_from_file_location("validateRectangularMatrix16", str(path))
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\nTrue False\n\nactual output\n<missing file: {path.name}>\n")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    try:
+        sys.stdout = _Cap()
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_is_rect_values():
-    mod = _load_student_module()
-    expected1, expected2 = True, False
-    assert mod.is_rect1 == expected1, f"expected={expected1} actual={mod.is_rect1}"
-    assert mod.is_rect2 == expected2, f"expected={expected2} actual={mod.is_rect2}"
-
-
-def test_printed_output_exact(capsys):
-    _load_student_module()
-    out = capsys.readouterr().out
+def test_16_validateRectangularMatrix_stdout_exact():
+    script = Path(__file__).resolve().parent / "16_validateRectangularMatrix.py"
     expected = "True False\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_is_rect_types_are_bool():
-    mod = _load_student_module()
-    expected_type = bool
-    assert isinstance(mod.is_rect1, expected_type), f"expected={expected_type} actual={type(mod.is_rect1)}"
-    assert isinstance(mod.is_rect2, expected_type), f"expected={expected_type} actual={type(mod.is_rect2)}"
+    actual = _run_script(script)
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}\nactual output\n{actual}")

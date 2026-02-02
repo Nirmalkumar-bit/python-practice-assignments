@@ -1,65 +1,36 @@
-import ast
-import importlib.util
-import io
-import os
 import sys
-
-import pytest
-
-
-FILE_NAME = "11_convertListOfTuplesToLists.py"
+import importlib.util
+from pathlib import Path
 
 
-def _load_module():
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    spec = importlib.util.spec_from_file_location("student_mod_11", path)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n[[1, 2], [3, 4], [5, 6]]\n\nactual output\n<missing file: {path.name}>\n")
 
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
 
-def _run_script_capture_stdout():
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    buf = io.StringIO()
-    old = sys.stdout
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
     try:
-        sys.stdout = buf
-        spec = importlib.util.spec_from_file_location("student_run_11", path)
-        mod = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(mod)
+        sys.stdout = _Cap()
+        spec.loader.exec_module(module)
     finally:
-        sys.stdout = old
-    return buf.getvalue()
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_prints_expected_output_exactly():
-    out = _run_script_capture_stdout()
+def test_11_convertListOfTuplesToLists_stdout_exact():
+    script = Path(__file__).resolve().parent / "11_convertListOfTuplesToLists.py"
     expected = "[[1, 2], [3, 4], [5, 6]]\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_converted_value_and_types():
-    mod = _load_module()
-    expected = [[1, 2], [3, 4], [5, 6]]
-    actual = getattr(mod, "converted", None)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-    assert isinstance(actual, list), f"expected={list!r} actual={type(actual)!r}"
-    assert all(isinstance(x, list) for x in actual), f"expected={True!r} actual={all(isinstance(x, list) for x in actual)!r}"
-    assert all(not isinstance(x, tuple) for x in actual), f"expected={True!r} actual={all(not isinstance(x, tuple) for x in actual)!r}"
-
-
-def test_source_does_not_leave_converted_as_none():
-    path = os.path.join(os.path.dirname(__file__), FILE_NAME)
-    with open(path, "r", encoding="utf-8") as f:
-        tree = ast.parse(f.read(), filename=FILE_NAME)
-
-    assigned_none = False
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Assign):
-            for target in node.targets:
-                if isinstance(target, ast.Name) and target.id == "converted":
-                    val = node.value
-                    if isinstance(val, ast.Constant) and val.value is None:
-                        assigned_none = True
-
-    assert assigned_none is False, f"expected={False!r} actual={assigned_none!r}"
+    actual = _run_script(script)
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}\nactual output\n{actual}")

@@ -1,22 +1,36 @@
-import importlib
-import io
-import contextlib
+import sys
+import importlib.util
+from pathlib import Path
 
 
-def test_prints_expected_output():
-    mod_name = "03_updateNestedList"
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        importlib.import_module(mod_name)
-    out = buf.getvalue().strip()
-    expected = "[[0, 1], [2, 99]]"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n[[0, 1], [2, 99]]\n\nactual output\n<missing file: {path.name}>\n")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    module = importlib.util.module_from_spec(spec)
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    try:
+        sys.stdout = _Cap()
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_grid_mutated_correctly():
-    mod_name = "03_updateNestedList"
-    with contextlib.redirect_stdout(io.StringIO()):
-        m = importlib.reload(importlib.import_module(mod_name))
-    expected = [[0, 1], [2, 99]]
-    actual = getattr(m, "grid", None)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+def test_03_updateNestedList_stdout_exact():
+    script = Path(__file__).resolve().parent / "03_updateNestedList.py"
+    expected = "[[0, 1], [2, 99]]\n"
+    actual = _run_script(script)
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}\nactual output\n{actual}")

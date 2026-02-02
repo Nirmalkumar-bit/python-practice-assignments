@@ -1,22 +1,29 @@
-import importlib
-import io
-import contextlib
 import sys
+import importlib.util
+from pathlib import Path
+import pytest
 
 
-def test_swap_with_unpacking_output_order_and_values():
-    module_name = "02_swapWithUnpacking"
-    if module_name in sys.modules:
-        del sys.modules[module_name]
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"Missing assignment file: {script_path}")
 
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        mod = importlib.import_module(module_name)
+    spec = importlib.util.spec_from_file_location(script_path.stem, script_path)
+    module = importlib.util.module_from_spec(spec)
 
-    lines = [line.rstrip("\n") for line in buf.getvalue().splitlines() if line.strip() != ""]
-    assert len(lines) == 2, f"expected=2 actual={len(lines)}"
-    assert lines[0] == "right", f"expected={'right'} actual={lines[0]!r}"
-    assert lines[1] == "left", f"expected={'left'} actual={lines[1]!r}"
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
-    assert getattr(mod, "x", None) == "right", f"expected={'right'} actual={getattr(mod, 'x', None)!r}"
-    assert getattr(mod, "y", None) == "left", f"expected={'left'} actual={getattr(mod, 'y', None)!r}"
+
+def test_stdout_exact():
+    script_path = (Path(__file__).resolve().parent / "02_swapWithUnpacking.py").resolve()
+    actual = _run_script(script_path)
+    expected = "right\nleft\n"
+    assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

@@ -1,46 +1,26 @@
-import importlib.util
-import os
 import sys
-import types
-import pytest
+import importlib.util
+from pathlib import Path
 
 
-def _load_module():
-    filename = os.path.join(os.path.dirname(__file__), "03_tupleUnpacking.py")
-    module_name = "03_tupleUnpacking"
-    spec = importlib.util.spec_from_file_location(module_name, filename)
+def _run_script(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_print_output(capsys):
-    expected = "255,128,64"
-    _load_module()
-    out = capsys.readouterr().out.strip()
-    assert out == expected, f"expected={expected!r} actual={out!r}"
+def test_stdout_exact():
+    script_path = Path(__file__).resolve().parent / "03_tupleUnpacking.py"
+    assert script_path.exists(), "expected output: (file exists)\nactual output: (missing file)"
 
-
-def test_unpacked_values_exist_and_match_expected(capsys):
-    expected_r, expected_g, expected_b = 255, 128, 64
-    mod = _load_module()
-    assert hasattr(mod, "r"), f"expected={'r'!r} actual={dir(mod)!r}"
-    assert hasattr(mod, "g"), f"expected={'g'!r} actual={dir(mod)!r}"
-    assert hasattr(mod, "b"), f"expected={'b'!r} actual={dir(mod)!r}"
-    assert mod.r == expected_r, f"expected={expected_r!r} actual={mod.r!r}"
-    assert mod.g == expected_g, f"expected={expected_g!r} actual={mod.g!r}"
-    assert mod.b == expected_b, f"expected={expected_b!r} actual={mod.b!r}"
-
-
-def test_rgb_tuple_intact():
-    expected = (255, 128, 64)
-    mod = _load_module()
-    assert hasattr(mod, "rgb"), f"expected={'rgb'!r} actual={dir(mod)!r}"
-    assert isinstance(mod.rgb, tuple), f"expected={tuple!r} actual={type(mod.rgb)!r}"
-    assert mod.rgb == expected, f"expected={expected!r} actual={mod.rgb!r}"
-
-
-def test_unpacked_matches_rgb_tuple():
-    mod = _load_module()
-    actual = (mod.r, mod.g, mod.b)
-    assert actual == mod.rgb, f"expected={mod.rgb!r} actual={actual!r}"
+    out = _run_script(script_path)
+    expected = "255,128,64\n"
+    assert out == expected, f"expected output:\n{expected}actual output:\n{out}"

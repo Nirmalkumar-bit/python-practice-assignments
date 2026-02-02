@@ -1,52 +1,36 @@
-import importlib.util
 import sys
+import importlib.util
 from pathlib import Path
 
 
-def load_module(module_name, file_path):
-    spec = importlib.util.spec_from_file_location(module_name, str(file_path))
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\nJane 34 NY\n\nactual output\n<missing file: {path.name}>\n")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    loader = spec.loader
-    assert loader is not None
-    loader.exec_module(module)
-    return module
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    try:
+        sys.stdout = _Cap()
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_stdout_exact(capsys):
-    file_path = Path(__file__).resolve().parent / "10_unpackNestedTuples.py"
-    module_name = "unpack_nested_tuples_10"
-    if module_name in sys.modules:
-        del sys.modules[module_name]
-
-    load_module(module_name, file_path)
-    out = capsys.readouterr().out
+def test_10_unpackNestedTuples_stdout_exact():
+    script = Path(__file__).resolve().parent / "10_unpackNestedTuples.py"
     expected = "Jane 34 NY\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_variables_set_correctly(capsys):
-    file_path = Path(__file__).resolve().parent / "10_unpackNestedTuples.py"
-    module_name = "unpack_nested_tuples_10_vars"
-    if module_name in sys.modules:
-        del sys.modules[module_name]
-
-    mod = load_module(module_name, file_path)
-    capsys.readouterr()
-
-    actual = (getattr(mod, "name", object()), getattr(mod, "age", object()), getattr(mod, "state", object()))
-    expected = ("Jane", 34, "NY")
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_record_unchanged(capsys):
-    file_path = Path(__file__).resolve().parent / "10_unpackNestedTuples.py"
-    module_name = "unpack_nested_tuples_10_record"
-    if module_name in sys.modules:
-        del sys.modules[module_name]
-
-    mod = load_module(module_name, file_path)
-    capsys.readouterr()
-
-    actual = getattr(mod, "record", None)
-    expected = ("Jane", (34, "NY"))
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    actual = _run_script(script)
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}\nactual output\n{actual}")

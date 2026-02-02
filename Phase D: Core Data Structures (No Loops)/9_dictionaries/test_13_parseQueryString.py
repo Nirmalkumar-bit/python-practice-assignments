@@ -1,46 +1,35 @@
+import io
+import sys
 import importlib.util
-import pathlib
-import ast
-import pytest
+from pathlib import Path
 
 
-def load_module():
-    path = pathlib.Path(__file__).resolve().parent / "13_parseQueryString.py"
-    spec = importlib.util.spec_from_file_location("parse_query_mod", str(path))
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
 
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
 
-def test_params_is_dict():
-    mod = load_module()
-    assert isinstance(mod.params, dict), f"expected dict, got {type(mod.params)!r}"
-
-
-def test_params_matches_expected_structure_and_values():
-    mod = load_module()
-    expected = {"lang": "py", "level": "2", "mode": "practice"}
-    assert mod.params == expected, f"expected {expected!r}, got {mod.params!r}"
-
-
-def test_params_values_are_strings():
-    mod = load_module()
-    non_str = {k: v for k, v in mod.params.items() if not isinstance(v, str)}
-    assert not non_str, f"expected all str values, got {non_str!r}"
-
-
-def test_query_not_mutated():
-    mod = load_module()
-    expected_query = "lang=py&level=2&mode=practice"
-    assert mod.query == expected_query, f"expected {expected_query!r}, got {mod.query!r}"
-
-
-def test_prints_params_dict(capsys):
-    load_module()
-    out = capsys.readouterr().out.strip()
-    expected = {"lang": "py", "level": "2", "mode": "practice"}
+    module = importlib.util.module_from_spec(spec)
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        actual = ast.literal_eval(out)
-    except Exception:
-        pytest.fail(f"expected {expected!r}, got {out!r}")
-    assert actual == expected, f"expected {expected!r}, got {actual!r}"
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        raise AssertionError(
+            f"expected output\n{{'lang': 'py', 'level': '2', 'mode': 'practice'}}\n"
+            f"actual output\n<exception: {type(e).__name__}: {e}>"
+        )
+    finally:
+        sys.stdout = old_stdout
+
+
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "13_parseQueryString.py"
+    actual = _run_script(script_path)
+    expected = "{'lang': 'py', 'level': '2', 'mode': 'practice'}\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

@@ -1,37 +1,32 @@
-import importlib
 import io
-import os
 import sys
+import importlib.util
+from pathlib import Path
 
 
-def test_output_role_and_default_logins(capsys):
-    module_name = "03_safeGetDefault"
-    if module_name in sys.modules:
-        del sys.modules[module_name]
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
 
-    importlib.import_module(module_name)
-    out = capsys.readouterr().out
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
 
-    lines = [line.rstrip("\n") for line in out.splitlines() if line.strip() != ""]
-    expected_lines = ["guest", "0"]
-    assert lines == expected_lines, f"expected={expected_lines!r} actual={lines!r}"
-
-
-def test_uses_get_with_default_for_logins():
-    file_path = os.path.join(os.path.dirname(__file__), "03_safeGetDefault.py")
-    with open(file_path, "r", encoding="utf-8") as f:
-        src = f.read()
-
-    expected_snippets = ['get("logins", 0)', "get('logins', 0)"]
-    found = any(snip in src for snip in expected_snippets)
-    assert found, f"expected={True!r} actual={found!r}"
+    module = importlib.util.module_from_spec(spec)
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        raise AssertionError(f"expected output\nguest\n0\nactual output\n<exception: {type(e).__name__}: {e}>")
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_no_direct_key_access_for_logins():
-    file_path = os.path.join(os.path.dirname(__file__), "03_safeGetDefault.py")
-    with open(file_path, "r", encoding="utf-8") as f:
-        src = f.read()
-
-    bad_patterns = ['["logins"]', "['logins']"]
-    present = any(pat in src for pat in bad_patterns)
-    assert present is False, f"expected={False!r} actual={present!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "03_safeGetDefault.py"
+    actual = _run_script(script_path)
+    expected = "guest\n0\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

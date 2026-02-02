@@ -1,32 +1,32 @@
-import ast
+import io
+import sys
 import importlib.util
-import pathlib
+from pathlib import Path
 
 
-def load_module_from_path(path):
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
+
     spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
+
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def test_sorted_keys_value_and_order(capsys):
-    path = pathlib.Path(__file__).with_name("11_sortByValue.py")
-    mod = load_module_from_path(path)
-
-    expected = sorted(mod.scores, key=mod.scores.get, reverse=True)
-    assert mod.sorted_keys == expected, f"expected={expected} actual={mod.sorted_keys}"
-
-    out = capsys.readouterr().out.strip()
-    assert out, f"expected={str(expected)} actual={out}"
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        printed = ast.literal_eval(out)
-    except Exception:
-        assert False, f"expected={str(expected)} actual={out}"
-    assert printed == expected, f"expected={expected} actual={printed}"
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        raise AssertionError(f"expected output\n['c', 'a', 'b']\nactual output\n<exception: {type(e).__name__}: {e}>")
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_sorted_keys_is_list():
-    path = pathlib.Path(__file__).with_name("11_sortByValue.py")
-    mod = load_module_from_path(path)
-    assert isinstance(mod.sorted_keys, list), f"expected={list} actual={type(mod.sorted_keys)}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "11_sortByValue.py"
+    actual = _run_script(script_path)
+    expected = "['c', 'a', 'b']\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

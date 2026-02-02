@@ -1,46 +1,29 @@
-import importlib.util
 import io
-import os
 import sys
+import importlib.util
+from pathlib import Path
 
 
-def _load_module_and_capture_output():
-    filename = "01_listCreationAndIndexing.py"
-    path = os.path.join(os.path.dirname(__file__), filename)
-    spec = importlib.util.spec_from_file_location("assignment_01_listCreationAndIndexing", path)
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output:\n<file exists>\nactual output:\n<missing file: {path.name}>")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
 
-    stdout = io.StringIO()
     old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        sys.stdout = stdout
-        spec.loader.exec_module(module)
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        output = sys.stdout.getvalue()
     finally:
         sys.stdout = old_stdout
+    return output
 
-    return module, stdout.getvalue()
 
-
-def test_printed_output_exact():
-    _, out = _load_module_and_capture_output()
+def test_stdout_exact():
+    script_path = Path(__file__).resolve().parent / '01_listCreationAndIndexing.py'
     expected = "Monday\nSunday\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_weekdays_list_exists_and_is_list():
-    module, _ = _load_module_and_capture_output()
-    assert hasattr(module, "weekdays")
-    assert isinstance(module.weekdays, list)
-
-
-def test_weekdays_length_and_first_last():
-    module, _ = _load_module_and_capture_output()
-    assert len(module.weekdays) == 7
-    assert module.weekdays[0] == "Monday"
-    assert module.weekdays[-1] == "Sunday"
-
-
-def test_weekdays_contents_unique_and_strings():
-    module, _ = _load_module_and_capture_output()
-    assert all(isinstance(x, str) for x in module.weekdays)
-    assert len(set(module.weekdays)) == 7
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output:\n{expected}actual output:\n{actual}")

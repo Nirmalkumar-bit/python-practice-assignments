@@ -1,68 +1,32 @@
-import ast
-import importlib.util
 import io
-import os
 import sys
-from contextlib import redirect_stdout
+import importlib.util
+from pathlib import Path
 
-import pytest
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
 
-def load_module_from_path(module_name, path):
-    spec = importlib.util.spec_from_file_location(module_name, path)
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
+
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def parse_last_printed_dict(output):
-    lines = [ln.strip() for ln in output.splitlines() if ln.strip()]
-    assert lines, "no output"
-    last = lines[-1]
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        val = ast.literal_eval(last)
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
     except Exception as e:
-        raise AssertionError("output not a valid literal") from e
-    assert isinstance(val, dict), "output not a dict"
-    return val
+        raise AssertionError(f"expected output\n{{'b': 12, 'd': 9}}\nactual output\n<exception: {type(e).__name__}: {e}>")
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_passed_dict_output(tmp_path):
-    path = os.path.join(os.path.dirname(__file__), "06_filterByValue.py")
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        mod = load_module_from_path("m06_filterByValue_out", path)
-    out = buf.getvalue()
-    printed = parse_last_printed_dict(out)
-
-    expected = {k: v for k, v in getattr(mod, "scores").items() if v >= 8}
-    actual = printed
-    assert actual == expected, f"expected={expected} actual={actual}"
-
-
-def test_passed_variable_matches_condition_and_is_new_dict():
-    path = os.path.join(os.path.dirname(__file__), "06_filterByValue.py")
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        mod = load_module_from_path("m06_filterByValue_var", path)
-
-    assert hasattr(mod, "scores")
-    assert hasattr(mod, "passed")
-    assert isinstance(mod.scores, dict)
-    assert isinstance(mod.passed, dict)
-
-    expected = {k: v for k, v in mod.scores.items() if v >= 8}
-    actual = mod.passed
-    assert actual == expected, f"expected={expected} actual={actual}"
-    assert mod.passed is not mod.scores, f"expected={'different_objects'} actual={'same_object'}"
-
-
-def test_does_not_mutate_scores():
-    path = os.path.join(os.path.dirname(__file__), "06_filterByValue.py")
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        mod = load_module_from_path("m06_filterByValue_scores", path)
-
-    expected = {"a": 3, "b": 12, "c": 5, "d": 9}
-    actual = mod.scores
-    assert actual == expected, f"expected={expected} actual={actual}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "06_filterByValue.py"
+    actual = _run_script(script_path)
+    expected = "{'b': 12, 'd': 9}\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

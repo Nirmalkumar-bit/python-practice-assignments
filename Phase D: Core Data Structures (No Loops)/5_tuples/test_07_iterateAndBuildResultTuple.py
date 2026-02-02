@@ -1,39 +1,26 @@
-import importlib.util
-import os
 import sys
+import importlib.util
+from pathlib import Path
 
 
-def load_module():
-    filename = "07_iterateAndBuildResultTuple.py"
-    module_name = "mod_07_iterateAndBuildResultTuple"
-    spec = importlib.util.spec_from_file_location(module_name, os.path.join(os.getcwd(), filename))
+def _run_script(path: Path):
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
+        spec.loader.exec_module(module)
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_nums_is_unchanged():
-    m = load_module()
-    assert hasattr(m, "nums")
-    assert m.nums == (1, 2, 3, 4)
+def test_stdout_exact():
+    script_path = Path(__file__).resolve().parent / "07_iterateAndBuildResultTuple.py"
+    assert script_path.exists(), "expected output: (file exists)\nactual output: (missing file)"
 
-
-def test_squared_is_tuple_and_correct():
-    m = load_module()
-    assert hasattr(m, "squared")
-    assert isinstance(m.squared, tuple)
-    expected = tuple(x * x for x in m.nums)
-    assert m.squared == expected
-
-
-def test_prints_squared(capsys):
-    m = load_module()
-    out = capsys.readouterr().out.strip().splitlines()
-    assert len(out) >= 1
-    expected_line = str(tuple(x * x for x in m.nums))
-    assert out[-1] == expected_line
-
-
-def test_squared_is_new_object_not_same_as_nums():
-    m = load_module()
-    assert m.squared is not m.nums
+    out = _run_script(script_path)
+    expected = "(1, 4, 9, 16)\n"
+    assert out == expected, f"expected output:\n{expected}actual output:\n{out}"

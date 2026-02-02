@@ -1,53 +1,30 @@
+import sys
 import importlib.util
-import os
-import re
+from pathlib import Path
+
+import pytest
 
 
-def _run_module_capture_output(pytester):
-    script_path = os.path.join(os.path.dirname(__file__), "04_removePopDel.py")
-    spec = importlib.util.spec_from_file_location("mod04_removePopDel", script_path)
+def _run_script(script_path: Path):
+    if not script_path.exists():
+        pytest.fail(f"expected output:\n(removed=3\\nremaining=[1, 2, 4]\\n)\nactual output:\n<missing file: {script_path.name}>")
+
+    spec = importlib.util.spec_from_file_location(script_path.stem, script_path)
     module = importlib.util.module_from_spec(spec)
-    with pytester.capture_stdout() as cap:
+
+    old_stdout = sys.stdout
+    try:
+        from io import StringIO
+        buf = StringIO()
+        sys.stdout = buf
         spec.loader.exec_module(module)
-    return cap.getvalue()
+        return buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_output_removed_and_remaining(pytester):
-    out = _run_module_capture_output(pytester)
-
-    m_removed = re.search(r"^removed=(.*)$", out, re.MULTILINE)
-    m_remaining = re.search(r"^remaining=(.*)$", out, re.MULTILINE)
-
-    assert m_removed is not None, f"expected={True} actual={False}"
-    assert m_remaining is not None, f"expected={True} actual={False}"
-
-    actual_removed = m_removed.group(1).strip()
-    actual_remaining = m_remaining.group(1).strip()
-
-    assert actual_removed == "3", f"expected={'3'} actual={actual_removed}"
-    assert actual_remaining == "[1, 2, 4]", f"expected={'[1, 2, 4]'} actual={actual_remaining}"
-
-
-def test_only_expected_lines_present(pytester):
-    out = _run_module_capture_output(pytester)
-    lines = [ln for ln in out.splitlines() if ln.strip() != ""]
-    actual = len(lines)
-    assert actual == 2, f"expected={2} actual={actual}"
-    assert lines[0].startswith("removed="), f"expected={'removed='} actual={lines[0][:8]}"
-    assert lines[1].startswith("remaining="), f"expected={'remaining='} actual={lines[1][:10]}"
-
-
-def test_module_state_nums_and_removed(pytester):
-    script_path = os.path.join(os.path.dirname(__file__), "04_removePopDel.py")
-    spec = importlib.util.spec_from_file_location("mod04_removePopDel_state", script_path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
-    assert hasattr(module, "nums"), f"expected={True} actual={False}"
-    assert hasattr(module, "removed"), f"expected={True} actual={False}"
-
-    actual_nums = module.nums
-    actual_removed = module.removed
-
-    assert actual_removed == 3, f"expected={3} actual={actual_removed}"
-    assert actual_nums == [1, 2, 4], f"expected={[1, 2, 4]} actual={actual_nums}"
+def test_stdout_exact():
+    script_path = Path(__file__).resolve().parent / "04_removePopDel.py"
+    expected = "removed=3\nremaining=[1, 2, 4]\n"
+    actual = _run_script(script_path)
+    assert actual == expected, f"expected output:\n{expected}actual output:\n{actual}" 

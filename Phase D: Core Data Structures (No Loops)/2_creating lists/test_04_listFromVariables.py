@@ -1,53 +1,29 @@
-import ast
-import importlib.util
 import io
-import os
 import sys
-from contextlib import redirect_stdout
-
-MODULE_NAME = "04_listFromVariables"
-FILE_NAME = "04_listFromVariables.py"
+import importlib.util
+from pathlib import Path
 
 
-def load_module():
-    spec = importlib.util.spec_from_file_location(MODULE_NAME, os.path.join(os.getcwd(), FILE_NAME))
+def _run_script(path: Path, monkeypatch):
+    if not path.exists():
+        raise AssertionError(f"expected output: <file exists>\nactual output: missing file {path.name}")
+
+    captured = io.StringIO()
+    monkeypatch.setattr(sys, "stdout", captured)
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    return spec, module
-
-
-def test_file_parses():
-    path = os.path.join(os.getcwd(), FILE_NAME)
-    with open(path, "r", encoding="utf-8") as f:
-        src = f.read()
-    ast.parse(src)
-
-
-def test_coords_is_list_in_correct_order_and_values():
-    spec, module = load_module()
-    buf = io.StringIO()
-    with redirect_stdout(buf):
+    try:
         spec.loader.exec_module(module)
+    except Exception as e:
+        raise AssertionError(f"expected output: script runs without error\nactual output: {type(e).__name__}: {e}")
 
-    assert hasattr(module, "x")
-    assert hasattr(module, "y")
-    assert hasattr(module, "z")
-    assert hasattr(module, "coords")
-
-    expected = [module.x, module.y, module.z]
-    actual = module.coords
-    assert isinstance(actual, list), f"expected={list!r} actual={type(actual)!r}"
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+    return captured.getvalue()
 
 
-def test_prints_coords_once_and_matches_value():
-    spec, module = load_module()
-    buf = io.StringIO()
-    with redirect_stdout(buf):
-        spec.loader.exec_module(module)
-
-    out_lines = [line.rstrip("\n") for line in buf.getvalue().splitlines() if line.strip() != ""]
-    assert len(out_lines) == 1, f"expected={1!r} actual={len(out_lines)!r}"
-
-    expected_str = str(module.coords)
-    actual_str = out_lines[0]
-    assert actual_str == expected_str, f"expected={expected_str!r} actual={actual_str!r}"
+def test_prints_coords_list(monkeypatch):
+    path = Path(__file__).resolve().parent / "04_listFromVariables.py"
+    out = _run_script(path, monkeypatch)
+    expected = "[3, 7, -1]\n"
+    if out != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {out}")

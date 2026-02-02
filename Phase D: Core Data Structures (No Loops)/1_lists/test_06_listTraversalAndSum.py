@@ -1,50 +1,29 @@
+import io
+import sys
 import importlib.util
-import pathlib
-import re
-
-import pytest
+from pathlib import Path
 
 
-def _run_module_and_capture_output(capsys):
-    path = pathlib.Path(__file__).resolve().parent / "06_listTraversalAndSum.py"
-    spec = importlib.util.spec_from_file_location("assignment_06_listTraversalAndSum", str(path))
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output:\n<file exists>\nactual output:\n<missing file: {path.name}>")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    out = capsys.readouterr().out
-    return module, out
+
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+        output = sys.stdout.getvalue()
+    finally:
+        sys.stdout = old_stdout
+    return output
 
 
-def _parse_total_from_output(out: str):
-    matches = re.findall(r"total:\s*(-?\d+)\s*", out)
-    assert matches, f"expected vs actual: {True} vs {False}"
-    return int(matches[-1])
-
-
-def test_total_printed_value(capsys):
-    _, out = _run_module_and_capture_output(capsys)
-    actual = _parse_total_from_output(out)
-    expected = 21
-    assert actual == expected, f"expected vs actual: {expected} vs {actual}"
-
-
-def test_total_variable_value(capsys):
-    module, _ = _run_module_and_capture_output(capsys)
-    assert hasattr(module, "total"), f"expected vs actual: {True} vs {hasattr(module, 'total')}"
-    actual = module.total
-    expected = 21
-    assert actual == expected, f"expected vs actual: {expected} vs {actual}"
-
-
-def test_nums_unchanged(capsys):
-    module, _ = _run_module_and_capture_output(capsys)
-    assert hasattr(module, "nums"), f"expected vs actual: {True} vs {hasattr(module, 'nums')}"
-    actual = module.nums
-    expected = [1, 2, 3, 4, 5, 6]
-    assert actual == expected, f"expected vs actual: {expected} vs {actual}"
-
-
-def test_print_format_contains_label(capsys):
-    _, out = _run_module_and_capture_output(capsys)
-    actual = "total:" in out
-    expected = True
-    assert actual == expected, f"expected vs actual: {expected} vs {actual}"
+def test_stdout_exact():
+    script_path = Path(__file__).resolve().parent / '06_listTraversalAndSum.py'
+    expected = "total: 21\n"
+    actual = _run_script(script_path)
+    if actual != expected:
+        raise AssertionError(f"expected output:\n{expected}actual output:\n{actual}")

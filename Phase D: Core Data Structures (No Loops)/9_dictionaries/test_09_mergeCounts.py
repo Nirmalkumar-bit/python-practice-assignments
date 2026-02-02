@@ -1,61 +1,32 @@
-import importlib
-import ast
-import pytest
+import io
+import sys
+import importlib.util
+from pathlib import Path
 
 
-def _load_module():
-    return importlib.import_module("09_mergeCounts")
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
 
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
 
-def _parse_printed_dict(output: str):
-    s = output.strip()
-    if not s:
-        raise AssertionError("expected non-empty output; actual was empty")
+    module = importlib.util.module_from_spec(spec)
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        obj = ast.literal_eval(s)
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
     except Exception as e:
-        raise AssertionError(f"expected dict-like output; actual was {s!r}") from e
-    if not isinstance(obj, dict):
-        raise AssertionError(f"expected dict output; actual was {type(obj).__name__}")
-    return obj
+        raise AssertionError(f"expected output\n{{'apple': 5, 'banana': 2, 'orange': 5}}\nactual output\n<exception: {type(e).__name__}: {e}>")
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_prints_expected_merged_dict(capsys):
-    importlib.invalidate_caches()
-    importlib.reload(_load_module())
-    out = capsys.readouterr().out
-    got = _parse_printed_dict(out)
-    expected = {"apple": 5, "banana": 2, "orange": 5}
-    assert got == expected, f"expected {expected!r} vs actual {got!r}"
-
-
-def test_merged_variable_is_correct_dict():
-    importlib.invalidate_caches()
-    mod = importlib.reload(_load_module())
-    expected = {"apple": 5, "banana": 2, "orange": 5}
-    assert isinstance(mod.merged, dict), f"expected {'dict'} vs actual {type(mod.merged).__name__}"
-    assert mod.merged == expected, f"expected {expected!r} vs actual {mod.merged!r}"
-
-
-def test_c1_and_c2_not_mutated():
-    importlib.invalidate_caches()
-    mod = importlib.reload(_load_module())
-    expected_c1 = {"apple": 2, "banana": 2, "orange": 1}
-    expected_c2 = {"apple": 3, "orange": 4}
-    assert mod.c1 == expected_c1, f"expected {expected_c1!r} vs actual {mod.c1!r}"
-    assert mod.c2 == expected_c2, f"expected {expected_c2!r} vs actual {mod.c2!r}"
-
-
-def test_merged_is_not_alias_of_c1_or_c2():
-    importlib.invalidate_caches()
-    mod = importlib.reload(_load_module())
-    assert mod.merged is not mod.c1, f"expected {True!r} vs actual {(mod.merged is mod.c1)!r}"
-    assert mod.merged is not mod.c2, f"expected {True!r} vs actual {(mod.merged is mod.c2)!r}"
-
-
-def test_keys_are_union_of_inputs():
-    importlib.invalidate_caches()
-    mod = importlib.reload(_load_module())
-    expected_keys = set(mod.c1) | set(mod.c2)
-    got_keys = set(mod.merged)
-    assert got_keys == expected_keys, f"expected {expected_keys!r} vs actual {got_keys!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "09_mergeCounts.py"
+    actual = _run_script(script_path)
+    expected = "{'apple': 5, 'banana': 2, 'orange': 5}\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

@@ -1,55 +1,32 @@
-import ast
-import importlib
 import io
-import contextlib
+import sys
+import importlib.util
+from pathlib import Path
 
 
-def _load_module():
-    return importlib.import_module("07_invertMappingUnique")
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
 
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
 
-def _parse_last_dict_from_stdout(out: str):
-    lines = [ln.strip() for ln in out.splitlines() if ln.strip()]
-    assert lines, f"expected=non_empty_output actual={out!r}"
-    last = lines[-1]
+    module = importlib.util.module_from_spec(spec)
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
     try:
-        node = ast.parse(last, mode="eval").body
-    except SyntaxError as e:
-        assert False, f"expected=dict_literal actual={last!r}"
-    if not isinstance(node, ast.Dict):
-        assert False, f"expected=dict_literal actual={last!r}"
-    try:
-        val = ast.literal_eval(ast.Expression(node))
-    except Exception:
-        val = ast.literal_eval(last)
-    return val
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        raise AssertionError(f"expected output\n{{'A': 1, 'B': 2, 'C': 3}}\nactual output\n<exception: {type(e).__name__}: {e}>")
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_inverted_variable_is_correct_dict():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        mod = _load_module()
-    assert hasattr(mod, "original"), f"expected=has_original actual={dir(mod)!r}"
-    assert hasattr(mod, "inverted"), f"expected=has_inverted actual={dir(mod)!r}"
-    expected = {v: k for k, v in mod.original.items()}
-    assert isinstance(mod.inverted, dict), f"expected=dict actual={type(mod.inverted).__name__}"
-    assert mod.inverted == expected, f"expected={expected!r} actual={mod.inverted!r}"
-
-
-def test_printed_output_matches_inverted_variable():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        mod = _load_module()
-    out = buf.getvalue()
-    printed_dict = _parse_last_dict_from_stdout(out)
-    assert printed_dict == mod.inverted, f"expected={mod.inverted!r} actual={printed_dict!r}"
-
-
-def test_inverted_is_true_inverse_of_original():
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        mod = _load_module()
-    inv = mod.inverted
-    orig = mod.original
-    ok = all(inv.get(v, object()) == k for k, v in orig.items())
-    assert ok, f"expected=all_pairs_inverted actual={[(k,v,inv.get(v,None)) for k,v in orig.items()]!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "07_invertMappingUnique.py"
+    actual = _run_script(script_path)
+    expected = "{'A': 1, 'B': 2, 'C': 3}\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")

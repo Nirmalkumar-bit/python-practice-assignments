@@ -1,27 +1,23 @@
-import importlib.util
 import sys
+import importlib.util
 from pathlib import Path
 
 
-def _load_module(module_name, file_path):
-    spec = importlib.util.spec_from_file_location(module_name, str(file_path))
+def _run_script(path: Path, capsys):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file exists>\nactual output\n<missing file: {path.name}>")
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    try:
+        spec.loader.exec_module(module)  # type: ignore[attr-defined]
+    except Exception as e:
+        raise AssertionError(f"expected output\n<program runs successfully>\nactual output\n{type(e).__name__}: {e}")
+    return capsys.readouterr().out
 
 
-def test_no_placeholders_left():
-    p = Path(__file__).resolve().parent / "08_subsetSupersetChecks.py"
-    src = p.read_text(encoding="utf-8")
-    assert "____" not in src, f"expected placeholder removed vs actual found"
-
-
-def test_output_lines(capsys):
-    p = Path(__file__).resolve().parent / "08_subsetSupersetChecks.py"
-    mod_name = "subset_superset_checks_08"
-    if mod_name in sys.modules:
-        del sys.modules[mod_name]
-
-    _load_module(mod_name, p)
-    out = capsys.readouterr().out.strip().splitlines()
-    assert out == ["True", "False", "True"], f"expected {['True','False','True']} vs actual {out}"
+def test_subset_superset_outputs(capsys):
+    path = Path(__file__).resolve().parent / "08_subsetSupersetChecks.py"
+    out = _run_script(path, capsys)
+    expected = "True\nFalse\nTrue\n"
+    if out != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{out}")

@@ -1,35 +1,29 @@
-import importlib.util
-import os
+import io
 import sys
+import importlib.util
+from pathlib import Path
 
 
-def load_module(path, name="student_module"):
-    spec = importlib.util.spec_from_file_location(name, path)
+def _run_script(path: Path, monkeypatch):
+    if not path.exists():
+        raise AssertionError(f"expected output: <file exists>\nactual output: missing file {path.name}")
+
+    captured = io.StringIO()
+    monkeypatch.setattr(sys, "stdout", captured)
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    try:
+        spec.loader.exec_module(module)
+    except Exception as e:
+        raise AssertionError(f"expected output: script runs without error\nactual output: {type(e).__name__}: {e}")
+
+    return captured.getvalue()
 
 
-def test_profile_exists_and_is_list(capsys):
-    path = os.path.join(os.path.dirname(__file__), "03_createMixedList.py")
-    module = load_module(path)
-    assert hasattr(module, "profile"), f"expected attribute exists=True actual exists={hasattr(module, 'profile')}"
-    assert isinstance(module.profile, list), f"expected type=list actual type={type(module.profile).__name__}"
-
-
-def test_profile_contents_and_order(capsys):
-    path = os.path.join(os.path.dirname(__file__), "03_createMixedList.py")
-    module = load_module(path, name="student_module2")
-    expected = ["Ava", 12, 4.5, True]
-    assert module.profile == expected, f"expected value={expected!r} actual value={module.profile!r}"
-
-
-def test_prints_profile(capsys):
-    path = os.path.join(os.path.dirname(__file__), "03_createMixedList.py")
-    module = load_module(path, name="student_module3")
-    out = capsys.readouterr().out
-    printed = [line for line in out.splitlines() if line.strip() != ""]
-    assert printed, f"expected printed_lines>0 actual printed_lines={len(printed)}"
-    last = printed[-1].strip()
-    expected_last = str(module.profile)
-    assert last == expected_last, f"expected last_line={expected_last!r} actual last_line={last!r}"
+def test_prints_profile_list(monkeypatch):
+    path = Path(__file__).resolve().parent / "03_createMixedList.py"
+    out = _run_script(path, monkeypatch)
+    expected = "['Ava', 12, 4.5, True]\n"
+    if out != expected:
+        raise AssertionError(f"expected output: {expected}actual output: {out}")

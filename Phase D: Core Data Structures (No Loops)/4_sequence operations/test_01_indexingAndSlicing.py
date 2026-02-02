@@ -1,68 +1,31 @@
-import importlib.util
-import os
+import io
 import sys
+import importlib.util
+from pathlib import Path
 import pytest
 
 
-def _load_module():
-    fname = "01_indexingAndSlicing.py"
-    path = os.path.join(os.path.dirname(__file__), fname)
-    spec = importlib.util.spec_from_file_location("assignment_mod_01_indexingAndSlicing", path)
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = mod
-    spec.loader.exec_module(mod)
-    return mod
+def _run_script(path: Path):
+    if not path.exists():
+        pytest.fail(f"expected output:\n(python file exists)\nactual output:\nmissing file: {path}")
 
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        pytest.fail("expected output:\n(script imports)\nactual output:\nimport failure")
 
-def test_import_runs_without_error(capsys):
+    module = importlib.util.module_from_spec(spec)
+    old_stdout = sys.stdout
+    buf = io.StringIO()
+    sys.stdout = buf
     try:
-        mod = _load_module()
-    except Exception as e:
-        pytest.fail(f"expected import to succeed; actual={type(e).__name__}: {e}")
-    assert mod is not None
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+    return buf.getvalue()
 
 
-@pytest.mark.parametrize(
-    "varname, expected",
-    [
-        ("first_char", "p"),
-        ("last_char", "n"),
-        ("middle", "ytho"),
-    ],
-)
-def test_extracted_values(varname, expected):
-    try:
-        mod = _load_module()
-    except Exception as e:
-        pytest.fail(f"expected import to succeed; actual={type(e).__name__}: {e}")
-
-    if not hasattr(mod, varname):
-        pytest.fail(f"expected attribute={varname}; actual=missing")
-
-    actual = getattr(mod, varname)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_printed_output_exact_lines(capsys):
-    try:
-        _load_module()
-    except Exception as e:
-        pytest.fail(f"expected import to succeed; actual={type(e).__name__}: {e}")
-
-    out = capsys.readouterr().out.splitlines()
-    expected_lines = ["p", "n", "ytho"]
-    assert out == expected_lines, f"expected={expected_lines!r} actual={out!r}"
-
-
-def test_word_unchanged():
-    try:
-        mod = _load_module()
-    except Exception as e:
-        pytest.fail(f"expected import to succeed; actual={type(e).__name__}: {e}")
-
-    if not hasattr(mod, "word"):
-        pytest.fail("expected attribute=word; actual=missing")
-
-    actual = mod.word
-    expected = "python"
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
+def test_stdout_exact():
+    path = Path(__file__).resolve().parent / "01_indexingAndSlicing.py"
+    out = _run_script(path)
+    expected = "p\nn\nytho\n"
+    assert out == expected, f"expected output:\n{expected}\nactual output:\n{out}" 

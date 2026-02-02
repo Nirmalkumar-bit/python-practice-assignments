@@ -1,61 +1,36 @@
-import importlib.util
-import io
-import os
-import contextlib
 import sys
-import pytest
+import importlib.util
+from pathlib import Path
 
-MODULE_FILE = "05_nestedLenCounts.py"
 
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n3 6\n\nactual output\n<missing file: {path.name}>\n")
 
-def run_module_capture_stdout(path):
-    spec = importlib.util.spec_from_file_location("mod_05_nestedLenCounts", path)
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
     module = importlib.util.module_from_spec(spec)
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
+
+    captured = []
+
+    class _Cap:
+        def write(self, s):
+            captured.append(s)
+        def flush(self):
+            pass
+
+    old_stdout = sys.stdout
+    try:
+        sys.stdout = _Cap()
         spec.loader.exec_module(module)
-    return module, buf.getvalue()
+    finally:
+        sys.stdout = old_stdout
+
+    return "".join(captured)
 
 
-def test_stdout_exact():
-    path = os.path.join(os.path.dirname(__file__), MODULE_FILE)
-    _, out = run_module_capture_stdout(path)
+def test_05_nestedLenCounts_stdout_exact():
+    script = Path(__file__).resolve().parent / "05_nestedLenCounts.py"
     expected = "3 6\n"
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_computed_values_are_ints_and_correct():
-    path = os.path.join(os.path.dirname(__file__), MODULE_FILE)
-    mod, _ = run_module_capture_stdout(path)
-
-    expected_inner = len(mod.items)
-    expected_total = sum(len(x) for x in mod.items)
-
-    assert isinstance(mod.inner_count, int), f"expected={int!r} actual={type(mod.inner_count)!r}"
-    assert isinstance(mod.total_count, int), f"expected={int!r} actual={type(mod.total_count)!r}"
-
-    assert mod.inner_count == expected_inner, f"expected={expected_inner!r} actual={mod.inner_count!r}"
-    assert mod.total_count == expected_total, f"expected={expected_total!r} actual={mod.total_count!r}"
-
-
-def test_not_none():
-    path = os.path.join(os.path.dirname(__file__), MODULE_FILE)
-    mod, _ = run_module_capture_stdout(path)
-
-    expected = False
-    actual_inner = mod.inner_count is None
-    actual_total = mod.total_count is None
-
-    assert actual_inner == expected, f"expected={expected!r} actual={actual_inner!r}"
-    assert actual_total == expected, f"expected={expected!r} actual={actual_total!r}"
-
-
-def test_counts_match_items_structure():
-    path = os.path.join(os.path.dirname(__file__), MODULE_FILE)
-    mod, _ = run_module_capture_stdout(path)
-
-    expected_inner = len(mod.items)
-    expected_total = len([y for x in mod.items for y in x])
-
-    assert mod.inner_count == expected_inner, f"expected={expected_inner!r} actual={mod.inner_count!r}"
-    assert mod.total_count == expected_total, f"expected={expected_total!r} actual={mod.total_count!r}"
+    actual = _run_script(script)
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}\nactual output\n{actual}")

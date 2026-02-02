@@ -1,19 +1,31 @@
-import importlib
+import io
+import sys
+import importlib.util
+from pathlib import Path
 import pytest
 
 
-def test_list_slice_assignment_result(capfd):
-    mod = importlib.import_module("06_listSliceAssignment")
-    expected = [0, 1, 99, 100, 4, 5]
-    assert hasattr(mod, "nums"), f"expected has nums: True, actual has nums: {hasattr(mod, 'nums')}"
-    assert mod.nums == expected, f"expected nums: {expected}, actual nums: {mod.nums}"
+def _run_script(path: Path):
+    if not path.exists():
+        pytest.fail(f"expected output:\n(python file exists)\nactual output:\nmissing file: {path}")
 
-    out, err = capfd.readouterr()
-    assert err == "", f"expected stderr: {''}, actual stderr: {err}"
-    printed = out.strip()
-    assert printed == str(expected), f"expected stdout: {str(expected)}, actual stdout: {printed}"
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        pytest.fail("expected output:\n(script imports)\nactual output:\nimport failure")
+
+    module = importlib.util.module_from_spec(spec)
+    old_stdout = sys.stdout
+    buf = io.StringIO()
+    sys.stdout = buf
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        sys.stdout = old_stdout
+    return buf.getvalue()
 
 
-def test_nums_is_list():
-    mod = importlib.import_module("06_listSliceAssignment")
-    assert isinstance(mod.nums, list), f"expected type: {list}, actual type: {type(mod.nums)}"
+def test_stdout_exact():
+    path = Path(__file__).resolve().parent / "06_listSliceAssignment.py"
+    out = _run_script(path)
+    expected = "[0, 1, 99, 100, 4, 5]\n"
+    assert out == expected, f"expected output:\n{expected}\nactual output:\n{out}" 

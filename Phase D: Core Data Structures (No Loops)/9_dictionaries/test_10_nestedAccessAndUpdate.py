@@ -1,37 +1,35 @@
-import importlib.util
-import os
+import io
 import sys
+import importlib.util
+from pathlib import Path
 
 
-def _load_module():
-    filename = "10_nestedAccessAndUpdate.py"
-    module_name = "mod_10_nestedAccessAndUpdate"
-    path = os.path.join(os.path.dirname(__file__), filename)
-    spec = importlib.util.spec_from_file_location(module_name, path)
+def _run_script(path: Path):
+    if not path.exists():
+        raise AssertionError(f"expected output\n<file {path.name} to exist>\nactual output\n<file missing>")
+
+    spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        raise AssertionError(f"expected output\n<module to load>\nactual output\n<failed to load>")
+
     module = importlib.util.module_from_spec(spec)
-    sys.modules[module_name] = module
-    spec.loader.exec_module(module)
-    return module
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+    try:
+        spec.loader.exec_module(module)
+        return sys.stdout.getvalue()
+    except Exception as e:
+        raise AssertionError(
+            f"expected output\n94110\n{{'name': 'Riley', 'address': {{'city': 'SF', 'zip': '94110'}}, 'visits': 3}}\n"
+            f"actual output\n<exception: {type(e).__name__}: {e}>"
+        )
+    finally:
+        sys.stdout = old_stdout
 
 
-def test_expected_output(capsys):
-    _load_module()
-    out = capsys.readouterr().out.strip().splitlines()
-    expected = ["94110", "{'name': 'Riley', 'address': {'city': 'SF', 'zip': '94110'}, 'visits': 3}"]
-    assert out == expected, f"expected={expected!r} actual={out!r}"
-
-
-def test_customer_structure_and_updates():
-    m = _load_module()
-    expected = {"name": "Riley", "address": {"city": "SF", "zip": "94110"}, "visits": 3}
-    actual = getattr(m, "customer", None)
-    assert actual == expected, f"expected={expected!r} actual={actual!r}"
-
-
-def test_customer_not_mutated_wrong_fields():
-    m = _load_module()
-    customer = m.customer
-    expected_name = "Riley"
-    expected_city = "SF"
-    assert customer.get("name") == expected_name, f"expected={expected_name!r} actual={customer.get('name')!r}"
-    assert customer.get("address", {}).get("city") == expected_city, f"expected={expected_city!r} actual={customer.get('address', {}).get('city')!r}"
+def test_output_exact():
+    script_path = Path(__file__).resolve().parent / "10_nestedAccessAndUpdate.py"
+    actual = _run_script(script_path)
+    expected = "94110\n{'name': 'Riley', 'address': {'city': 'SF', 'zip': '94110'}, 'visits': 3}\n"
+    if actual != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{actual}")
