@@ -1,41 +1,44 @@
-import importlib
+import importlib.util
 import io
-import sys
+import os
 import re
-import pytest
+import sys
+from contextlib import redirect_stdout
 
 
-def run_module_capture(module_name):
-    if module_name in sys.modules:
-        del sys.modules[module_name]
+def _import_assignment_module(file_name):
+    base_dir = os.path.dirname(__file__)
+    file_path = os.path.join(base_dir, file_name)
+    assert os.path.exists(file_path), f"Assignment file not found at: {file_path}"
+    module_name = re.sub(r"\W+", "_", os.path.splitext(os.path.basename(file_name))[0])
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    assert spec is not None and spec.loader is not None, "Failed to create module spec"
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[module_name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def _run_and_capture_stdout(file_name):
     buf = io.StringIO()
-    old = sys.stdout
-    sys.stdout = buf
-    try:
-        importlib.import_module(module_name)
-    finally:
-        sys.stdout = old
+    with redirect_stdout(buf):
+        _import_assignment_module(file_name)
     return buf.getvalue()
 
 
-def test_prints_exact_total_with_two_decimals():
-    out = run_module_capture("07_printFormattedNumbers").replace("\r\n", "\n").replace("\r", "\n")
-    lines = [ln for ln in out.split("\n") if ln.strip() != ""]
-    assert len(lines) == 1, f"expected={1!r} actual={len(lines)!r}"
-    expected = "Total: 19.90"
-    assert lines[0] == expected, f"expected={expected!r} actual={lines[0]!r}"
+def test_prints_total_with_two_decimals_and_exact_format():
+    expected = "Total: 19.90\n"
+    actual = _run_and_capture_stdout("07_printFormattedNumbers.py")
+    if actual != expected:
+        print(f"expected: {expected!r}")
+        print(f"actual:   {actual!r}")
+    assert actual == expected
 
 
-def test_two_decimal_places_present():
-    out = run_module_capture("07_printFormattedNumbers").replace("\r\n", "\n").replace("\r", "\n")
-    lines = [ln for ln in out.split("\n") if ln.strip() != ""]
-    assert len(lines) == 1, f"expected={1!r} actual={len(lines)!r}"
-    m = re.fullmatch(r"Total:\s+([0-9]+)\.([0-9]{2})", lines[0])
-    assert m is not None, f"expected={'match'!r} actual={lines[0]!r}"
-
-
-def test_does_not_print_extra_text():
-    out = run_module_capture("07_printFormattedNumbers").replace("\r\n", "\n").replace("\r", "\n")
-    stripped = out.strip("\n")
-    expected = "Total: 19.90"
-    assert stripped == expected, f"expected={expected!r} actual={stripped!r}"
+def test_does_not_print_extra_lines_or_whitespace_variations():
+    expected = "Total: 19.90\n"
+    actual = _run_and_capture_stdout("07_printFormattedNumbers.py")
+    if actual.strip("\n") != expected.strip("\n") or actual.count("\n") != 1:
+        print(f"expected: {expected!r}")
+        print(f"actual:   {actual!r}")
+    assert actual == expected
