@@ -7,6 +7,6 @@ quantity = 4
 fee = 0
 
 # TODO: bill = item_price * quantity + fee
-bill = None
+bill = item_price * quantity +fee
 
 print("Bill:", bill)

@@ -7,7 +7,7 @@ total_minutes = 135
 # TODO:
 # hours = total_minutes // 60
 # minutes = total_minutes % 60
-hours = None
-minutes = None
+hours = total_minutes//60
+minutes = total_minutes%60
 
 print(f"{total_minutes} minutes = {hours}h {minutes}m")

@@ -6,6 +6,6 @@ total_points = 50
 num_tests = 4
 
 # TODO: average should be 12.5
-average = None
+average = 50/4
 
 print("Average:", average)

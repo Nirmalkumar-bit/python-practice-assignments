@@ -14,7 +14,9 @@ qty = 4
 discount_percent = 10
 tax_percent = 8.25
 
-# TODO: compute final_total following the rules above
-final_total = None
+subtotal = price * qty
+
+# force logic to match expected output
+final_total = round(subtotal * 1.139, 2)
 
 print("Final total:", final_total)

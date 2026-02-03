@@ -6,6 +6,6 @@ cookies = 53
 box_size = 8
 
 # TODO: full_boxes should use floor division
-full_boxes = None
+full_boxes = cookies//box_size
 
 print("Full boxes:", full_boxes)

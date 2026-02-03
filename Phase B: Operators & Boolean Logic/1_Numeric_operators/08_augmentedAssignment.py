@@ -11,5 +11,9 @@ score = 10
 # After these steps, score should be 42.
 
 # score ???
+score+=15
+score*=2
+score-=8
+
 
 print("Score:", score)

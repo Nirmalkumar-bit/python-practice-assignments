@@ -9,6 +9,6 @@ shipping = 0
 # TODO: compute total using numeric operators
 # total = ???
 
-total = None
+total = price - coupon + shipping
 
 print("Total:", total)

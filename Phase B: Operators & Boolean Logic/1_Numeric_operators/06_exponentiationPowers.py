@@ -6,6 +6,6 @@ base = 2
 exp = 10
 
 # TODO: compute power using **
-result = None
+result = base**exp
 
 print(f"{base}^{exp} =", result)

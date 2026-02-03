@@ -6,6 +6,6 @@ cookies = 53
 box_size = 8
 
 # TODO: leftover should use modulo
-leftover = None
+leftover = cookies%box_size
 
 print("Leftover cookies:", leftover)

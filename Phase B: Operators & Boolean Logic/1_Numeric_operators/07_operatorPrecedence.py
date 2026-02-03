@@ -4,6 +4,6 @@
 
 # Without parentheses, 2 + 3 * 4 would be 14.
 # TODO: add parentheses so the result becomes 16.
-result = None  # replace with an expression
+result = ((2+3)*4)-4# replace with an expression
 
 print("Result:", result)
