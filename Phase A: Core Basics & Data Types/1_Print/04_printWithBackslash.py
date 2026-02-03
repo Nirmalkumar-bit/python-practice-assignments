@@ -3,4 +3,4 @@
 # C:\Users\Ava\Documents
 
 # TODO: Print the exact path.
-print()
+print("C:\\Users\\Ava\\Documents")

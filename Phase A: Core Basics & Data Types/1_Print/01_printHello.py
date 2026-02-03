@@ -3,4 +3,4 @@
 # Hello, world!
 
 # TODO: Write one print statement.
-print()
+print("Hello, world!")

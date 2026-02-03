@@ -3,5 +3,5 @@
 # Hello there
 
 # TODO: Use end= so the first print does NOT add a newline.
-print()
-print()
+print("Hello",end= " ")
+print("there")

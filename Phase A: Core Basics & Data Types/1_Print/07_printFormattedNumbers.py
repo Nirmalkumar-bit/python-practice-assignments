@@ -5,4 +5,4 @@
 total = 19.9
 
 # TODO: Print exactly as shown using formatting (f-string or format).
-print()
+print(f"Total: {total:.2f}")
