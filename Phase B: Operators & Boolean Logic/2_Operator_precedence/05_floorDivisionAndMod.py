@@ -6,8 +6,8 @@
 # q=3
 # r=2
 
-n = __
-d = __
+n = 11
+d = 3
 q = n // d
 r = n % d
 print(f"q={q}")

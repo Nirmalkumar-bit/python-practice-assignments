@@ -5,5 +5,5 @@
 # When you run this file, it must print exactly:
 # 19
 
-result = 3 + 2 ** __
+result = 3 + 2 ** 4
 print(result)

@@ -5,7 +5,7 @@
 # When you run this file, it must print exactly:
 # True
 
-x = __
-y = __
+x = 14
+y = 12
 check = x + 2 * 3 > y
 print(check)

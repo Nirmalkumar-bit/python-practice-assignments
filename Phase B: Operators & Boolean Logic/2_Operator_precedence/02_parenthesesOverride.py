@@ -7,5 +7,5 @@
 
 result = 2 + 3 * 6
 # Add parentheses on the next line by rewriting the expression:
-result = __
+result = 2 +(3 * 6)
 print(result)

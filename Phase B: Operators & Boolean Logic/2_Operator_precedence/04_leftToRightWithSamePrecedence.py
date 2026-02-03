@@ -5,5 +5,5 @@
 # When you run this file, it must print exactly:
 # 6.0
 
-result = __ / __ * __
+result = 15/5 *2 
 print(float(result))

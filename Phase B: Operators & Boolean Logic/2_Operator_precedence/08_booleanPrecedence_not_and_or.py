@@ -6,8 +6,8 @@
 # When you run this file, it must print exactly:
 # True
 
-A = __
-B = __
-C = __
+A = False
+B = True
+C = False
 result = not A and B or C
 print(result)

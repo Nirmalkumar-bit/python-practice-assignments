@@ -6,5 +6,5 @@
 # When you run this file, it must print exactly:
 # -9
 
-expr = __
+expr = -3**2
 print(expr)

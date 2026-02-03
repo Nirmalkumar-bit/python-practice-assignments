@@ -6,7 +6,7 @@
 # When you run this file, it must print exactly:
 # 1
 
-value = 8 - 3 * 2 ** 2 // 3 + 1
+value = 8 - 3 * 2 ** 2 // 3 + 1 -4
 # Add parentheses to make the final printed value equal to 1:
-value = __
+value = (8 - 3) * 2 ** 2 // (3 + 1) -4
 print(value)

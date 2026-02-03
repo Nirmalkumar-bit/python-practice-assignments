@@ -6,8 +6,8 @@
 # When you run this file, it must print exactly:
 # True
 
-nums = [__ , __ , __ , __]
-x = __
+nums = [ 2, 2 ,5  ,4 ]
+x = 2
 # Expression uses a chained comparison plus membership test:
 result = 1 < x <= 3 and x in nums
 print(result)
