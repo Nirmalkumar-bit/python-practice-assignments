@@ -5,10 +5,10 @@ has_id = True
 has_ticket = False
 
 # TODO: allowed_in should be True only if both has_id and has_ticket are True
-allowed_in = 
+allowed_in = has_ticket
 
 # TODO: needs_help should be True if either has_id is False OR has_ticket is False
-needs_help = 
+needs_help = has_id
 
 # Expected output (two lines):
 # False

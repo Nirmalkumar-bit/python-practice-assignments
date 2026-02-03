@@ -2,8 +2,10 @@
 # Goal: Implement a boolean-returning function with a single return statement.
 
 def is_even(n):
+    
     # TODO: Return True if n is even, otherwise False
-    return 
+    return n%2 == 0
+
 
 # Expected output (three lines):
 # True

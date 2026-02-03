@@ -2,11 +2,15 @@
 # Goal: Complete the function so it returns True only if every element is exactly a bool.
 
 def all_bools(values):
+    if not values:
+        return False
     # TODO: Iterate through values and verify each item is a bool.
     # Hint: Use type(x) is bool (not isinstance) to avoid counting ints.
     for v in values:
-        
-    return 
+        if type(v) is not bool:
+            
+                return False
+    return True
 
 # Expected output (three lines):
 # True

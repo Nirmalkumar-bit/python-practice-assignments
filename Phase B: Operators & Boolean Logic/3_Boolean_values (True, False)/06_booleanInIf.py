@@ -5,7 +5,7 @@ is_member = False
 
 # TODO: If is_member is True, print: Member price
 # Otherwise print: Regular price
-if 
-    print()
+if is_member:
+    print("Member price")
 else:
-    print()
+    print("Regular price")

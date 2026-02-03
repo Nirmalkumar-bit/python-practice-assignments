@@ -5,13 +5,13 @@ age = 17
 min_age = 18
 
 # TODO: is_adult should be False
-is_adult = 
+is_adult = age > min_age
 
 score = 90
 passing_score = 60
 
 # TODO: passed should be True
-passed = 
+passed = passing_score < score
 
 # Expected output (two lines):
 # False

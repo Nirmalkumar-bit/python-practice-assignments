@@ -10,7 +10,7 @@ phone_access = True
 account_locked = True
 
 # TODO: Compute can_reset using the rule above.
-can_reset = 
+can_reset = (email_access or phone_access) and not account_locked
 
 # Expected output (one line):
 # False

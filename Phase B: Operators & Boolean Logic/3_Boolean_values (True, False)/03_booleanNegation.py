@@ -4,7 +4,7 @@
 is_raining = True
 
 # TODO: Create is_dry that is the opposite of is_raining
-is_dry = 
+is_dry = False
 
 # Expected output (two lines):
 # True

@@ -14,10 +14,10 @@ pairs = [
 
 for A, B in pairs:
     # TODO: Compute result for (A and not B) or (not A and B)
-    result = 
+    result = (A and not B) or (not A and B)
     # TODO: Print exactly in this format:
     # A=<value> B=<value> => <result>
-    print()
+    print(f"A={A} B={B} => {result}")
 
 # Expected output (4 lines):
 # A=False B=False => False
