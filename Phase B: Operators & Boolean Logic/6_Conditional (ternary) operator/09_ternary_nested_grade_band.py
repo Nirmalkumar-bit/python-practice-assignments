@@ -4,6 +4,6 @@
 
 score = 84
 
-grade = ________________________________
+grade = "A" if score >= 90 else "B" if score >= 80 else "c"
 
 print(grade)

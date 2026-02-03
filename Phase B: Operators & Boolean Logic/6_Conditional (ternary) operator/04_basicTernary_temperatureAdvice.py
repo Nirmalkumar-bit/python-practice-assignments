@@ -4,6 +4,6 @@
 
 temp_c = -3
 
-message = ________________________________
+message ="freeze" if temp_c <=0 else "ok"
 
 print(message)

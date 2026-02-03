@@ -4,6 +4,6 @@
 
 name = None
 
-display_name = ________________________________
+display_name = "Anonymous" if name is None else name
 
 print(f"Hello, {display_name}")

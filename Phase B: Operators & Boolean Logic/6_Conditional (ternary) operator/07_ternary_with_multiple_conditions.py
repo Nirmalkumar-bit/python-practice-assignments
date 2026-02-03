@@ -4,6 +4,6 @@
 
 age = 19
 
-label = ________________________________
+label = "not teen" if 13 >= age <=19  else "teen"
 
 print(label)

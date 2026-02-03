@@ -5,6 +5,6 @@
 price = 50
 is_member = True
 
-final_price = ________________________________
+final_price = price * 0.9 if is_member else price
 
 print(f"final={final_price}")

@@ -3,6 +3,6 @@
 
 x = -12
 
-abs_x = ________________________________
+abs_x = x if x >= 0 else -x
 
 print(f"abs={abs_x}")

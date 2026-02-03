@@ -4,6 +4,6 @@
 
 nums = [1, 2, 3, 4]
 
-labels = [______________________________ for n in nums]
+labels = ["E" if n%2 == 0 else "O" for n in nums]
 
 print(labels)

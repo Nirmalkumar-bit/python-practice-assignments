@@ -9,7 +9,7 @@ config = {
 
 use_primary = False
 
-key = ________________________________
+key = "primary" if use_primary else "backup"
 
 token = config[key]
 

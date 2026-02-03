@@ -4,4 +4,6 @@
 
 score = 60
 
-print(f"Result: {________________}")
+
+
+print(f"Result: {'PASS' if score >= 60 else 'fail'}")

@@ -4,6 +4,6 @@
 
 minutes = 90
 
-hours = ________________________________
+hours =  hours=minutes/60 if minutes > 60 else 0
 
 print(f"hours={hours}")

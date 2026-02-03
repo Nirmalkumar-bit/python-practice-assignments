@@ -4,6 +4,6 @@
 a = 7
 b = 10
 
-result = ________________________________
+result = a if a> b else b
 
 print(f"max={result}")

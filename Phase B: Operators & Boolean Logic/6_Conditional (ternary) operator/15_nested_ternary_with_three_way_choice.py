@@ -7,6 +7,6 @@
 
 x = 0
 
-category = ________________________________
+category = "negative" if x < 0 else "zero" if x == 0 else "positive"
 
 print(category)
