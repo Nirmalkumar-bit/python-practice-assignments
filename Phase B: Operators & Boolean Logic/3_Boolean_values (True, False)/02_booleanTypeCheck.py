@@ -4,4 +4,4 @@
 is_complete = False
 
 # TODO: Print the type of is_complete (should print exactly: <class 'bool'>)
-print()
+print(type(is_complete))
