@@ -3,6 +3,9 @@
 # result=18
 
 value = 5
+value+=4
+value*=2
+value-=0
 
 # TODO: add 10 to value using a compound operator
 # TODO: multiply value by 2 using a compound operator

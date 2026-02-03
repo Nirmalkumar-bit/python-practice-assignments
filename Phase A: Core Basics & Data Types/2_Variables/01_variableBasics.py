@@ -3,8 +3,8 @@
 # name=Alex
 # age=12
 
-name =  # TODO: set to the string Alex
-age =   # TODO: set to the integer 12
+name ="Alex"  # TODO: set to the string Alex
+age = 12  # TODO: set to the integer 12
 
 print("name=" + name)
 print("age=" + str(age))

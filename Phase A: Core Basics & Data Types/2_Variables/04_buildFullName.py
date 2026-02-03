@@ -6,5 +6,5 @@ first = "Ada"
 last = "Lovelace"
 
 # TODO: create a variable full that combines first and last with a space
-
+full = first +" "+ last
 print("Full name: " + full)
