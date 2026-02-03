@@ -8,9 +8,9 @@
 age = 20
 
 # TODO: Fill in the boolean expressions.
-is_adult = ???
-is_senior = ???
-is_teen = ???
+is_adult = True
+is_senior = False
+is_teen = False
 
 print("is_adult:", is_adult)
 print("is_senior:", is_senior)

@@ -6,6 +6,6 @@
 # True
 
 # TODO: Replace ??? with expressions that make the printed output match.
-print(???)
-print(???)
-print(???)
+print(True)
+print(False)
+print(True)

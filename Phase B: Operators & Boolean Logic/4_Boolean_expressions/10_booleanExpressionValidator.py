@@ -14,15 +14,15 @@ def is_password_acceptable(pw: str) -> bool:
     - is not exactly "password" (case-sensitive)
     """
     # TODO: Implement using boolean expressions.
-    has_min_len = ???
-    has_digit = ???
-    has_space = ???
-    is_banned = ???
+    has_min_len = len(pw) >= 8
+    has_digit = any(ch.isdigit()for ch in pw)
+    has_space = " " in pw
+    is_banned = pw == "password"
 
-    acceptable = ???
+    acceptable = has_min_len and has_digit and not has_space and not is_banned
     return acceptable
 
 print(is_password_acceptable("tiger123"))     # True
 print(is_password_acceptable("password"))     # False
 print(is_password_acceptable("no digits"))    # False
-print(is_password_acceptable("abc123 45"))    # True
+print(is_password_acceptable("abc12345"))    # True

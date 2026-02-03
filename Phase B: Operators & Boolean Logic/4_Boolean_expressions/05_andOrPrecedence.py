@@ -13,8 +13,9 @@ with_parent = True
 # - needs_parent is True if has_ticket AND age < 18 AND NOT with_parent
 
 # TODO: Write boolean expressions that follow the rules.
-can_enter = ???
-needs_parent = ???
+# Rules:
+can_enter = has_ticket and (age >= 18 or with_parent)
+needs_parent = has_ticket and age < 18 and not with_parent
 
 print("can_enter:", can_enter)
 print("needs_parent:", needs_parent)

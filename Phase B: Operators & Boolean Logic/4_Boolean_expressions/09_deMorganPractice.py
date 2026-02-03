@@ -10,11 +10,11 @@ has_food = True
 has_time = False
 
 # original means: NOT (has_food AND has_time)
-original = ???
+original = has_food and has_time
 
 # equivalent should be written WITHOUT a leading NOT applied to parentheses.
 # Use only 'not' directly on variables and 'and'/'or'.
-equivalent = ???
+equivalent = has_food and has_time or is_hungry and has_time
 
 match = (original == equivalent)
 

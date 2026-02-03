@@ -9,6 +9,6 @@ username = "Ada"
 password = "opensesame"
 
 # TODO: Use == and != to match the expected output.
-print(???)  # username is "Ada"
-print(???)  # password is NOT "letmein"
-print(???)  # username is not "Bob"
+print(username=="Ada")  # username is "Ada"
+print(password == "letmein")  # password is NOT "letmein"
+print(username != "Bob")  # username is not "Bob"

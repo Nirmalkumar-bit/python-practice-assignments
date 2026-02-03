@@ -13,9 +13,9 @@ pct = 100
 # - in_range_1_to_10: True when x is between 1 and 10 inclusive
 # - is_weekend_day: True when weekday is Sat or Sun
 # - valid_percentage: True when pct is between 0 and 100 inclusive
-in_range_1_to_10 = ???
-is_weekend_day = ???
-valid_percentage = ???
+in_range_1_to_10 = 1<= x <=10
+is_weekend_day = weekday =="sat" or weekday=="sun"
+valid_percentage = 0 <= pct <=100
 
 print("in_range_1_to_10:", in_range_1_to_10)
 print("is_weekend_day:", is_weekend_day)

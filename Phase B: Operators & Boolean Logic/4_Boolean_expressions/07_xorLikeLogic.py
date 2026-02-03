@@ -8,6 +8,6 @@ is_member = False
 
 # exactly_one_discount should be True only when exactly one of the two is True.
 # TODO: Write a boolean expression using and/or/not (no ^ operator).
-exactly_one_discount = ???
+exactly_one_discount = has_coupon or is_member
 
 print("exactly_one_discount:", exactly_one_discount)
