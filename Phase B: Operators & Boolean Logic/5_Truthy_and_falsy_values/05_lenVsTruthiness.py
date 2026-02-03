@@ -5,7 +5,7 @@
 queue = ["job1"]
 
 # Do not change the print statements.
-if __:
+if queue:
     print("READY")
 else:
     print("IDLE")

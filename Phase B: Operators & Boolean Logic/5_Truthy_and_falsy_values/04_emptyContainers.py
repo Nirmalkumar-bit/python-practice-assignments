@@ -3,7 +3,7 @@
 
 items = []
 
-if __:
+if items:
     print("HAS ITEMS")
 else:
     print("NO ITEMS")

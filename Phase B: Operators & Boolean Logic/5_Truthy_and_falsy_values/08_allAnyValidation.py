@@ -8,7 +8,7 @@ password = "secret"
 
 required = [username, email, password]
 
-if __:
+if required:
     print("VALID")
 else:
     print("INVALID")

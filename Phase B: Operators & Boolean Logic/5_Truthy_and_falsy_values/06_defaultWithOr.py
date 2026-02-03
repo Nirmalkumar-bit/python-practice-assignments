@@ -4,5 +4,5 @@
 
 name = ""
 
-final_name = __
-print("Hello, " + final_name)
+final_name = name or "stranger"
+print(f"Hello, {final_name}")

@@ -11,7 +11,7 @@ class Cart:
         self.items = items
 
     def __bool__(self):
-        __
+        return len(self.items) > 0
 
 c1 = Cart([])
 c2 = Cart(["apple"])

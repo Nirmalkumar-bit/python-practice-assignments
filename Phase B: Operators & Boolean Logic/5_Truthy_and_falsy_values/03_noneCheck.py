@@ -3,7 +3,7 @@
 
 result = None
 
-if __:
+if result:
     print("HAS VALUE")
 else:
     print("NO VALUE")

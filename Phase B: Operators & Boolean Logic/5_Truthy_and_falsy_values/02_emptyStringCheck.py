@@ -3,7 +3,7 @@
 
 text = ""
 
-if __:
+if text :
     print("NONEMPTY")
 else:
     print("EMPTY")

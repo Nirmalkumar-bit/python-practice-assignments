@@ -6,8 +6,8 @@
 def keep_truthy(values):
     kept = []
     for v in values:
-        if __:
-            __
+        if v:
+            kept.append(v)
     return kept
 
 data = [0, 1, "", "hi", [], [0], None, False, True, {}, {"x": 1}]

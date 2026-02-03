@@ -3,7 +3,7 @@
 
 value = 0
 
-if __:
+if value > 0 :
     print("TRUTHY")
 else:
     print("FALSY")
