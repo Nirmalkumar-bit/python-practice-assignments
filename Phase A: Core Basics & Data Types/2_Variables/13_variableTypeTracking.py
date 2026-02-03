@@ -6,6 +6,8 @@
 # as_int=3
 
 text = input()
+as_float = float(text)
+as_int = int(as_float)
 
 # TODO: convert text to float in a variable called as_float
 # TODO: convert as_float to int in a variable called as_int

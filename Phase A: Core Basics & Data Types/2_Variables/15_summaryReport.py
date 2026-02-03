@@ -14,9 +14,12 @@
 # Print money values with exactly 2 digits after the decimal.
 
 product = input()
-unit_price_text = input()
-quantity_text = input()
-
+unit_price_text = float(input())
+quantity_text = int(input())
+subtotal = unit_price_text * quantity_text
+if quantity_text >= 10:
+    discount= subtotal/10
+total = subtotal- discount
 # TODO: convert unit_price_text to float unit_price
 # TODO: convert quantity_text to int quantity
 

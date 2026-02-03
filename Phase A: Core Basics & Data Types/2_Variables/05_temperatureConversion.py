@@ -4,7 +4,7 @@
 # 25C is 77.0F
 
 celsius = 25
-
+fahrenheit = F = celsius * 9/5 + 32
 # TODO: compute fahrenheit using celsius
 
 print(str(celsius) + "C is " + str(fahrenheit) + "F")

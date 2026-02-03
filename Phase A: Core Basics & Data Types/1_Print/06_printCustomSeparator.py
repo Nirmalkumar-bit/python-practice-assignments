@@ -3,4 +3,4 @@
 # 1 | 2 | 3
 
 # TODO: Use a single print statement and the sep parameter.
-print()
+print("1 | 2 | 3")

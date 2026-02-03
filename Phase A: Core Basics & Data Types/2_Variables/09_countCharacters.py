@@ -3,6 +3,7 @@
 # length=6
 
 word = "python"
+length= len(word)
 
 # TODO: store the length of word in a variable called length
 

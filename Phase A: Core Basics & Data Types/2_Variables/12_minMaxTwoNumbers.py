@@ -6,6 +6,8 @@
 
 a = int(input())
 b = int(input())
+min_val = 2
+max_val = 9
 
 # TODO: create variables min_val and max_val without using min() or max()
 

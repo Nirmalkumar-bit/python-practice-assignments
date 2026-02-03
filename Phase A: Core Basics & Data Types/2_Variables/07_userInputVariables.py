@@ -3,7 +3,8 @@
 # Mia will be 9 next year.
 
 name = input()            # user types a name
-age_text = input()        # user types an age
+age_text =int(input()) 
+next_age = age_text+1# user types an age
 
 # TODO: convert age_text to an integer variable age
 # TODO: create next_age as age + 1

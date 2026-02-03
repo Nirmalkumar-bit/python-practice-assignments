@@ -9,6 +9,7 @@
 
 price = 20.00
 tax_rate = 0.07
+total = price + price*tax_rate
 
 # TODO: compute total
 

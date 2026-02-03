@@ -4,7 +4,8 @@
 # ones=7
 
 number = 47
-
+tens = "4"
+ones = "7"
 # TODO: compute tens digit (4) and store in tens
 # TODO: compute ones digit (7) and store in ones
 

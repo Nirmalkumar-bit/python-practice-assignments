@@ -7,6 +7,6 @@ a = 1
 b = 2
 
 # TODO: swap a and b (do not hardcode final values)
-
+a ,b=b,a
 print("a=" + str(a))
 print("b=" + str(b))
