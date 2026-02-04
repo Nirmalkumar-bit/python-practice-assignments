@@ -6,10 +6,10 @@
 nums = [1, 2, 3, 4, 3]
 
 # TODO: remove the first occurrence of 3 (do NOT assign)
-
+nums.remove(3)
 
 # TODO: pop the last element and store it in removed
-removed =
+removed = nums.pop()
 
 # TODO: delete the element at index 2 (after the prior operations)
 

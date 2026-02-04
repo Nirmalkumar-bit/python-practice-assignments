@@ -7,12 +7,12 @@
 values = [3, 1, 2]
 
 # TODO: create a new sorted list WITHOUT modifying values
-sorted_copy =
+sorted_copy = sorted(values)
 
 print(f"original={values}")
 print(f"sorted_copy={sorted_copy}")
 
 # TODO: sort values in place
 
-
+values.sort()
 print(f"after_sort={values}")

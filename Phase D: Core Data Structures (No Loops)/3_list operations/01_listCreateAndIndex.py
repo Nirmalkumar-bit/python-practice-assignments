@@ -6,10 +6,10 @@
 numbers = [10, 20, 30, 40, 50]
 
 # TODO: assign the first element to first
-first =
+first = numbers[0]
 
 # TODO: assign the last element to last (use indexing)
-last =
+last = numbers[4]
 
 print(f"first={first}")
 print(f"last={last}")

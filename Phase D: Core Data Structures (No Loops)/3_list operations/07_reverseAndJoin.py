@@ -6,10 +6,12 @@
 parts = ["a", "b", "c"]
 
 # TODO: create reversed_parts as a NEW list in reverse order (do not mutate parts)
-reversed_parts =
+
+reversed_parts = parts[::-1]
+joined = "-".join(reversed_parts)
+
 
 # TODO: join reversed_parts with '-' into joined
-joined =
 
 print(f"reversed={reversed_parts}")
 print(f"joined={joined}")

@@ -7,6 +7,9 @@ items = ["a", "b", "a", "c", "b", "d", "d"]
 
 # TODO: build unique preserving first occurrences only
 unique = []
+for item in items:
+    if item not in unique:
+        unique.append(item)
 
 
 print(f"unique={unique}")

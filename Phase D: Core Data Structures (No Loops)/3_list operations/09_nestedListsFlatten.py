@@ -6,6 +6,10 @@ matrix = [[1, 2], [3], [4, 5, 6]]
 
 # TODO: flatten matrix into flat using a loop (not using external libraries)
 flat = []
+for sublist in matrix:
+    for item in sublist:
+        flat.append(item)
+
 
 
 print(f"flat={flat}")

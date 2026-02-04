@@ -6,10 +6,10 @@
 letters = ["a", "b", "c", "d", "e", "f"]
 
 # TODO: slice out ["b", "c", "d"]
-middle =
+middle = letters[1:4]
 
 # TODO: slice out the last two items
-last_two =
+last_two = letters[-2:]
 
 print(f"middle={middle}")
 print(f"last_two={last_two}")

@@ -7,13 +7,13 @@
 chars = ["a", "b", "a", "c", "a"]
 
 # TODO: count how many "a" are in chars
-count_a =
+count_a = chars.count("a")
 
 # TODO: find the index of the first "a"
-first_a_index =
+first_a_index = chars.index("a")
 
 # TODO: check whether "z" is in chars
-has_z =
+has_z = "z" in chars
 
 print(f"count_a={count_a}")
 print(f"first_a_index={first_a_index}")
