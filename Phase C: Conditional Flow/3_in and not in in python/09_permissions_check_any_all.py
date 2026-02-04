@@ -9,7 +9,7 @@ user_permissions = {"read", "write"}
 missing = []
 # TODO: Fill missing with permissions from required that are not in user_permissions
 for perm in required:
-    if None:
+    if perm not in user_permissions:
         missing.append(perm)
 
 print(f"missing: {missing}")

@@ -8,7 +8,7 @@ items = [3, 1, 2, 3, 2, 4, 1]
 unique = []
 for x in items:
     # TODO: Add x only if it is not already in unique
-    if None:
+    if x not in unique:
         unique.append(x)
 
 print(f"unique: {unique}")

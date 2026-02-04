@@ -11,7 +11,11 @@ usernames = ["dev_42", "Bad-Name"]
 
 for name in usernames:
     # TODO: Set is_valid to True only if every character in name is in allowed
-    is_valid = None
+    is_valid = True
+    for ch in name:
+        if ch not in allowed:
+            is_valid = False
+            break
 
     if is_valid:
         print("VALID")

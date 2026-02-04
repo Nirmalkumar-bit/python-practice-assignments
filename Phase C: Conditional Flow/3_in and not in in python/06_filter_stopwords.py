@@ -9,7 +9,7 @@ stopwords = {"the", "a", "an"}
 keep = []
 for w in words:
     # TODO: Append only words not in stopwords
-    if None:
+    if w not in stopwords:
         keep.append(w)
 
 print(f"keep: {keep}")

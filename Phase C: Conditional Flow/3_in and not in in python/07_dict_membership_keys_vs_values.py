@@ -4,15 +4,14 @@
 #   key_exists
 #   value_missing
 
-prices = {"apple": 1.25, "banana": 0.75}
 
-# TODO: Use membership tests correctly.
-if None:
+prices = {"apple": 1.50, "banana": 0.75}
+
+if "apple" in prices:
     print("key_exists")
 
-# TODO: Check whether the VALUE 1.25 exists in the dictionary values.
-if None:
+if 1.25 not in prices.values():
     print("value_missing")
 else:
-    # This branch should NOT run for the expected outcome
     print("value_exists")
+

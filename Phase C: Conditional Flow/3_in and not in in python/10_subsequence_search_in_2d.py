@@ -12,18 +12,26 @@ cols = [1, 2, 3, 4]
 reserved = {"A2", "C3", "B1"}
 requested = ["A1", "A2", "B4", "C3"]
 
-# TODO: Build a full set of valid seats (e.g., {'A1', ...}) using rows and cols
-valid_seats = None
+rows = ["A", "B", "C"]
+cols = [1, 2, 3, 4]
+
+reserved = {"A2", "C3", "B1"}
+requested = ["A1", "A2", "B4", "C3"]
+
+valid_seats = set()
+for r in rows:
+    for c in cols:
+        valid_seats.add(f"{r}{c}")
 
 available = []
 unavailable = []
 
 for seat in requested:
-    # TODO: A seat is available only if it is in valid_seats AND not in reserved
-    if None:
+    if seat in valid_seats and seat not in reserved:
         available.append(seat)
     else:
         unavailable.append(seat)
 
 print(f"available: {available}")
 print(f"unavailable: {unavailable}")
+

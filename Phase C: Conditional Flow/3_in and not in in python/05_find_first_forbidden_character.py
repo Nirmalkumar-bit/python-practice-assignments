@@ -9,7 +9,7 @@ text = "Meet me at 5#pm"
 # TODO: Scan text from left to right and print the first forbidden character.
 # If none are forbidden, print "forbidden: None"
 for ch in text:
-    if None:
+    if ch not in allowed:
         print(f"forbidden: {repr(ch)}")
         break
 else:
