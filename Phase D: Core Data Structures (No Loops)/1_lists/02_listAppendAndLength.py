@@ -8,6 +8,8 @@ shopping = []
 # TODO: append 'milk'
 # TODO: append 'bread'
 # TODO: append 'eggs'
-
+shopping.append('milk')
+shopping.append('bread')
+shopping.append('eggs')
 print(shopping)
 print(len(shopping))

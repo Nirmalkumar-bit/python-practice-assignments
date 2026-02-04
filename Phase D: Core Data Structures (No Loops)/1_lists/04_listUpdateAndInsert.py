@@ -6,5 +6,5 @@ colors = ['red', 'blue', 'yellow']
 
 # TODO: insert 'green' so it becomes the third element (index 2)
 # TODO: ensure 'yellow' remains last
-
+colors.insert(2,'green')
 print(colors)

@@ -4,7 +4,7 @@
 
 words = ['python', 'lists', 'rock']
 
-upper_words = [
+upper_words = [ word.upper() for word in words
     # TODO: list comprehension producing uppercase versions
 ]
 

@@ -5,8 +5,10 @@
 
 nums = [1, 2, 3, 4, 5, 6]
 
-evans = []  # intentionally incorrect variable name to fix
+evens = []  # intentionally incorrect variable name to fix
 # TODO: rename the list variable to evens
 # TODO: loop and append only even numbers
-
+for n in nums:
+    if n% 2 == 0:
+        evens.append(n)
 print('evens:', evens)

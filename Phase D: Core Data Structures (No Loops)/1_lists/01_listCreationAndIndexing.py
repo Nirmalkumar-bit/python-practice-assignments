@@ -3,10 +3,10 @@
 # Monday
 # Sunday
 
-weekdays = [
+weekdays = ["Monday","Tuesday","Thursday","wenesday","Friday","Saturday","Sunday"
     # TODO: add 7 strings for the days of the week starting with Monday
 ]
 
 print(weekdays[0])
-print(weekdays[  # TODO: index for Sunday
-])
+print(weekdays[6]) # TODO: index for Sunday
+

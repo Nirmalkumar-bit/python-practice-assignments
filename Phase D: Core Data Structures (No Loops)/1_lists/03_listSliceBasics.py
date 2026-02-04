@@ -4,7 +4,7 @@
 
 nums = [10, 20, 30, 40, 50]
 
-middle = nums[  # TODO: slice to get [20, 30, 40]
+middle = nums[ 1:4 # TODO: slice to get [20, 30, 40]
 ]
 
 print(middle)

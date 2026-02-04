@@ -11,5 +11,9 @@ matrix = [
 row_sums = []
 # TODO: for each row in matrix, compute its sum WITHOUT using sum()
 # TODO: append each row total to row_sums in order
-
+for row in matrix:
+    total = 0
+    for value in row:
+        total += value
+    row_sums.append(total)
 print(row_sums)

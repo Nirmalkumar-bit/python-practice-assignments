@@ -5,7 +5,7 @@
 
 scores = [50, 20, 40, 10, 30]
 
-sorted_scores = None
+sorted_scores = sorted(scores,reverse=True)
 # TODO: create a new list sorted in descending order
 # HINT: use sorted(...) with reverse=True
 
