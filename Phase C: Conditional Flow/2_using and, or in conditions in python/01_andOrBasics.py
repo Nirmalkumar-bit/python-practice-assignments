@@ -8,7 +8,7 @@ low = 5
 high = 10
 
 # TODO: Use 'and' to check if number is between low and high (inclusive).
-if ____:
+if low <= number and number <= high:
     print("IN RANGE")
 else:
     print("OUT OF RANGE")

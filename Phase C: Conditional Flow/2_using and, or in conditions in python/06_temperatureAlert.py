@@ -6,11 +6,18 @@
 # With temperature=36, humidity=75 => print exactly: DANGER
 # With temperature=34, humidity=80 => print exactly: OK
 
-temperature = 36
-humidity = 75
+try:
+    temperature
+except NameError:
+    temperature = 46
 
-# TODO: Use 'and'/'or' with correct precedence (use parentheses where needed).
-if ____:
+try:
+    humidity
+except NameError:
+    humidity = 80
+
+
+if temperature >= 40 or (temperature >= 35 and humidity >= 70):
     print("DANGER")
 else:
     print("OK")

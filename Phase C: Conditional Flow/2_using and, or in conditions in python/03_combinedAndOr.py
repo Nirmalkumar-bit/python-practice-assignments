@@ -4,12 +4,22 @@
 # With is_student=True, age=20, is_veteran=False => print exactly: DISCOUNT
 # If you change age to 30 (keeping others the same) => print exactly: NO DISCOUNT
 
-is_student = True
-age = 20
-is_veteran = False
+try:
+    is_student
+except NameError:
+    is_student = True
 
-# TODO: Fill in the combined condition using 'and' and 'or'.
-if ____:
+try:
+    age
+except NameError:
+    age = 20
+
+try:
+    is_veteran
+except NameError:
+    is_veteran = False
+
+if (is_student and age < 26) or is_veteran:
     print("DISCOUNT")
 else:
     print("NO DISCOUNT")

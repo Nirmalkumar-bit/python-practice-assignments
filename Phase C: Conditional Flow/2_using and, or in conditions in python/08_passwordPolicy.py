@@ -8,14 +8,19 @@
 # With password='abcde1fg' => VALID
 # With password='abcd e1fg' => INVALID
 
-password = "abcde1fg"
+# Do NOT override password if it already exists
+try:
+    password
+except NameError:
+    password = "abcde1fg"
 
 has_digit = any(ch.isdigit() for ch in password)
 has_special = any(ch in "!@#" for ch in password)
-has_space = (" " in password)
+has_space = " " in password
+has_min_length = len(password) >= 8
 
-# TODO: Combine conditions using 'and', 'or', and 'not'.
-if ____:
+if has_min_length and (has_digit or has_special) and not has_space:
     print("VALID")
 else:
     print("INVALID")
+

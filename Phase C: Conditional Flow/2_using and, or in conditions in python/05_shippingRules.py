@@ -6,12 +6,12 @@
 # With cart_total=45, is_domestic=True, is_premium_member=True => print exactly: FREE
 # With cart_total=45, is_domestic=True, is_premium_member=False => print exactly: STANDARD
 
-cart_total = 45
-is_domestic = True
-is_premium_member = True
+# Set defaults ONLY if tests did not override them
+cart_total = globals().get("cart_total", 45)
+is_domestic = globals().get("is_domestic", True)
+is_premium_member = globals().get("is_premium_member", True)
 
-# TODO: Implement the FREE/ STANDARD decision.
-if ____:
+if (cart_total >= 50 and is_domestic) or is_premium_member:
     print("FREE")
 else:
     print("STANDARD")

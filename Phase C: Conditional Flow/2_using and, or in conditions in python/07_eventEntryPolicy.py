@@ -8,18 +8,16 @@
 # With has_ticket=False, is_vip=True, on_guest_list=True, age=25, accompanied=False => ENTER
 # With has_ticket=True, is_vip=False, on_guest_list=False, age=16, accompanied=False => DENY
 
-has_ticket = False
-is_vip = True
-on_guest_list = True
-age = 25
-accompanied = False
+has_ticket = globals().get("has_ticket", False)
+is_vip = globals().get("is_vip", True)
+on_guest_list = globals().get("on_guest_list", True)
+age = globals().get("age", 25)
+accompanied = globals().get("accompanied", False)
 
-# TODO: Build the condition using 'and'/'or' to match the policy.
-# Hint: Break it into parts like regular_entry, vip_entry.
-regular_entry = ____
-vip_entry = ____
+regular_entry = has_ticket and (age >= 18 or accompanied)
+vip_entry = is_vip and on_guest_list
 
-if ____:
+if regular_entry or vip_entry:
     print("ENTER")
 else:
     print("DENY")
