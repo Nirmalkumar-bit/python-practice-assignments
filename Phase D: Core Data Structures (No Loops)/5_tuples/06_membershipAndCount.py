@@ -7,7 +7,8 @@
 
 data = (2, 7, 2, 9, 2)
 
+print(7 in data)
 # TODO: membership test
-
+print(data.count(2))
 # TODO: count occurrences
 

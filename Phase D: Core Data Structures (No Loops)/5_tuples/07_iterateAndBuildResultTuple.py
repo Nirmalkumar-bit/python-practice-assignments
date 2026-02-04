@@ -5,6 +5,8 @@
 
 nums = (1, 2, 3, 4)
 
-squared = 
+squared = ()
+for n in nums:
+    squared += (n*n,)
 
 print(squared)

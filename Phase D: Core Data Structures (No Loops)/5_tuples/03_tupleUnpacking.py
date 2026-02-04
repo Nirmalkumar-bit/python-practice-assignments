@@ -3,6 +3,6 @@
 
 rgb = (255, 128, 64)
 
-r, g, b = 
+r, g, b = rgb
 
 print(f"{r},{g},{b}")

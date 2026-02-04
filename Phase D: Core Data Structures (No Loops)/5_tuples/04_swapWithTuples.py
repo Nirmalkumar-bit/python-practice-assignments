@@ -8,6 +8,6 @@ a = 3
 b = 9
 
 # TODO: swap a and b
-
+a, b = b,a
 print(a)
 print(b)

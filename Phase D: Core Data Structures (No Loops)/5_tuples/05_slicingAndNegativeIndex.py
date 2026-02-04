@@ -8,8 +8,8 @@
 
 items = ('a', 'b', 'c', 'd', 'e')
 
-last_item = 
-middle = 
+last_item = items[4]
+middle = items[1:4]
 
 print(last_item)
 print(middle)

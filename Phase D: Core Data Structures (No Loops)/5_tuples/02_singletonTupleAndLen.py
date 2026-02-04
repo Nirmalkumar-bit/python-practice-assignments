@@ -2,6 +2,6 @@
 # Print the length of the tuple.
 # Expected output: 1
 
-singleton = 
+singleton = ("only",)
 
 print(len(singleton))

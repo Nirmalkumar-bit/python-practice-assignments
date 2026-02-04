@@ -8,8 +8,8 @@
 
 person = ('Ada', (36, 'London'))
 
-name = 
-city = 
+name = person[0]
+city = person[1][1]
 
 print(name)
 print(city)

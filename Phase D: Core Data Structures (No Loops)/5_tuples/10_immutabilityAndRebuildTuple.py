@@ -6,6 +6,7 @@
 original = (1, 2, 3, 4)
 
 # TODO: rebuild the tuple without modifying original
-updated = 
+updated = original[:1] + (99,) + original[2:]
+
 
 print(updated)
