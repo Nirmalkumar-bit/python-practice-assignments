@@ -9,3 +9,9 @@ temp = 22
 
 # TODO: Use if/elif/else to print exactly one label: Cold, Warm, or Hot
 
+if temp < 15 :
+    print("Cold")
+elif - 15 <= temp <= 25:
+    print("Warm")
+else:
+    print("Hot")

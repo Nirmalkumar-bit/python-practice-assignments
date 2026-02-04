@@ -16,3 +16,13 @@ locked = False
 
 # TODO: Use if/elif/else to print exactly one status message
 
+if username == "":
+    print("Missing username")
+elif password == "":
+    print("Missing password")
+elif locked:
+    print("Account locked")
+elif username == correct_user and password == correct_pass:
+    print("Access granted")
+else:
+    print("Access denied")

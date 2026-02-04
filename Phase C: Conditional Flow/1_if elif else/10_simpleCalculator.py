@@ -16,3 +16,21 @@ b = 0
 # "Result: <value>"
 # Note: For division, result may be a float.
 
+
+if op not in ["+", "-", "*", "/"]:
+    print("Unsupported operator")
+
+elif op == "/":
+    if b == 0:
+        print("Cannot divide by zero")
+    else:
+        print(f"Result: {a / b}")
+
+elif op == "+":
+    print(f"Result: {a + b}")
+
+elif op == "-":
+    print(f"Result: {a - b}")
+
+elif op == "*":
+    print(f"Result: {a * b}")

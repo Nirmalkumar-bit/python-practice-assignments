@@ -13,3 +13,17 @@ c = 3
 # TODO: Use if/elif/else to print exactly one of:
 # "Not a triangle", "Equilateral", "Isosceles", "Scalene"
 
+if  a <= 0 or b <= 0 or c <= 0 or (a + b <= c or a + c <= b or b + c <= a):
+    print("Not a triangle")
+
+# All sides equal
+elif a == b == c:
+    print("Equilateral")
+
+# Exactly two sides equal
+elif a == b or b == c or a == c:
+    print("Isosceles")
+
+# All sides different
+else:
+    print("Scalene")

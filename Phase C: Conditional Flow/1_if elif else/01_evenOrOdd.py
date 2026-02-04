@@ -6,3 +6,7 @@ n = 7
 
 # TODO: Use if/else to print exactly "Even" or "Odd"
 
+if n% 2 == 0:
+    print("Even")
+else:
+    print("Odd")

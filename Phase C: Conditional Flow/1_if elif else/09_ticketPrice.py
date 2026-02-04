@@ -17,3 +17,22 @@ show_time = "matinee"  # "matinee" or "evening"
 # TODO: Use if/elif/else to print exactly:
 # "Invalid age" OR "Invalid show time" OR "Ticket price: <number>"
 
+if age < 0:
+    print("Invalid age")
+
+else:
+    # Determine base price
+    if age <= 12:
+        base_price = 8
+    elif age <= 64:
+        base_price = 12
+    else:
+        base_price = 9
+
+    # Apply time-based pricing
+    if show_time == "matinee":
+        print(f"Ticket price: {base_price - 2}")
+    elif show_time == "evening":
+        print(f"Ticket price: {base_price}")
+    else:
+        print("Invalid show time")

@@ -12,3 +12,11 @@ year = 1900
 # TODO: Use if/elif/else (no nested required, but allowed) to print exactly:
 # "Leap" or "Not Leap"
 
+if year% 400 == 0:
+    print("Leap")
+elif year% 100 == 0:
+    print("Not Leap")
+elif year % 4 ==0:
+    print("Leap")
+else:
+    print("Not Leap")
