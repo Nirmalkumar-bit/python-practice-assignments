@@ -5,5 +5,5 @@
 
 words = ["ant", "tiger", "cat", "zebra", "ox", "giraffe"]
 
-long_words = 
+long_words = [word for word in words if len(word) >= 5]
 print(long_words)

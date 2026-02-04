@@ -2,5 +2,5 @@
 # "Ava", 12, 4.5, True
 # Print profile.
 
-profile = 
+profile = ["Ava", 12, 4.5, True]
 print(profile)

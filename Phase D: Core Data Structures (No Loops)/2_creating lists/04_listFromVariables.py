@@ -5,5 +5,5 @@ x = 3
 y = 7
 z = -1
 
-coords = 
+coords = [x, y , z]
 print(coords)

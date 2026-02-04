@@ -6,5 +6,5 @@
 rows = 3
 cols = 4
 
-grid = 
+grid = [['_' for _ in range(cols)] for _ in range(rows)]
 print(grid)

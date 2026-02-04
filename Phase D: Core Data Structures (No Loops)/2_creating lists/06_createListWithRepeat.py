@@ -2,5 +2,5 @@
 # Print zeros.
 # Expected outcome: [0, 0, 0, 0, 0]
 
-zeros = 
+zeros = [0]*5
 print(zeros)

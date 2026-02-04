@@ -3,5 +3,5 @@
 # Print evens.
 # Expected outcome: [2, 4, 6, 8, 10, 12]
 
-evens = 
+evens = list(range(2, 13, 2))
 print(evens)

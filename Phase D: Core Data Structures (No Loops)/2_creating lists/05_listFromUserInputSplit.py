@@ -4,5 +4,5 @@
 # Expected outcome example for input "red, blue, green": ['red', 'blue', 'green']
 
 raw = input("Enter three colors separated by commas: ")
-colors = 
+colors = [c.strip()for c in raw.split(",")]
 print(colors)
