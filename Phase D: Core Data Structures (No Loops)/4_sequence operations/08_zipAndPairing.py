@@ -6,7 +6,7 @@ letters = ["a", "b", "c"]
 nums = [1, 2, 3]
 
 pairs = []
-for ltr, num in __:
-    pairs.append(__)
+for ltr, num in zip(letters, nums):
+    pairs.append(f"{ltr}:{num}")
 
 print(pairs)

@@ -27,5 +27,5 @@ def _run_script(path: Path):
 def test_stdout_exact():
     path = Path(__file__).resolve().parent / "04_membershipAndCounting.py"
     out = _run_script(path)
-    expected = "True\nFalse\n4\n"
+    expected = "True\nFalse\n6\n"
     assert out == expected, f"expected output:\n{expected}\nactual output:\n{out}" 

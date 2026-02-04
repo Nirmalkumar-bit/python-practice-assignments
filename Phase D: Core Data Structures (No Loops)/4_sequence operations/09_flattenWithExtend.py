@@ -6,7 +6,7 @@
 matrix = [[1, 2], [3], [4, 5, 6]]
 flat = []
 
-for row in __:
-    flat.__
+for row in matrix :
+    flat.extend(row)
 
 print(flat)

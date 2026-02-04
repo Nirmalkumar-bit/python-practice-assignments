@@ -5,6 +5,6 @@
 nums = [0, 1, 2, 3, 4, 5]
 
 # Replace the middle two elements (2, 3) with [99, 100]
-nums[__] = __
+nums[2:4] = [99,100] 
 
 print(nums)

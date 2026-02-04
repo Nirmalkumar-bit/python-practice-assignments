@@ -6,7 +6,7 @@
 
 colors = ["red", "green", "blue", "yellow"]
 
-first, *middle, last = __
+first, *middle, last = colors
 
 print(first)
 print(middle)

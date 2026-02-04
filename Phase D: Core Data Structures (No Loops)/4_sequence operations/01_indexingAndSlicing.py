@@ -6,9 +6,9 @@
 
 word = "python"
 
-first_char = word[__]
-last_char = word[__]
-middle = word[__]
+first_char = word[0]
+last_char = word[5]
+middle = word[1:5]
 
 print(first_char)
 print(last_char)

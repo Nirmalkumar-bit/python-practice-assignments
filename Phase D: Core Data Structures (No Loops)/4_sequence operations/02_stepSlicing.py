@@ -6,9 +6,9 @@
 
 digits = "0123456789"
 
-evens = digits[__]
-odds = digits[__]
-reversed_digits = digits[__]
+evens = digits[: :2]
+odds = digits[1::2]
+reversed_digits = digits[::-1]
 
 print(evens)
 print(odds)
