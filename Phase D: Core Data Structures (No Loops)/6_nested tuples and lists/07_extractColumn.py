@@ -10,6 +10,9 @@ matrix = [
 col_index = 1
 
 # TODO: build column as values from matrix[*][col_index]
-column = None
+column = []
+for row in matrix:
+    column.append(row[col_index])
+
 
 print(column)

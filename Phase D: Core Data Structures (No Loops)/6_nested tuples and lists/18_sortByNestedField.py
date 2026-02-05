@@ -8,6 +8,7 @@ records = [
 ]
 
 # TODO: produce sorted_records sorted by inner score (second item of inner tuple), highest first
-sorted_records = None
+sorted_records = sorted(records, key=lambda r: r[1][1], reverse=True)
+
 
 print(sorted_records)

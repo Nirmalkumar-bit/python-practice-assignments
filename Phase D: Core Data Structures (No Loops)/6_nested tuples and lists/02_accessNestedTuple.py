@@ -4,6 +4,6 @@
 users = ("root", ("bob", "carol"), ("dave", "alice"))
 
 # TODO: set name to "alice" by indexing into users
-name = None
+name = users[2][1]
 
 print(name)

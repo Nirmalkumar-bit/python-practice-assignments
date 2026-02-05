@@ -5,6 +5,6 @@ rows = 3
 cols = 4
 
 # TODO: build grid using a list comprehension (not multiplication like [[0]*cols]*rows)
-grid = None
+grid = [[0 for _ in range(cols)] for _ in range(rows)]
 
 print(grid)

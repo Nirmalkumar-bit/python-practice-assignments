@@ -5,5 +5,5 @@ grid = [[0, 1], [2, 3]]
 
 # TODO: change the bottom-right value to 99
 # grid[?][?] = ?
-
+grid[1][1] = 99
 print(grid)

@@ -7,6 +7,7 @@ matrix = [
 ]
 
 # TODO: build transposed (3x2) so transposed[i][j] == matrix[j][i]
-transposed = None
+transposed = [[matrix[j][i] for j in range(len(matrix))]
+              for i in range(len(matrix[0]))]
 
 print(transposed)

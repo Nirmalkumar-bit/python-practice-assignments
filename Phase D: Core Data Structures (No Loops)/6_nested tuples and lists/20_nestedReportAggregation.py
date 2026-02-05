@@ -10,6 +10,5 @@ stores = [
 ]
 
 # TODO: build report as a list of (store_id, total_sales) in the same order as stores
-report = None
-
+report = [(store_id, sum(sales)) for store_id, sales in stores]
 print(report)

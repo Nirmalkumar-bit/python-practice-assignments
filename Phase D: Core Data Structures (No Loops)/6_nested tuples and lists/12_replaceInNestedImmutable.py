@@ -4,6 +4,6 @@
 data = ("a", ("b", "x"), "c")
 
 # TODO: create new_data where the inner "x" becomes "Z"
-new_data = None
+new_data = (data[0], (data[1][0], "Z"), data[2])
 
 print(new_data)

@@ -5,7 +5,7 @@
 items = [[1, 2], [], [3, 4, 5, 6]]
 
 # TODO: compute inner_count and total_count
-inner_count = None
-total_count = None
+inner_count= len(items)
+total_count = sum(len(inner) for inner in items)
 
 print(inner_count, total_count)

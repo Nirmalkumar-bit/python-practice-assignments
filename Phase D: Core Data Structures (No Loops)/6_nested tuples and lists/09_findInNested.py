@@ -12,4 +12,12 @@ target = "T"
 # TODO: set pos to a tuple (row_index, col_index) where target is found
 pos = None
 
+target = "T"
+
+pos = None
+for i in range(len(grid)):
+    for j in range(len(grid[i])):
+        if grid[i][j] == target:
+            pos = (i, j)
+
 print(pos)

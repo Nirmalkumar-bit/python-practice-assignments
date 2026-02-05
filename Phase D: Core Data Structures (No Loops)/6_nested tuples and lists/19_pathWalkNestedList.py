@@ -11,10 +11,13 @@ path = [1, 1, 1, 1]  # data[1][1][1][1] -> 99
 
 # TODO: walk the path iteratively (no hardcoded indexing) to get the final value
 current = data
+for idx in path:
+    current = current[idx]
 
+value = current
 # for idx in path:
 #     ...
 
-value = None
+
 
 print(value)

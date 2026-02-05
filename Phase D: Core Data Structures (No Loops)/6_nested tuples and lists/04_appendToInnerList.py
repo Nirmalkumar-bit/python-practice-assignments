@@ -4,5 +4,5 @@
 letters = [["a", "b"], ["x"]]
 
 # TODO: append "c" to the first inner list
-
+letters[0].append("c")
 print(letters)

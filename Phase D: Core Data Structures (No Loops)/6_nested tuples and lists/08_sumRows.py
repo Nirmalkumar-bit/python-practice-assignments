@@ -8,6 +8,9 @@ matrix = [
 ]
 
 # TODO: build row_sums as a list of sums for each row
-row_sums = None
+row_sums = []
+for row in matrix:
+    row_sums.append(sum(row))
+
 
 print(row_sums)

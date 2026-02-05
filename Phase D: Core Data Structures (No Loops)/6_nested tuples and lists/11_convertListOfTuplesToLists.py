@@ -4,6 +4,6 @@
 pairs = [(1, 2), (3, 4), (5, 6)]
 
 # TODO: build converted so each element is a list, not a tuple
-converted = None
+converted = [list(pair) for pair in pairs]
 
 print(converted)

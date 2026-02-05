@@ -5,6 +5,13 @@ nested = [[1, [2, 3]], [4, [5, 6]]]
 
 # TODO: build flat so all ints appear in left-to-right order
 # Hint: you may use loops and type checks; no recursion needed for exactly this shape.
-flat = None
+flat = []
+for item in nested:
+    for elem in item:
+        if isinstance(elem, list):
+            flat.extend(elem)
+        else:
+            flat.append(elem)
+
 
 print(flat)

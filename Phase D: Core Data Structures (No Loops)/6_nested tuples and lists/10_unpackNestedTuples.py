@@ -4,8 +4,8 @@
 record = ("Jane", (34, "NY"))
 
 # TODO: unpack record into name, age, state
-name = None
-age = None
-state = None
+name = record[0]
+age = record[1][0]
+state = record[1][1]
 
 print(name, age, state)

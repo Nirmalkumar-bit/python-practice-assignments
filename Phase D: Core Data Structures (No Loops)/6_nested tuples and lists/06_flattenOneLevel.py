@@ -4,6 +4,9 @@
 nested = [[1, 2], [3], [4, 5]]
 
 # TODO: build flat as a new list with all numbers in order
-flat = None
+flat = []
+for sublist in nested:
+    for item in sublist:
+        flat.append(item)
 
 print(flat)
