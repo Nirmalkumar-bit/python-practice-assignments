@@ -4,12 +4,16 @@
 # - Prints: "list_key_error: TypeError"
 
 # TODO: create a dict using a tuple key (1, 2)
-d = None
+d = d = {(1, 2): "ok"}
+
 
 # TODO: set tuple_key_ok to True if lookup by (1, 2) yields "ok"
-tuple_key_ok = None
+tuple_key_ok = d[(1, 2)] == "ok"
 
 try:
+      d[[1, 2]] = "nope"
+except Exception as e:
+    print("list_key_error:", type(e).__name__)
     # TODO: attempt to use a list [1, 2] as a dict key
     pass
 except Exception as e:

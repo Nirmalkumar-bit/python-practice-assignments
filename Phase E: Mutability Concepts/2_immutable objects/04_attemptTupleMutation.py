@@ -6,6 +6,7 @@
 t = (1, 2, 3)
 
 try:
+    t[1] = 99
     # TODO: attempt to change the middle element to 99
     pass
 except Exception as e:

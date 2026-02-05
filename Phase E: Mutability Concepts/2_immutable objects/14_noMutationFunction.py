@@ -5,6 +5,7 @@
 # - Prints: "same input object: True" (input variable still refers to original tuple)
 
 def replace_at(t, index, value):
+    return t[:index] + (value,) + t[index + 1:]
     """Return a new tuple equal to t but with t[index] replaced by value."""
     # TODO: implement using slicing and concatenation
     pass

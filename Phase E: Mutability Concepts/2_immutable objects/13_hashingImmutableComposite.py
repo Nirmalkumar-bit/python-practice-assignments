@@ -10,13 +10,22 @@ user = {
 }
 
 # TODO: create an immutable key using (name, tuple(roles), region)
-key = None
 
+
+key = (user["name"], tuple(user["roles"]), user["region"])
+
+cache = {key: "found"}
+
+try:
+    hash(key)
+    key_hashable = True
+except Exception:
+    key_hashable = False
 # TODO: create a dict cache mapping key -> "found"
-cache = None
+
 
 # TODO: set key_hashable to True if hash(key) works without raising
-key_hashable = None
+
 
 print("key hashable:", key_hashable)
 print("lookup:", cache.get(key))

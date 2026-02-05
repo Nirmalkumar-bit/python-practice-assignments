@@ -6,11 +6,11 @@
 nums = (3, 4, 5)
 
 # TODO: set first and last using indexing
-first = None
-last = None
+first = nums[0]
+last = nums[2]
 
 # TODO: set n to the length of nums
-n = None
+n = len(nums)
 
 print(f"first={first} last={last}")
 print(f"len={n}")

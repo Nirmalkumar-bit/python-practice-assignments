@@ -5,13 +5,20 @@
 
 from dataclasses import dataclass
 
+@dataclass(frozen=True)
+class Point:
+    x: int
+    y: int
+
+
 # TODO: define a frozen dataclass Point with fields x:int and y:int
 
 # TODO: instantiate p = Point(2, 5)
-p = None
+p = Point(2, 5)
 print(p)
 
 try:
+    p.x = 10
     # TODO: attempt to modify p.x
     pass
 except Exception as e:

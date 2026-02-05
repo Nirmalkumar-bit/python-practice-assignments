@@ -6,6 +6,12 @@
 prefs = {"dims": (1, 2)}
 
 print("before:", prefs["dims"])
+prefs = {"dims": (1, 2)}
+
+
+prefs["dims"] = prefs["dims"] + (3,)
+
+
 
 # TODO: append 3 to the tuple by creating a new tuple and reassigning prefs["dims"]
 

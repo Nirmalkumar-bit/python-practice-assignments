@@ -16,6 +16,18 @@ data = {
 }
 
 def freeze(obj):
+    if isinstance(obj, dict):
+        return tuple(
+            (k, freeze(obj[k]))
+            for k in sorted(obj)
+        )
+    elif isinstance(obj, list):
+        return tuple(freeze(x) for x in obj)
+    elif isinstance(obj, set):
+        return frozenset(freeze(x) for x in obj)
+    else:
+        return obj
+
     # TODO: implement deep freezing per rules above
     # Hint: for dict, sort keys to ensure deterministic output
     pass
@@ -23,9 +35,14 @@ def freeze(obj):
 frozen = freeze(data)
 
 print("type:", type(frozen).__name__)
+try:
+    hash(frozen)
+    hashable = True
+except TypeError:
+    hashable = False
 
 # TODO: set hashable to True if hash(frozen) succeeds
-hashable = None
+hashable = True
 print("hashable:", hashable)
 
 print("frozen_repr:", frozen)

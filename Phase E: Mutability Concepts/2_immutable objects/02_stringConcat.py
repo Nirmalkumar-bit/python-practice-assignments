@@ -6,10 +6,11 @@
 
 s = "hello"
 # TODO: capture original object id
-orig_id = None
+orig_id = id(s)
 
 # TODO: create t by adding " world" to s without modifying s
-t = None
+t = s + " world"
+
 
 print("original:", s)
 print("new:", t)

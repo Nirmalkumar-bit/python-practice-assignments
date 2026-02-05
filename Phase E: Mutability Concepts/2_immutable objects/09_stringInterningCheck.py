@@ -5,11 +5,11 @@
 # - Prints: "identical: False" (build one string dynamically so identity differs)
 
 # TODO: create a as literal "python"
-a = None
+a = "python"
 
 # TODO: create b dynamically so it equals "python" but is typically a different object
 # Hint: use ''.join([...]) or format
-b = None
+b = "".join(["py", "thon"])
 
 print("equal:", a == b)
 print("identical:", a is b)

@@ -6,6 +6,8 @@
 #   ()
 
 def add_item(item, items=()):
+    return items if item is None else items + (item,)
+
     """Return a NEW tuple containing previous items plus item."""
     # TODO: implement by returning a new tuple
     pass

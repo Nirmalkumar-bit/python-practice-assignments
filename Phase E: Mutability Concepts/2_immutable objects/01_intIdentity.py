@@ -5,11 +5,11 @@
 
 x = 10
 # TODO: store id of x in before
-before = None
+before = id(x)
 
 y = x + 1  # creates a new int object
 # TODO: store id of y in after
-after = None
+after = id(y)
 
 print(before)
 print(after)
