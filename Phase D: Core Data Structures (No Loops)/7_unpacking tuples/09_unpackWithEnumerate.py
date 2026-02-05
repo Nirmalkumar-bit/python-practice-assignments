@@ -3,6 +3,8 @@
 names = ("Ada", "Linus", "Grace")
 
 lines = []
+for i, name in enumerate(names, start=1):
+    lines.append(f"{i}: {name}")
 # TODO: loop with enumerate(names, start=1) and unpack (i, name)
 # Append lines like "1: Ada" to lines
 

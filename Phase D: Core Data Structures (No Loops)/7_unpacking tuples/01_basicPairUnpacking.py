@@ -3,7 +3,7 @@
 pair = (10, 20)
 
 # TODO: unpack pair into a and b
-
+a,b = pair
 print(a)
 print(b)
 # Expected outcome:

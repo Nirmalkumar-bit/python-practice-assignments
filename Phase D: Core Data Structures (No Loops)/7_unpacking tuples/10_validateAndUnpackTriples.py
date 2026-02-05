@@ -11,6 +11,15 @@ items = [
 
 line_totals = []
 grand_total = 0.0
+for item in items:
+    if len(item) != 3:
+        continue
+
+    product, qty, unit_price = item
+    total = qty * unit_price
+
+    line_totals.append((product, total))
+    grand_total += total
 
 # TODO:
 # - Loop through items

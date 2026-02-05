@@ -3,6 +3,10 @@
 points = [(1, 2), (3, 4), (5, 6)]
 
 result_lines = []
+
+for x, y in points:
+    result_lines.append(f"x={x}, y={y}")
+    
 # TODO: loop through points, unpack each (x, y), and append "x=<x>, y=<y>" to result_lines
 
 output = "\n".join(result_lines)
