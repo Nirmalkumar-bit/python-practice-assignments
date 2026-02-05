@@ -8,6 +8,8 @@ min_len = 5
 
 kept = []
 for w in words:
+    if len(w) < min_len:
+        continue 
     # TODO: if len(w) < min_len, continue
     
     kept.append(w)

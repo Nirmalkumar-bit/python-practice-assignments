@@ -5,6 +5,8 @@
 
 result = []
 for n in range(1, 16):
+    if n%3 == 0:
+        continue
     # TODO: if n is divisible by 3, continue
     
     result.append(n)

@@ -9,9 +9,14 @@ primes = []
 for n in range(2, 31):
     is_prime = True
     for d in range(2, n):
+        if n % d == 0:
+            is_prime = False
+            break   
         # TODO: if n is divisible by d, set is_prime False and stop checking
         
-        pass
+        
+    if not is_prime:
+        continue
 
     # TODO: if not prime, continue
     

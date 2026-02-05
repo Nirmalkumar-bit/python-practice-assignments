@@ -10,6 +10,8 @@ parts = raw.split(",")
 
 for token in parts:
     cleaned = token.strip()
+    if cleaned == "":
+        continue
     # TODO: if cleaned is empty, continue
     
     print(cleaned)

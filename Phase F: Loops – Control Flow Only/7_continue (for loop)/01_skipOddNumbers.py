@@ -7,6 +7,7 @@
 # 10
 
 for n in range(1, 11):
-    # TODO: if n is odd, skip it
-    
-    print(n)
+    if n%2 == 0:
+        print(n)
+        
+    # TODO: if n is odd, skip

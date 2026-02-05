@@ -7,8 +7,10 @@ text = "Python"
 vowels = "aeiouAEIOU"
 
 for ch in text:
+     if ch in vowels:
+        continue
     # TODO: if ch is a vowel, continue
     
-    print(ch, end="")
+     print(ch, end="")
 
 print()

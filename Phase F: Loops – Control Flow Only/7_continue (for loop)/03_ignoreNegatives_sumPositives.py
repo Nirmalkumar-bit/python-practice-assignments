@@ -7,6 +7,9 @@ numbers = [3, -1, 4, -2, 0, 6, -9]
 
 total = 0
 for x in numbers:
+    if x < 0:
+        continue
+        
     # TODO: if x is negative, skip it
     
     total += x

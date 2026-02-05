@@ -11,7 +11,12 @@ for s in items:
     s = s.strip()
     # TODO: attempt int conversion; if it fails, continue
     # Hint: use try/except
-    
+    try:
+        value = int(s)
+    except ValueError:
+        continue   # skip non-integer strings
+    total += value
+
     # TODO: add the integer to total
     
 print(total)

@@ -20,6 +20,8 @@ blocked = {"A3", "C2"}
 for r in rows:
     for c in cols:
         seat = f"{r}{c}"
+        if seat in blocked:
+            continue 
         # TODO: if seat is blocked, continue
         
         print(seat)
