@@ -9,6 +9,6 @@
 n = 7
 
 # TODO: Use a for loop to print the lines above
-for i in ____:
-    product = ____
+for i in range(1,6):
+    product = n*i
     print(f"{n} x {i} = {product}")

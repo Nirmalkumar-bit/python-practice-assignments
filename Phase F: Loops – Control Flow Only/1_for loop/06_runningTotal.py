@@ -7,8 +7,8 @@ running = []
 current = 0
 
 # TODO: Use a for loop to build running totals
-for ____ in ____:
-    current = ____
-    running.append(____)
+for nums in nums:
+    current = current + nums
+    running.append(current)
 
 print(running)

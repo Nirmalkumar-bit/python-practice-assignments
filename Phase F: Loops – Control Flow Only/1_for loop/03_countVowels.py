@@ -7,8 +7,8 @@ vowels = "aeiouAEIOU"
 count = 0
 
 # TODO: Loop through each character and count vowels
-for ____ in ____:
-    if ____:
-        count = ____
+for ch in text:
+    if ch in vowels:
+        count = count + 1
 
 print(count)

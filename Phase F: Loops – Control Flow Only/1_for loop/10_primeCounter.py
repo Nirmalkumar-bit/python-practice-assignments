@@ -10,15 +10,15 @@ prime_count = 0
 # - Assume is_prime = True for n > 1
 # - Try divisors from 2 to n-1 (or to int(sqrt(n)) + 1 if you prefer)
 # - If divisible, set is_prime = False and break
-for n in ____:
+for n in nums:
     if n <= 1:
         continue
     is_prime = True
-    for d in ____:
-        if ____:
-            is_prime = ____
-            ____
-    if ____:
-        prime_count = ____
+    for d in range(2, n):
+        if n % d == 0:
+            is_prime = False
+            break
+    if is_prime:
+        prime_count = prime_count + 1
 
 print(prime_count)

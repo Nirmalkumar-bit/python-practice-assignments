@@ -5,7 +5,7 @@ n = 10
 total = 0
 
 # TODO: Add 1..n to total using a for loop
-for ____ in ____:
-    total = ____
+for i in range(1, n+1): 
+    total += i
 
 print(total)

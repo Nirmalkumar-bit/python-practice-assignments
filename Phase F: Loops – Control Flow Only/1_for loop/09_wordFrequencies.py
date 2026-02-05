@@ -7,10 +7,11 @@ words = text.lower().split()
 counts = {}
 
 # TODO: Use a for loop to count occurrences into the dictionary
-for w in ____:
-    if ____:
-        counts[w] = ____
+for w in words:
+    if w in counts:
+        counts[w] = counts[w] + 1
     else:
-        counts[w] = ____
+        counts[w] = 1
+
 
 print(counts)

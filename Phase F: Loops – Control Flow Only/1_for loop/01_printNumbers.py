@@ -7,5 +7,5 @@
 # 5
 
 # TODO: Use a for loop with range(...) to print 1..5
-for ____ in ____:
-    print(____)
+for i in range(1,6):
+    print(i)

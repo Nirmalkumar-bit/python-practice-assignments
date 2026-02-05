@@ -5,8 +5,8 @@ nums = [3, 2, 5, 8, 1, 0, -4]
 evens = []
 
 # TODO: Append only even numbers to evens
-for ____ in ____:
-    if ____:
-        evens.____(____)
+for num in nums:
+    if num % 2 == 0:
+        evens.append(num)
 
 print(evens)

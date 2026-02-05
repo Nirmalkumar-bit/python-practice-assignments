@@ -6,9 +6,11 @@ nums = [10, 13, 21, 28, 5]
 found = None
 
 # TODO: Set found to the first multiple of 7 and break
-for x in ____:
-    if ____:
-        found = ____
-        ____
+for x in nums:
+    if x % 7 == 0:
+        found = x
+        break
 
 print(found)
+
+

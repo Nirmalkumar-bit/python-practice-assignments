@@ -8,8 +8,9 @@ rows = 3
 cols = 4
 
 # TODO: Use nested loops; each row should be printed on its own line
-for r in ____:
+# Use nested loops; each row should be printed on its own line
+for r in range(rows):
     line = ""
-    for c in ____:
-        line = ____
-    print(____)
+    for c in range(cols):
+        line = line + "*"
+    print(line)
