@@ -4,8 +4,8 @@
 
 text = "education"
 vowels = "aeiou"
-count = ____
+count = 0
 for ch in text:
-    if ch in ____:
-        count = ____
+    if ch in vowels:
+        count += 1
 print("vowels:", count)

@@ -7,6 +7,6 @@
 # (1,1)
 # (1,2)
 
-for row in range(____):
-    for col in range(____):
-        print("(" + str(____) + "," + str(____) + ")")
+for row in range(2):
+    for col in range(3):
+        print("(" + str(row) + "," + str(col) + ")")

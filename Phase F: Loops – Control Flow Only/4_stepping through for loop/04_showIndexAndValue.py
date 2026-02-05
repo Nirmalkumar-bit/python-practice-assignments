@@ -5,5 +5,5 @@
 # 2: green
 
 colors = ["red", "blue", "green"]
-for idx in range(____):
-    print(str(idx) + ": " + ____)
+for idx in range(3):
+    print(str(idx) + ": " + colors[idx])

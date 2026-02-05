@@ -7,7 +7,7 @@
 # 6
 # 7
 
-for n in range(____, ____):
-    if n == ____:
-        ____
+for n in range(1, 8):
+    if n == 4:
+        continue
     print(n)

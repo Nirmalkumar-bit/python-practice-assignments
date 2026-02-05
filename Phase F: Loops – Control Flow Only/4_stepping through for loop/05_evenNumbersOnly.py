@@ -6,6 +6,6 @@
 # 8
 # 10
 
-for n in range(____, ____):
-    if ____:
+for n in range(1, 11):
+    if n%2 == 0:
         print(n)

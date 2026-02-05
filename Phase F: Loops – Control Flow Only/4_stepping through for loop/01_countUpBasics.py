@@ -6,5 +6,5 @@
 # 4
 # 5
 
-for i in range(____, ____):
-    print(____)
+for i in range(1, 6):
+    print(i)

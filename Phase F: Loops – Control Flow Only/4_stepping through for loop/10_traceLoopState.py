@@ -9,12 +9,9 @@
 # Rule: On each iteration, multiply result by (i if i > 0 else 1)
 # and print the trace line using the exact format above.
 
-result = ____
-for i in range(____):
-    before = ____
-    if i > 0:
-        result = result * ____
-    else:
-        result = result * ____
+result = 1
+for i in range(4):
+    before = result
+    result = result * (i + 1)
     print("i=" + str(i) + " before=" + str(before) + " after=" + str(result))
 print("final:", result)

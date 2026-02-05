@@ -7,7 +7,7 @@
 
 nums = [3, 7, 0, 9, 0]
 for i in range(len(nums)):
-    print("checking", ____)
-    if nums[i] == ____:
-        print("found 0 at index", ____)
+    print("checking", nums[i])
+    if nums[i] == 0:
+        print("found 0 at index", i)
         break
