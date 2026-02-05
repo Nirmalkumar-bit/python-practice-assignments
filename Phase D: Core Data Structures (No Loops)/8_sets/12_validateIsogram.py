@@ -7,9 +7,9 @@ word1 = 'six-year'
 word2 = 'programming'
 
 def is_isogram(text: str) -> bool:
-    cleaned = ____  # TODO: lowercase text and remove '-' and spaces
-    letters = ____  # TODO: build a list or iterable of alphabetic characters only
-    return ____  # TODO: True if no repeats, else False
+    cleaned =text.lower().replace('-', '').replace(' ', '')   # TODO: lowercase text and remove '-' and spaces
+    letters =  [c for c in cleaned if c.isalpha()]  # TODO: build a list or iterable of alphabetic characters only
+    return len(letters) == len(set(letters))  # TODO: True if no repeats, else False
 
 print(is_isogram(word1))
 print(is_isogram(word2))

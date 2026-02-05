@@ -3,5 +3,5 @@
 # Explanation of expected: unique words are {'the','cat','sat','on','mat'}
 
 sentence = 'The cat sat on the mat'
-words = ____  # TODO: split sentence, lowercase each word, put into a set
+words = set(sentence.lower().split())  # TODO: split sentence, lowercase each word, put into a set
 print(len(words))

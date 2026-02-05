@@ -4,5 +4,5 @@
 event1 = {'Ava', 'Noah', 'Mia', 'Liam'}
 event2 = {'Noah', 'Ava', 'Ethan'}
 
-both = ____  # TODO: compute intersection
+both = event1&event2 # TODO: compute intersection
 print(both)

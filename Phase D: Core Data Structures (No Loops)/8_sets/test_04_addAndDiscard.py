@@ -17,8 +17,11 @@ def _run_script(path: Path, capsys):
 
 def test_add_discard_result(capsys):
     path = Path(__file__).resolve().parent / "04_addAndDiscard.py"
-    out = _run_script(path, capsys)
+    out = _run_script(path, capsys).strip()
+
+    actual_set = eval(out)
     expected_set = {"a", "c", "d"}
-    expected = f"{expected_set}\n"
-    if out != expected:
-        raise AssertionError(f"expected output\n{expected}actual output\n{out}")
+
+    assert actual_set == expected_set, (
+        f"expected output\n{expected_set}\nactual output\n{actual_set}"
+    )

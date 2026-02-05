@@ -2,5 +2,5 @@
 # Expected outcome: When run, it prints a set containing exactly these elements (order may vary):
 # {'apple', 'banana', 'orange'}
 
-fruits = ____  # TODO: create a set with 'apple', 'banana', 'orange'
+fruits = {'apple', 'banana', 'orange'}  # TODO: create a set with 'apple', 'banana', 'orange'
 print(fruits)

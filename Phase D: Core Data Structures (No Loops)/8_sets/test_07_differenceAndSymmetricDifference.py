@@ -21,5 +21,10 @@ def test_difference_and_symdiff_prints(capsys):
     expected_diff = {"a", "b"}
     expected_sym = {"a", "b", "e"}
     expected = f"A-B: {expected_diff}\nsymdiff: {expected_sym}\n"
-    if out != expected:
-        raise AssertionError(f"expected output\n{expected}actual output\n{out}")
+    lines = out.strip().splitlines()
+    diff = eval(lines[0].split(": ")[1])
+    sym = eval(lines[1].split(": ")[1])
+
+    assert diff == expected_diff
+    assert sym == expected_sym
+

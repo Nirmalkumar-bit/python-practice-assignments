@@ -2,5 +2,5 @@
 # Expected outcome: It prints a set containing exactly {0, 1, 4, 9, 16} (order may vary).
 
 nums = [0, 1, 2, 2, 3, 4, 4]
-squares = ____  # TODO: set comprehension of n*n for each n in nums
+squares = {n * n for n in nums} # TODO: set comprehension of n*n for each n in nums
 print(squares)

@@ -7,6 +7,9 @@ items = [3, 1, 3, 2, 1, 5, 2, 4, 5]
 seen = set()
 result = []
 for x in items:
-    ____  # TODO: if x not in seen, add to seen and append to result
+    if x not in seen:
+        seen.add(x)
+        result.append(x)
+     # TODO: if x not in seen, add to seen and append to result
 
 print(result)

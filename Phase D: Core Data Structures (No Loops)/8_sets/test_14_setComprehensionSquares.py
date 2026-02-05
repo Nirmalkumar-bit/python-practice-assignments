@@ -19,6 +19,7 @@ def test_set_comprehension_squares(capsys):
     path = Path(__file__).resolve().parent / "14_setComprehensionSquares.py"
     out = _run_script(path, capsys)
     expected_set = {0, 1, 4, 9, 16}
-    expected = f"{expected_set}\n"
-    if out != expected:
-        raise AssertionError(f"expected output\n{expected}actual output\n{out}")
+    result = eval(out.strip())
+    assert result == expected_set
+
+    

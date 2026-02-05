@@ -3,7 +3,7 @@
 # 0
 # 2
 
-empty = ____  # TODO: create an empty set (not an empty dict)
+empty = set()  # TODO: create an empty set (not an empty dict)
 print(len(empty))
 empty.add('x')
 empty.add('y')

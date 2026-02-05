@@ -4,5 +4,5 @@
 # False
 
 colors = {'red', 'green', 'blue'}
-print(____)  # TODO: print whether 'green' is in colors
-print(____)  # TODO: print whether 'yellow' is in colors
+print('green' in colors)  # TODO: print whether 'green' is in colors
+print('yellow' in colors)  # TODO: print whether 'yellow' is in colors

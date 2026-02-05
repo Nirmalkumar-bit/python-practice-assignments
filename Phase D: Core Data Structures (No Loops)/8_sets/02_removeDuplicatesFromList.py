@@ -2,5 +2,5 @@
 # Expected outcome: It prints a set with exactly {1, 2, 3, 4, 5} (order may vary).
 
 nums = [1, 2, 2, 3, 4, 4, 4, 5]
-unique_nums = ____  # TODO: convert nums to a set
+unique_nums = set(nums) # TODO: convert nums to a set
 print(unique_nums)

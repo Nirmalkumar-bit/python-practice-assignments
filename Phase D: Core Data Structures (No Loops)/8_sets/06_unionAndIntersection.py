@@ -7,8 +7,8 @@
 A = {1, 2, 3, 4}
 B = {3, 4, 5, 6}
 
-u = ____  # TODO: union of A and B
-inter = ____  # TODO: intersection of A and B
+u =  A | B # TODO: union of A and B
+inter = A & B  # TODO: intersection of A and B
 
 print('union:', u)
 print('intersection:', inter)

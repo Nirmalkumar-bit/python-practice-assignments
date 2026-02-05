@@ -5,8 +5,8 @@
 # (Order may vary.)
 
 s = {1, 2, 3}
-____  # TODO: update s with {3, 4, 5} so s becomes {1,2,3,4,5}
+s.update({3, 4, 5}) # TODO: update s with {3, 4, 5} so s becomes {1,2,3,4,5}
 print(s)
 
-____  # TODO: intersect-update s with {3, 4, 5, 6} so s becomes {3,4,5}
+s.intersection_update({3, 4, 5, 6})  # TODO: intersect-update s with {3, 4, 5, 6} so s becomes {3,4,5}
 print(s)
