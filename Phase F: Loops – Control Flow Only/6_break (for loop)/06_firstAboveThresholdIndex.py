@@ -5,5 +5,8 @@
 values = [10, 50, 100, 101, 200]
 
 for i in range(len(values)):
+    if values[i] > 100:
+        print(i)
+        break
     # TODO: if values[i] > 100, print i and break
     pass

@@ -7,6 +7,8 @@
 nums = [4, 2, 7, -1, 9]
 
 for n in nums:
+    if n < 0:
+        break
     # TODO: if n is negative, stop the loop
     # TODO: otherwise print n
-    pass
+    print(n)

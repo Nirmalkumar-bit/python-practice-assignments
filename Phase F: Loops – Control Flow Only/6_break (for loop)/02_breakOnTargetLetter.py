@@ -9,6 +9,10 @@
 text = "Hello!World"
 
 for ch in text:
+    if ch == "!":
+        break
+    
+    print(ch)
     # TODO: stop when ch is '!'
     # TODO: otherwise print ch
-    pass
+    

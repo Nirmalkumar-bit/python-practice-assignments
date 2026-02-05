@@ -5,5 +5,8 @@
 nums = [10, 13, 21, 28, 35]
 
 for n in nums:
+    if n%7 == 0:
+        print(n)
+        break
     # TODO: if n is divisible by 7, print it and break
-    pass
+    

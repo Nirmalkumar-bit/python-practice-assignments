@@ -8,8 +8,12 @@ nums = [5, 4, 6, 2, 9]
 
 total = 0
 for n in nums:
+    if total + n > 15:
+        break
+    total += n
+    
     # TODO: if total + n would be > 15, break
     # TODO: otherwise add n to total
-    pass
+    
 
 print(total)

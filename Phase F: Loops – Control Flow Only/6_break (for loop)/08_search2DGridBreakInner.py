@@ -9,8 +9,9 @@ grid = [
     [".", ".", "X", "."],
     ["X", ".", ".", "."]
 ]
-
 for r in range(len(grid)):
     for c in range(len(grid[r])):
-        # TODO: if grid[r][c] == 'X', print f"{r},{c}" and break
-        pass
+        if grid[r][c] == "X":
+            print(f"{r},{c}")
+            break  
+
