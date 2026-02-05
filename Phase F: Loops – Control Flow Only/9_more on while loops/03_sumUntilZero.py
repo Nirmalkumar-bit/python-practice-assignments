@@ -11,8 +11,14 @@
 # 10
 
 total = 0
+value = int(input().strip())
+
 
 # TODO: read first value
+while value != 0:
+    total += value
+    value = int(input().strip())
+
 
 # TODO: while value is not 0, add to total and read next value
 

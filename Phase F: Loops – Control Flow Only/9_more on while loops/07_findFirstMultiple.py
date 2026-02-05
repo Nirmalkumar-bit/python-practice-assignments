@@ -11,3 +11,9 @@ k = int(input().strip())
 # TODO: while candidate is not a multiple of k, increase candidate by 1
 
 # TODO: print the candidate
+candidate = start
+
+while candidate % k != 0:
+    candidate += 1
+
+print(candidate)

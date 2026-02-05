@@ -11,3 +11,9 @@ n = int(input().strip())
 # TODO: initialize a counter
 
 # TODO: while loop to print 1..n
+i = 1
+
+# while loop to print 1..n
+while i <= n:
+    print(i)
+    i += 1

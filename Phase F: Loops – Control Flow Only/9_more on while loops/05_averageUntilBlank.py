@@ -22,3 +22,14 @@ line = input()
 # - read next line
 
 # TODO: after loop, print average to 2 decimals, or No data if count==0
+
+while line != "":
+    value = float(line)
+    total += value
+    count += 1
+    line = input()
+
+if count == 0:
+    print("No data")
+else:
+    print(f"{total / count:.2f}")

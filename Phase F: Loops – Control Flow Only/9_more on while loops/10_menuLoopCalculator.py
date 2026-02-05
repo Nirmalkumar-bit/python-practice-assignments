@@ -21,6 +21,28 @@
 # 6.0
 # Cannot divide by zero
 # Bye
+while True:
+    command = input().strip()
+
+    if command == "quit":
+        print("Bye")
+        break
+
+    x = float(input().strip())
+    y = float(input().strip())
+
+    if command == "add":
+        print(x + y)
+    elif command == "sub":
+        print(x - y)
+    elif command == "mul":
+        print(x * y)
+    elif command == "div":
+        if y == 0:
+            print("Cannot divide by zero")
+        else:
+            print(x / y)
+
 
 # TODO: start an infinite loop with while True
 

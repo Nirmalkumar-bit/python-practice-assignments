@@ -9,7 +9,11 @@
 # 0
 
 n = int(input().strip())
-
+if n % 2 != 0:
+    n -= 1
 # TODO: start from the largest even <= n
 
 # TODO: while loop that decreases by 2 and prints values down to 0
+while n >= 0:
+    print(n)
+    n -= 2

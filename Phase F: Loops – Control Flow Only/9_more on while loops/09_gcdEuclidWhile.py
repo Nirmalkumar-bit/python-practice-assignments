@@ -10,5 +10,13 @@ b = int(input().strip())
 
 # TODO: while b != 0:
 # - set a, b = b, a % b
+a = abs(a)
+b = abs(b)
+
+# Euclid's algorithm
+while b != 0:
+    a, b = b, a % b
+
+print(a)
 
 # TODO: print a
