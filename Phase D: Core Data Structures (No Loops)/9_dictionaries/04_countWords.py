@@ -7,7 +7,7 @@ words = text.split()
 counts = {}
 
 for w in words:
-    # TODO: update counts so each word is counted
-    pass
+     counts[w] = counts.get(w, 0) + 1# TODO: update counts so each word is counted
+     pass
 
 print(counts)

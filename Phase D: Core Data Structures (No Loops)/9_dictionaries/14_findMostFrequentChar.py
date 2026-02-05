@@ -5,14 +5,15 @@
 
 s = "a b a c c"
 counts = {}
-
 for ch in s:
     if ch == " ":
         continue
-    # TODO: count characters
-    pass
+    counts[ch] = counts.get(ch, 0) + 1
 
-# TODO: determine the most frequent character with tie-break rule
-most_common = None
+most_common = min(
+    (ch for ch in counts),
+    key=lambda ch: (-counts[ch], ch)
+)
+
 
 print(most_common)

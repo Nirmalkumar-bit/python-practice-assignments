@@ -9,3 +9,4 @@ user = {
 
 print(user.get("role"))
 # TODO: print user.get("logins", 0)
+print(user.get("logins", 0))

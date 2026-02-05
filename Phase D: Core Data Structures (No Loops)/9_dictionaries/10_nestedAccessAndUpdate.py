@@ -13,5 +13,8 @@ customer = {
 # TODO: update zip to "94110"
 # TODO: increment visits by 1
 
+customer["address"]["zip"] = "94110"
+customer["visits"] += 1
+
 print(customer["address"]["zip"])
 print(customer)

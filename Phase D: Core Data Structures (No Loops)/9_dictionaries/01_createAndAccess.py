@@ -5,8 +5,10 @@
 
 employee = {
     "id": 202,
+    "name":"Ada"
     # TODO: add key "name" with value "Ada"
 }
 
 print(employee["id"])
 # TODO: print the value for key "name"
+print(employee["name"])

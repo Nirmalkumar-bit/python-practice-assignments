@@ -7,6 +7,8 @@ groups = {}
 
 for word in words:
     first = word[0]
+    
+    groups.setdefault(first, []).append(word)
     # TODO: append word into groups[first], creating a list if needed
     pass
 

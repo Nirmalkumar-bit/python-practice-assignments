@@ -8,7 +8,9 @@
 
 query = "lang=py&level=2&mode=practice"
 params = {}
-
+for pair in query.split("&"):
+    k, v = pair.split("=")
+    params[k] = v
 # TODO: split query into pairs and fill params
 
 print(params)

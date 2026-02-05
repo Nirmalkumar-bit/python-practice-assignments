@@ -15,7 +15,13 @@ transactions = [
     {"item": "banana", "delta": -2},
     {"item": "apple", "delta": -2}
 ]
+for t in transactions:
+    item = t["item"]
+    delta = t["delta"]
+    inventory[item] = inventory.get(item, 0) + delta
 
+# remove zero-quantity items
+inventory = {k: v for k, v in inventory.items() if v != 0}
 # TODO: apply transactions to inventory
 # TODO: remove zero-quantity items
 

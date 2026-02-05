@@ -9,5 +9,6 @@ inventory = {
     "bananas": 5,
     "cherries": 2
 }
-
+for k, v in inventory.items():
+    print(f"{k}={v}")
 # TODO: loop through inventory items and print "<key>=<value>" per line

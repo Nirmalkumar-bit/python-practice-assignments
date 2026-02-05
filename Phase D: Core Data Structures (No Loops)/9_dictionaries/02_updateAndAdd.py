@@ -6,6 +6,9 @@ profile = {
     "status": "inactive",
     "points": 10
 }
+profile["status"] = "active"
+profile["points"] += 5
+
 
 # TODO: update "status" to "active"
 # TODO: add 5 to "points"

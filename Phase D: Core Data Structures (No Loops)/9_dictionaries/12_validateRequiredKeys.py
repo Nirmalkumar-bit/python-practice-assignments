@@ -12,7 +12,9 @@ required = {"id", "name"}
 valid_count = 0
 
 for rec in records:
-    # TODO: if all required keys are present in rec, increment valid_count
+    if required.issubset(rec):
+        valid_count += 1
+# TODO: if all required keys are present in rec, increment valid_count
     pass
 
 print(valid_count)
