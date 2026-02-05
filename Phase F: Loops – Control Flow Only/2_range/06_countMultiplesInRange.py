@@ -2,7 +2,7 @@
 # Use range and a loop (no list comprehensions).
 
 count = 0
-for n in range(_____, _____):
+for n in range(1,31 ):
     if n % 3 == 0:
         count += 1
 

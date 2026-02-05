@@ -1,6 +1,6 @@
 # Goal: Create a list containing the numbers 0 through 4 using range.
 
-nums = list(_____(_____))
+nums = list(range(0,5))
 print(nums)
 
 # Expected outcome:

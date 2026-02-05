@@ -1,6 +1,6 @@
 # Goal: Create a list containing the numbers 3 through 7 (inclusive) using range.
 
-nums = list(range(_____, _____))
+nums = list(range(3,8 ))
 print(nums)
 
 # Expected outcome:

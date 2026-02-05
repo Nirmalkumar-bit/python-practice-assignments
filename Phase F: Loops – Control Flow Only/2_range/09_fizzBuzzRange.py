@@ -5,9 +5,18 @@
 # - divisible by both -> FizzBuzz
 # - otherwise print the number
 
-for n in range(_____, _____):
+for n in range(1, 16):
+    if n % 3 == 0 and n % 5 == 0:
+        print("FizzBuzz")
+    elif n % 3 == 0:
+        print("Fizz")
+    elif n % 5 == 0:
+        print("Buzz")
+    else:
+        print(n)
+
     # TODO: complete the conditional logic
-    _____
+    
 
 # Expected outcome (15 lines):
 # 1

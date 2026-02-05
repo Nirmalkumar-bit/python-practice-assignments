@@ -4,7 +4,7 @@
 data = [10, 11, 12, 13, 14, 15, 16]
 result = []
 
-for i in range(_____, _____, _____):
+for i in range(0,8 ,2 ):
     result.append(data[i])
 
 print(result)

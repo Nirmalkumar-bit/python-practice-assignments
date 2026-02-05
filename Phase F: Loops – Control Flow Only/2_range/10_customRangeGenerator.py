@@ -4,9 +4,13 @@
 
 def my_range(start, stop, step):
     values = []
-    # TODO: add numbers starting at start, increasing by step, stopping before stop
-    _____
+    current = start
+    while current < stop:
+        values.append(current)
+        current += step
     return values
+    # TODO: add numbers starting at start, increasing by step, stopping before stop
+    
 
 print(my_range(2, 11, 3))
 print(my_range(0, 1, 1))

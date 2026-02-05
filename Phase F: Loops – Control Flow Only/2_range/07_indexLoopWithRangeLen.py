@@ -3,7 +3,7 @@
 
 items = ["a", "b", "c", "d"]
 
-for i in range(_____):
+for i in range(len(items)):
     print(f"{i}:{items[i]}")
 
 # Expected outcome:
