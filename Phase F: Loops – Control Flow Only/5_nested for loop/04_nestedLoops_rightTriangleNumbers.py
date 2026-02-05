@@ -9,6 +9,12 @@
 rows = 5
 
 lines = []
+for i in range(1, rows + 1):
+    line = ""
+    for j in range(1, i + 1):
+        line += str(j)
+    lines.append(line)
+
 
 # TODO: Use nested loops.
 # Outer loop for each row i (1..rows)

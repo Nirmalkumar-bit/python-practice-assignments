@@ -9,8 +9,15 @@
 #  [1, 5, 10, 10, 5, 1]]
 
 n = 6
-
 triangle = []
+for r in range(n):
+    row = [1] * (r + 1)
+    if r > 1:
+        prev = triangle[r - 1]
+        for c in range(1, r):
+            row[c] = prev[c - 1] + prev[c]
+    triangle.append(row)
+
 
 # TODO: Use an outer loop to build each row index r from 0..n-1.
 # Each row starts and ends with 1.

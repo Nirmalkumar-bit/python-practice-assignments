@@ -7,8 +7,16 @@ target = 2
 
 pairs = []
 
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        if nums[i] + nums[j] == target:
+            pairs.append((i, j))
+
+print(pairs)
+
+            
+
 # TODO: Use nested loops with i from 0..len(nums)-1 and j from i+1..len(nums)-1.
 # If nums[i] + nums[j] equals target, append (i, j) to pairs.
 
 
-print(pairs)

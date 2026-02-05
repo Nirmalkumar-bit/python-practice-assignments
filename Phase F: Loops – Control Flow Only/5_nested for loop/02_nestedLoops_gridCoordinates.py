@@ -7,6 +7,11 @@ width = 3
 height = 2
 
 lines = []
+for y in range(height):
+    line_parts = []
+    for x in range(width):
+        line_parts.append(f"({x},{y})")
+    lines.append(" ".join(line_parts))
 
 # TODO: Use nested loops over y then x.
 # For each row y, create a line with coordinates separated by a single space.

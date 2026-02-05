@@ -10,6 +10,14 @@
 size = 5
 
 lines = []
+for r in range(size):
+    line = ""
+    for c in range(size):
+        if (r + c) % 2 == 0:
+            line += "X"
+        else:
+            line += "."
+    lines.append(line)
 
 # TODO: Use nested loops over r and c from 0..size-1.
 # If (r + c) is even -> 'X' else '.'

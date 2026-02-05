@@ -9,6 +9,12 @@ n = 4
 cell_width = 2
 
 table_lines = []
+for row in range(1, n + 1):
+    cells = []
+    for col in range(1, n + 1):
+        value = row * col
+        cells.append(str(value).rjust(cell_width))
+    table_lines.append(" ".join(cells))
 
 # TODO: Use nested loops for row and col from 1..n.
 # Compute row*col and format each cell right-aligned to cell_width.

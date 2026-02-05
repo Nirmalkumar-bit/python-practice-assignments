@@ -8,6 +8,10 @@ grid = [
 ]
 
 freq = {}
+for row in grid:
+    for val in row:
+        freq[val] = freq.get(val, 0) + 1
+
 
 # TODO: Use nested loops over rows and values.
 # Update freq counts for each number.

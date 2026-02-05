@@ -13,6 +13,12 @@ rows = len(matrix)
 cols = len(matrix[0])
 
 transpose = []
+for c in range(cols):
+    new_row = []
+    for r in range(rows):
+        new_row.append(matrix[r][c])
+    transpose.append(new_row)
+
 
 # TODO: Use nested loops.
 # Outer loop should iterate over column index (0..cols-1).

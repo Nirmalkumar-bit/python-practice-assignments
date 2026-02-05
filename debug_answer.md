@@ -1,22 +1,64 @@
-```
-test_14_setComprehensionSquares.py:24: in test_set_comprehension_squares
-    raise AssertionError(f"expected output\n{expected}actual output\n{out}")
-E   AssertionError: expected output
-E   {0, 1, 16, 4, 9}
-E   actual output
-E   {0, 1, 4, 9, 16}
+``` 
+test_08_nestedLoops_findPairsWithSum.py:29: in test_find_pairs_with_sum_stdout_exact
+    pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
+E   Failed: expected output:
+E   [(0, 3), (1, 2)]
+E   
+E   actual output:
+E   [(0, 3)]
+_________________
+
+
 
 ```
-
 can you assess the error above and check why the below code is failing?
 
 ```
-# Goal: Use a set comprehension to generate unique squares for numbers in a list.
-# Expected outcome: It prints a set containing exactly {0, 1, 4, 9, 16} (order may vary).
+# Goal: Find# Goal: Find all unique index pairs (i, j) with i < j such that nums[i] + nums[j] == target.
+# Expected outcome for nums and target below (pairs of indices):
+# [(0, 3), (1, 2)]
 
-nums = [0, 1, 2, 2, 3, 4, 4]
-squares = {n * n for n in nums} # TODO: set comprehension of n*n for each n in nums
-print(squares)
+nums = [2, 7, 5, 0]
+target = 2
+
+pairs = []
+
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        if nums[i] + nums[j] == target:
+            pairs.append((i, j))
+
+print(pairs)
+
+            
+
+# TODO: Use nested loops with i from 0..len(nums)-1 and j from i+1..len(nums)-1.
+# If nums[i] + nums[j] equals target, append (i, j) to pairs.
+
+
+ all unique index pairs (i, j) with i < j such that nums[i] + nums[j] == target.
+# Expected outcome for nums and target below (pairs of indices):
+# [(0, 3), (1, 2)]
+
+nums = [2, 7, 5, 0]
+target = 2
+
+pairs = []
+
+for i in range(len(nums)):
+    for j in range(i + 1, len(nums)):
+        if nums[i] + nums[j] == target:
+            pairs.append((i, j))
+
+print(pairs)
+
+            
+
+# TODO: Use nested loops with i from 0..len(nums)-1 and j from i+1..len(nums)-1.
+# If nums[i] + nums[j] equals target, append (i, j) to pairs.
+
+
+
 
 
 
@@ -29,27 +71,35 @@ for better idea check the test cases file below and see if there is any issue wi
 import sys
 import importlib.util
 from pathlib import Path
+import pytest
 
 
-def _run_script(path: Path, capsys):
+
+
+def _run_script(path: Path):
     if not path.exists():
-        raise AssertionError(f"expected output\n<file exists>\nactual output\n<missing file: {path.name}>")
+        pytest.fail(f"Missing assignment file: {path}")
+
     spec = importlib.util.spec_from_file_location(path.stem, str(path))
+    if spec is None or spec.loader is None:
+        pytest.fail(f"Could not load assignment file: {path}")
+
     module = importlib.util.module_from_spec(spec)
-    try:
-        spec.loader.exec_module(module)  # type: ignore[attr-defined]
-    except Exception as e:
-        raise AssertionError(f"expected output\n<program runs successfully>\nactual output\n{type(e).__name__}: {e}")
-    return capsys.readouterr().out
+    spec.loader.exec_module(module)
 
 
-def test_set_comprehension_squares(capsys):
-    path = Path(__file__).resolve().parent / "14_setComprehensionSquares.py"
-    out = _run_script(path, capsys)
-    expected_set = {0, 1, 4, 9, 16}
-    expected = f"{expected_set}\n"
-    if out != expected:
-        raise AssertionError(f"expected output\n{expected}actual output\n{out}")
+def test_find_pairs_with_sum_stdout_exact(capsys):
+    script_path = Path(__file__).resolve().parent / "08_nestedLoops_findPairsWithSum.py"
+    _run_script(script_path)
+
+    captured = capsys.readouterr()
+    expected = "[(0, 3), (1, 2)]\n"
+    actual = captured.out
+    if actual != expected:
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
+    if captured.err != "":
+        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
+
 
 
 

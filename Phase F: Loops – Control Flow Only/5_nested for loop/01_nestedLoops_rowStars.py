@@ -8,6 +8,12 @@ rows = 3
 cols = 5
 
 output_lines = []
+for r in range(rows):
+    line = ""
+    for c in range(cols):
+        line += "*"
+    output_lines.append(line)
+
 
 # TODO: Use a nested for loop.
 # Outer loop: each row
