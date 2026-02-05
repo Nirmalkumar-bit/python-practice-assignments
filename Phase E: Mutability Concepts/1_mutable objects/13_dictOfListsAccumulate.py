@@ -3,6 +3,7 @@
 
 
 def add_to_group(groups, category, item):
+    groups.setdefault(category, []).append(item)
     # TODO: mutate groups so that groups[category] is a list that includes item.
     # If category doesn't exist, create it with an empty list first.
     pass

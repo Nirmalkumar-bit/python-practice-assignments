@@ -6,9 +6,11 @@
 
 def main():
     original = [[1, 2], [3, 4]]
+    shallow = original.copy()      # shallow copy (outer list only)
+    shallow[0][1] = 99  
 
     # TODO: make a shallow copy of original (outer list only)
-    shallow = None
+    
 
     # TODO: mutate the first inner list so that 2 becomes 99
 

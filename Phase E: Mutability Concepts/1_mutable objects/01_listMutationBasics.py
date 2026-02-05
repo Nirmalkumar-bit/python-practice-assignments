@@ -3,7 +3,9 @@
 
 def main():
     nums = [10, 20, 30]
-
+    nums.append(40)
+    nums[1] = 99  
+    
     # TODO: append 40 to nums
     
     # TODO: change the second element (index 1) to 99

@@ -5,6 +5,11 @@
 
 
 def add_item(item, bucket=None):
+    if bucket is None:
+        bucket = []
+    bucket.append(item)
+    return bucket
+
     # TODO: implement so that each call without an explicit bucket
     # starts with a fresh list (no shared state between calls).
     # Must return the list.

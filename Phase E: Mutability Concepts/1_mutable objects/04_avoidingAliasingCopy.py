@@ -7,10 +7,10 @@ def main():
     original = [1, 2, 3]
 
     # TODO: create a shallow copy of original and store in copied
-    copied = None
+    copied = original.copy()
 
     # TODO: mutate copied to add 99 without changing original
-
+    copied.append(99)
     print("original:", original)
     print("copy:", copied)
 

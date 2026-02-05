@@ -3,7 +3,9 @@
 
 
 def double_in_place(nums):
-    # TODO: mutate nums so each element is doubled, in-place
+    for i in range(len(nums)):
+        nums[i] *= 2
+# TODO: mutate nums so each element is doubled, in-place
     # Do not create and return a new list.
     pass
 

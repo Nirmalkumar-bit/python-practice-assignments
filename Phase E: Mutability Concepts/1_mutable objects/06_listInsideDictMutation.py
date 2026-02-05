@@ -5,7 +5,7 @@ def main():
     item = {"tags": ["python", "mutability"]}
 
     # TODO: append "lists" to the list inside the dict
-
+    item["tags"].append("lists")
     print(item)
 
 

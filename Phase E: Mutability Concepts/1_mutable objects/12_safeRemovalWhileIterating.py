@@ -4,6 +4,9 @@
 
 def main():
     nums = [1, 2, 3, 4, 5, 6]
+    for i in range(len(nums) - 1, -1, -1):
+        if nums[i] % 2 == 0:
+            nums.pop(i)
 
     # TODO: remove all even numbers from nums.
     # Constraint: Do NOT build a brand-new list with a comprehension.

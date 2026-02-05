@@ -8,9 +8,11 @@ import copy
 
 def main():
     original = [[1, 2], [3, 4]]
+    deep = copy.deepcopy(original)
+    deep[0][1] = 99
 
     # TODO: create a deep copy of original
-    deep = None
+    
 
     # TODO: mutate deep so that the first inner list's second element becomes 99
 

@@ -5,9 +5,10 @@
 
 def main():
     a = ["x", "y"]
+    a.append("z")
 
     # TODO: make b refer to the SAME list object as a (aliasing)
-    b = None
+    b = a
 
     # TODO: mutate the list through b so that the shared list becomes ["x","y","z"]
 

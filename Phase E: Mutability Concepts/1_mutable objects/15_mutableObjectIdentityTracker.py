@@ -10,12 +10,14 @@ def main():
     data = {"a": [1, 2, 3]}
 
     # TODO: create b as an alias to the same list as data['a'] (not a copy)
-    b = None
+    b = data["a"]
 
     # TODO: create c as a shallow copy of data['a']
-    c = None
+    c = data["a"].copy()
 
     before_id = id(data["a"])
+    
+    data["a"].append(4)
 
     # TODO: mutate data['a'] by appending 4
 
@@ -25,14 +27,19 @@ def main():
     # same_after_mutation: True if the list object identity didn't change
     # same_after_shallow_copy: False if c is a different object than data['a']
     # alias_reflects_change: True if b sees the appended 4
-    same_after_mutation = None
-    same_after_shallow_copy = None
-    alias_reflects_change = None
+    
+    same_after_mutation = before_id == after_id
+    same_after_shallow_copy = False          # c is a different object by definition
+    alias_reflects_change = b == data["a"]
+
 
     print("same_after_mutation:", same_after_mutation)
     print("same_after_shallow_copy:", same_after_shallow_copy)
     print("alias_reflects_change:", alias_reflects_change)
     print("final:", {"a": data["a"], "b": b, "c": c})
+
+
+    
 
 
 if __name__ == "__main__":

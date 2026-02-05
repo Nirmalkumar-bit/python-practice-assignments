@@ -4,6 +4,7 @@
 
 
 def make_grid(rows, cols):
+    return [[0 for _ in range(cols)] for _ in range(rows)]
     # BUGGY starter (do not keep as-is):
     # return [[0] * cols] * rows
 

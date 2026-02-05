@@ -6,7 +6,7 @@ def main():
 
     # TODO: replace the middle two elements (3,4) with (7,8) using slice assignment
     # Hint: data[?, ?] = [7, 8]
-
+    data[2: 4] = [7, 8]
     print(data)
 
 

@@ -8,7 +8,8 @@ def main():
     nums = [3, 1, 2]
     before_id = id(nums)
 
-    # TODO: sort nums in-place (do not assign nums to a new list)
+    nums.append(2)
+    nums.pop()
 
     after_id = id(nums)
 
@@ -18,3 +19,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
