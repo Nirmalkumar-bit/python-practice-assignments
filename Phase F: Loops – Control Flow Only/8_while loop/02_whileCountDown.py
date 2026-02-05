@@ -9,6 +9,7 @@
 n = 5
 
 # TODO: write a while loop that prints n and decrements it until 1
-while __________:
-    print(__________)
-    __________
+while n>=1:
+    print(n)
+    n -=1
+    

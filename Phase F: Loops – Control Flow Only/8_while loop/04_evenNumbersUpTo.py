@@ -11,6 +11,8 @@ max_n = 12
 
 # TODO: implement the loop
 n = 2
-while __________:
-    print(__________)
-    n = __________
+while n <= max_n:
+    print(n)
+    n = n + 2
+
+

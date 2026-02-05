@@ -10,11 +10,13 @@ n = 6
 steps = 0
 
 # TODO: implement Collatz with a while loop
-while __________:
-    if __________:
-        n = __________
+
+while n != 1:
+    if n % 2 == 0:
+        n = n // 2
     else:
-        n = __________
-    steps = __________
+        n = 3 * n + 1
+    steps = steps + 1
+
 
 print("Steps:", steps)

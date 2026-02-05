@@ -11,8 +11,8 @@ count = 0
 
 # TODO: use a while loop to repeatedly call input() until 'quit'
 text = input("Enter text (or quit): ")
-while __________:
-    count = __________
+while text != "quit":
+    count = count + 1
     text = input("Enter text (or quit): ")
 
 print("You entered", count, "lines")

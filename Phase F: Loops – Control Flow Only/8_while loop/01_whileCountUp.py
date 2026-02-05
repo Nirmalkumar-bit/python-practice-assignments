@@ -9,6 +9,7 @@
 n = 1
 
 # TODO: write a while loop that prints n and increments it until 5
-while __________:
-    print(__________)
-    __________
+while n<=5 :
+    print(n)
+    n += 1
+    

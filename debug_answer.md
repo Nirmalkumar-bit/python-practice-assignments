@@ -1,12 +1,22 @@
 ``` 
-test_08_nestedLoops_findPairsWithSum.py:29: in test_find_pairs_with_sum_stdout_exact
-    pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
-E   Failed: expected output:
-E   [(0, 3), (1, 2)]
-E   
-E   actual output:
-E   [(0, 3)]
-_________________
+During handling of the above exception, another exception occurred:
+test_06_passwordAttempts.py:38: in test_password_access_denied_after_three_failures
+    _run_script_with_inputs(path, monkeypatch, ["x", "y", "z"], "Access denied\n")
+test_06_passwordAttempts.py:18: in _run_script_with_inputs
+    spec.loader.exec_module(module)
+<frozen importlib._bootstrap_external>:995: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+06_passwordAttempts.py:15: in <module>
+    entered = input("Py:15: in <module>
+    entered = input("Password: ")
+test_06_passwordAttempts.py:12: in fake_input
+    raise AssertionError(f"expected output\n{expected_for_errors}actual output\n<program requested more input>")
+E   AssertionError: expected output
+E   Access denied
+E   actual output
+E   <program requested more input>
 
 
 
@@ -14,48 +24,27 @@ _________________
 can you assess the error above and check why the below code is failing?
 
 ```
-# Goal: Find# Goal: Find all unique index pairs (i, j) with i < j such that nums[i] + nums[j] == target.
-# Expected outcome for nums and target below (pairs of indices):
-# [(0, 3), (1, 2)]
+# Goal: Allow up to 3 attempts to enter the correct password.
+# If the correct password is entered, print 'Access granted'. Otherwise, after 3 failures, print 'Access denied'.
+# Use a while loop.
+# With inputs: a, b, secret
+# Expected outcome (exact line):
+# Access granted
 
-nums = [2, 7, 5, 0]
-target = 2
+correct = "secret"
+attempts = 0
 
-pairs = []
+# TODO: loop while attempts remain and password not correct
+entered = input("Password: ")
+while attempts < 3 and entered != correct:
+    attempts = attempts + 1
+    entered = input("Password: ")
 
-for i in range(len(nums)):
-    for j in range(i + 1, len(nums)):
-        if nums[i] + nums[j] == target:
-            pairs.append((i, j))
-
-print(pairs)
-
-            
-
-# TODO: Use nested loops with i from 0..len(nums)-1 and j from i+1..len(nums)-1.
-# If nums[i] + nums[j] equals target, append (i, j) to pairs.
-
-
- all unique index pairs (i, j) with i < j such that nums[i] + nums[j] == target.
-# Expected outcome for nums and target below (pairs of indices):
-# [(0, 3), (1, 2)]
-
-nums = [2, 7, 5, 0]
-target = 2
-
-pairs = []
-
-for i in range(len(nums)):
-    for j in range(i + 1, len(nums)):
-        if nums[i] + nums[j] == target:
-            pairs.append((i, j))
-
-print(pairs)
-
-            
-
-# TODO: Use nested loops with i from 0..len(nums)-1 and j from i+1..len(nums)-1.
-# If nums[i] + nums[j] equals target, append (i, j) to pairs.
+# TODO: print the correct final message
+if entered == correct:
+    print("Access granted")
+else:
+    print("Access denied")
 
 
 
@@ -68,37 +57,52 @@ print(pairs)
 for better idea check the test cases file below and see if there is any issue with that.
 
 ```
-import sys
 import importlib.util
 from pathlib import Path
-import pytest
 
+def _run_script_with_inputs(path, monkeypatch, inputs, expected_for_errors):
+    import builtins
+    it = iter(inputs)
 
+    def fake_input(prompt=""):
+        try:
+            return next(it)
+        except StopIteration:
+            raise AssertionError(f"expected output\n{expected_for_errors}actual output\n<program requested more input>")
 
+    monkeypatch.setattr(builtins, "input", fake_input)
 
-def _run_script(path: Path):
-    if not path.exists():
-        pytest.fail(f"Missing assignment file: {path}")
-
-    spec = importlib.util.spec_from_file_location(path.stem, str(path))
-    if spec is None or spec.loader is None:
-        pytest.fail(f"Could not load assignment file: {path}")
-
+    spec = importlib.util.spec_from_file_location("student_module", str(path))
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
 
 
-def test_find_pairs_with_sum_stdout_exact(capsys):
-    script_path = Path(__file__).resolve().parent / "08_nestedLoops_findPairsWithSum.py"
-    _run_script(script_path)
+def test_password_access_granted_on_third_try(capsys, monkeypatch):
+    path = Path(__file__).resolve().parent / "06_passwordAttempts.py"
+    if not path.exists():
+        raise AssertionError("expected output\nAccess granted\nactual output\n<missing file>")
 
-    captured = capsys.readouterr()
-    expected = "[(0, 3), (1, 2)]\n"
-    actual = captured.out
-    if actual != expected:
-        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
-    if captured.err != "":
-        pytest.fail(f"expected output:\n{expected}\nactual output:\n{actual}")
+    _run_script_with_inputs(path, monkeypatch, ["a", "b", "secret"], "Access granted\n")
+    out = capsys.readouterr().out
+    expected = "Access granted\n"
+    if out != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{out}")
+
+
+def test_password_access_denied_after_three_failures(capsys, monkeypatch):
+    path = Path(__file__).resolve().parent / "06_passwordAttempts.py"
+    if not path.exists():
+        raise AssertionError("expected output\nAccess denied\nactual output\n<missing file>")
+
+    _run_script_with_inputs(path, monkeypatch, ["x", "y", "z"], "Access denied\n")
+    out = capsys.readouterr().out
+    expected = "Access denied\n"
+    if out != expected:
+        raise AssertionError(f"expected output\n{expected}actual output\n{out}")
+
+
+
+
 
 
 

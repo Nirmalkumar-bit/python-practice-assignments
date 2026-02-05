@@ -9,7 +9,9 @@ number = 91
 d = 2
 
 # TODO: loop until you find a divisor
-while __________:
-    d = __________
+
+while number % d != 0:
+    d = d + 1
+
 
 print("Smallest divisor:", d)

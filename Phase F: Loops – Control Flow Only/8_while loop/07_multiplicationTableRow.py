@@ -10,7 +10,10 @@ base = 7
 mult = 1
 
 # TODO: while loop to print the formatted lines up to 5
-while __________:
-    product = __________
+
+while mult <= 5:
+    product = base * mult
     print(f"{base} x {mult} = {product}")
-    mult = __________
+    mult = mult + 1
+
+    

@@ -9,13 +9,14 @@ correct = "secret"
 attempts = 0
 
 # TODO: loop while attempts remain and password not correct
-entered = input("Password: ")
-while __________:
-    attempts = __________
-    entered = input("Password: ")
-
-# TODO: print the correct final message
-if __________:
-    print("Access granted")
+while attempts < 3:
+    entered = input()
+    if entered == correct:
+        print("Access granted")
+        break
+    attempts += 1
 else:
     print("Access denied")
+
+
+# TODO: print the correct final message

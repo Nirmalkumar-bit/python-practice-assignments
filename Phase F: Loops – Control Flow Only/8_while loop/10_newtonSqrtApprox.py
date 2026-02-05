@@ -8,11 +8,11 @@ value = 25.0
 tolerance = 1e-6
 
 # TODO: initialize x and prev so the loop works correctly
-x = __________
-prev = __________
+x = value
+prev = 0.0
 
 # TODO: loop until the absolute change is less than tolerance
-while __________:
+while abs(x - prev) >= tolerance:
     prev = x
     x = (x + value / x) / 2
 

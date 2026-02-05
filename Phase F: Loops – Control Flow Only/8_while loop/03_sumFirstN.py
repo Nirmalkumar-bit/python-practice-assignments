@@ -7,8 +7,10 @@ limit = 10
 # TODO: use a while loop to compute total
 current = 1
 total = 0
-while __________:
-    total = __________
-    current = __________
+
+while current <= limit:
+    total = total + current
+    current = current + 1
+
 
 print("Sum is", total)
