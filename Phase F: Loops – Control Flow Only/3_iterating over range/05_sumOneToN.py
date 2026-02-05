@@ -3,8 +3,8 @@
 
 n = int(input())
 
-total = ____
-for k in range(____, ____):
-    total = total + ____
+total = 0
+for k in range(1, n+1):
+    total = total + k
 
 print(total)

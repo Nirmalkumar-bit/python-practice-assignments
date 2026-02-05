@@ -7,9 +7,12 @@ a = int(input())
 b = int(input())
 m = int(input())
 
-count = ____
-for n in range(____, ____):
-    if ____:
-        count += ____
+
+count = 0
+for n in range(a, b + 1):
+    if n % m == 0:
+        count += 1
 
 print(count)
+
+

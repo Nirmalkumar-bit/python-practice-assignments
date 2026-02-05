@@ -4,6 +4,6 @@
 
 x = int(input())
 
-for i in range(____, ____):
-    result = ____
+for i in range(1,11 ):
+    result = x*i
     print(str(x) + " * " + str(i) + " = " + str(result))

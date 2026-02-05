@@ -13,12 +13,13 @@
 start = int(input())
 end = int(input())
 
-for n in range(____, ____):
-    if ____:
+
+for n in range(start, end + 1):
+    if n % 3 == 0 and n % 5 == 0:
         print("FizzBuzz")
-    elif ____:
+    elif n % 3 == 0:
         print("Fizz")
-    elif ____:
+    elif n % 5 == 0:
         print("Buzz")
     else:
-        print(____)
+        print(n)

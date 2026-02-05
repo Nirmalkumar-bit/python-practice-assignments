@@ -8,8 +8,10 @@
 
 h = int(input())
 
-for i in range(____, ____):
+
+for i in range(1, h + 1):
     line = ""
-    for j in range(____):
-        line += ____
+    for j in range(i):
+        line += "#"
     print(line)
+
