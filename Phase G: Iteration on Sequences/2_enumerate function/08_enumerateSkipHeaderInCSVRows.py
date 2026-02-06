@@ -13,6 +13,7 @@ rows = [
 # - Skip the header row
 # - Use enumerate(..., start=1) over the remaining rows
 # - Print "<n>: <name>" for each data row
-for ___, ___ in ___:
-    name = ___.split(",")[0]
-    print(___)
+
+for index, row in enumerate(rows[1:], start=1):
+    name = row.split(",")[0]
+    print(f"{index}: {name}")

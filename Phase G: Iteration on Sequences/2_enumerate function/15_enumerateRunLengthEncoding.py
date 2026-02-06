@@ -19,13 +19,13 @@ for i, ch in enumerate(s):
         continue
 
     # TODO: If ch differs from run_char, close the previous run and start a new one.
-    if ___:
+    if ch != run_char:
         run_len = i - run_start
         parts.append(f"{run_char}{run_len}")
         run_char = ch
         run_start = i
 
+   
 # TODO: Close the final run after the loop.
-___
-
+parts.append(f"{run_char}{len(s) - run_start}")
 print("".join(parts))

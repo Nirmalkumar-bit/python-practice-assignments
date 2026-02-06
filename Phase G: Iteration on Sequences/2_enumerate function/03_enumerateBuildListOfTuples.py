@@ -6,7 +6,8 @@ letters = ["A", "B", "C", "D"]
 indexed = []
 
 # TODO: Append (i, letter) for each element using enumerate.
-for ___ in ___:
-    indexed.append(___)
+
+for i, letter in enumerate(letters):
+    indexed.append((i, letter))
 
 print(indexed)

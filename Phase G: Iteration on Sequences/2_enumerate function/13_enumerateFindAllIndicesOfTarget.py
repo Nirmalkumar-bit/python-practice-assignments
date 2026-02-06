@@ -7,8 +7,8 @@ target = "y"
 indices = []
 
 # TODO: Use enumerate to append every index where value == target.
-for ___, ___ in ___:
-    if ___:
-        indices.append(___)
+for index, value in enumerate(data):
+    if value == target:
+        indices.append(index)
 
 print(indices)

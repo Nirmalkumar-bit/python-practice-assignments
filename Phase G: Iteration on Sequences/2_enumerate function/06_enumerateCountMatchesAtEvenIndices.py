@@ -7,8 +7,9 @@ vowels = set("aeiou")
 count = 0
 
 # TODO: Use enumerate to count characters that are vowels and whose index is even.
-for ___, ___ in ___:
-    if ___:
+
+for index, ch in enumerate(s):
+    if index % 2 == 0 and ch in vowels:
         count += 1
 
 print(count)

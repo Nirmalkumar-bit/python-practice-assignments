@@ -5,6 +5,6 @@
 nums = [10, 11, 12, 13]
 
 # TODO: Create labels using enumerate; label based on the index parity (not the value).
-labels = [___ for ___ in ___]
+labels = [f"{i}: {'even' if i % 2 == 0 else 'odd'}" for i, _ in enumerate(nums)]
 
 print(labels)

@@ -7,5 +7,6 @@
 items = ["Home", "Settings", "Logout"]
 
 # TODO: Use enumerate(..., start=1) and print in the format: <number> - <item>
-for ___, ___ in ___:
-    print(___)
+for index, item in enumerate(items, start=1):
+    print(f"{index} - {item}")
+

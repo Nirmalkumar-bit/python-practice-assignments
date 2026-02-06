@@ -7,5 +7,5 @@
 fruits = ["apple", "banana", "cherry"]
 
 # TODO: Use enumerate to print each index and fruit on one line in the format: <index> <fruit>
-for ___ in ___:
-    print(___)
+for index, fruit in enumerate(fruits):
+    print(index, fruit)

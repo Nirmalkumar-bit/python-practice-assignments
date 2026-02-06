@@ -5,8 +5,9 @@
 words = ["keep", "remove", "keep", "remove", "keep"]
 
 # TODO: Modify the list in-place: if index is odd, set words[index] = "_".
-for ___, ___ in ___:
-    if ___:
-        words[___] = ___
+for index, word in enumerate(words):
+    if index % 2 == 1:
+        words[index] = "_"
+
 
 print(words)

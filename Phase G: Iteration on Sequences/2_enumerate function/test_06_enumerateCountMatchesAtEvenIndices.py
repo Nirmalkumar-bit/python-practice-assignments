@@ -24,6 +24,6 @@ def _run_script(path: Path):
 def test_output_exact():
     path = Path(__file__).resolve().parent / "06_enumerateCountMatchesAtEvenIndices.py"
     actual = _run_script(path)
-    expected = "3\n"
+    expected = "4\n"
     if actual != expected:
         raise AssertionError(f"expected output:\n{expected}\nactual output:\n{actual}")

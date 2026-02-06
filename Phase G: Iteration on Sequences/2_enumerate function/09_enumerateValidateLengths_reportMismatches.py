@@ -11,8 +11,8 @@ expected_lengths = [4, 4, 4, 3]
 # Compare len(word) to expected_lengths[index].
 # Print only mismatches in the format:
 # "Index <i> expected <expected> got <actual>"
-for ___, ___ in ___:
-    expected = expected_lengths[___]
-    actual = len(___)
-    if ___:
-        print(___)
+for index, word in enumerate(words):
+    expected = expected_lengths[index]
+    actual = len(word)
+    if actual != expected:
+        print(f"Index {index} expected {expected} got {actual}")

@@ -5,7 +5,9 @@
 table = [["Ann"], ["Ben"], ["Cy"]]
 
 # TODO: Modify each inner list in-place to insert row number at position 0.
-for ___, ___ in ___:
-    ___.insert(___, ___)
+
+for index, row in enumerate(table, start=1):
+    row.insert(0, index)
+
 
 print(table)

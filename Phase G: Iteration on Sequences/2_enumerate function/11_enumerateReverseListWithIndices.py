@@ -10,6 +10,7 @@ letters = ["a", "b", "c", "d"]
 # TODO:
 # Iterate over the list in reverse but show the original index.
 # Hint: use enumerate(reversed(letters)) and compute original index.
-for ___, ___ in ___:
-    original_index = ___
-    print(f"{original_index} {___}")
+n = len(letters)
+for rev_index, letter in enumerate(reversed(letters)):
+    original_index = n - 1 - rev_index
+    print(f"{original_index} {letter}")

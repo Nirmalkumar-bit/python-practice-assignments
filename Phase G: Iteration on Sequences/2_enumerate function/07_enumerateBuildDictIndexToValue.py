@@ -6,7 +6,7 @@ colors = ["red", "green", "blue"]
 index_map = {}
 
 # TODO: Fill index_map using enumerate.
-for ___, ___ in ___:
-    index_map[___] = ___
+for index, color in enumerate(colors):
+    index_map[index] = color
 
 print(index_map)
