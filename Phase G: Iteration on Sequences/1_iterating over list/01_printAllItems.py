@@ -7,5 +7,5 @@
 fruits = ["apple", "banana", "cherry"]
 
 # TODO: write a for-loop that prints each fruit
-for ____ in ____:
-    print(____)
+for a in fruits :
+    print(a)

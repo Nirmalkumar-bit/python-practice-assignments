@@ -5,8 +5,8 @@
 items = ["a", "b", "c", "d", "e"]
 
 # TODO: swap adjacent pairs using indices
-for i in range(____, ____, ____):
+for i in range(0, len(items) -1,2):
     # swap items[i] and items[i+1]
-    items[i], items[i + 1] = ____, ____
+    items[i], items[i + 1] = items[i + 1], items[i]
 
 print(items)

@@ -7,6 +7,8 @@
 letters = ["a", "b", "c", "d", "e"]
 
 # TODO: iterate by index
-for i in range(____):
-    if ____:
-        print(letters[____])
+
+for i in range(len(letters)):
+    if i % 2 == 0:
+        print(letters[i])
+        

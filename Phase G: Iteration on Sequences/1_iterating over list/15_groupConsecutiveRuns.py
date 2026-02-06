@@ -5,18 +5,18 @@
 
 nums = [1, 1, 2, 2, 2, 3, 1, 1]
 
-runs = ____
-current_run = ____
+runs = []
+current_run = []
 
-for n in ____:
-    if current_run == [] or ____:
-        current_run.append(____)
+
+for n in nums:
+    if current_run == [] or n == current_run[-1]:
+        current_run.append(n)
     else:
-        runs.append(____)
-        current_run = [____]
-
+        runs.append(current_run)
+        current_run = [n]
 # TODO: after the loop, append the last run if needed
-if ____:
-    runs.append(____)
+if current_run:
+    runs.append(current_run)
 
 print(runs)

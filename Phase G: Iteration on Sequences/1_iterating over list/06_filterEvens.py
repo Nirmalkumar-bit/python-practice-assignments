@@ -4,9 +4,9 @@
 
 nums = [1, 2, 3, 4, 5, 6]
 
-evens = ____
-for n in ____:
-    if ____:
-        evens.append(____)
+evens = []
+for n in nums:
+    if n%2 == 0:
+        evens.append(n)
 
 print(evens)

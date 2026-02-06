@@ -5,11 +5,12 @@
 
 items = ["a", "b", "a", "c", "b", "d", "d"]
 
-unique = ____
-seen = ____
-for item in ____:
-    if ____:
-        unique.append(____)
-        seen.add(____)
+unique = []
+seen = set()
+for item in items:
+    if item not in seen:
+        unique.append(item)
+        seen.add(item)
 
 print(unique)
+

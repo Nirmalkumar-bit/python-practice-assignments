@@ -4,9 +4,9 @@
 
 nested = [[1, 2], [3], [4, 5, 6]]
 
-flat = ____
-for sub in ____:
-    for x in ____:
-        flat.append(____)
+flat = []
+for sub in nested:
+    for x in sub:
+        flat.append(x)
 
 print(flat)

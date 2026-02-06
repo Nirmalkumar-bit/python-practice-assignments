@@ -4,9 +4,9 @@
 
 words = ["tree", "apple", "sun", "water", "stone"]
 
-count = ____
-for w in ____:
-    if ____:
-        count = ____
+count = 0
+for w in words:
+    if len(w)>= 5:
+        count += 1
 
 print(count)

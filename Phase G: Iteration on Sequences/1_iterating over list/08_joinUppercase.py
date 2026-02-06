@@ -4,8 +4,8 @@
 
 animals = ["cat", "dog", "fish"]
 
-upper_animals = ____
-for a in ____:
-    upper_animals.append(____)
+upper_animals = []
+for a in animals:
+    upper_animals.append(a.upper())
 
 print("-".join(upper_animals))

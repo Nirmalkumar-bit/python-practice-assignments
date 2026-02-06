@@ -7,7 +7,7 @@
 colors = ["red", "green", "blue"]
 
 # TODO: iterate using a counter starting at 1
-index = ____
-for color in ____:
-    print(str(index) + ": " + ____)
-    index = ____
+index = 1
+for color in colors:
+    print(str(index) + ": " + color)
+    index +=1

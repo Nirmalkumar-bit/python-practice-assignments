@@ -7,12 +7,11 @@ matrix = [
     [4, 5],
     [6]
 ]
+row_sums = []
 
-row_sums = ____
-for row in ____:
-    s = ____
-    for value in ____:
-        s = ____
-    row_sums.append(____)
-
+for row in matrix:
+    s = 0
+    for value in row:
+        s += value 
+    row_sums.append(s)
 print(row_sums)

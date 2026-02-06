@@ -4,8 +4,8 @@
 
 nums = [1, 2, 3, 4]
 
-squares = ____
-for n in ____:
-    squares.append(____)
+squares = []
+for n in nums:
+    squares.append(n * n)
 
 print(squares)

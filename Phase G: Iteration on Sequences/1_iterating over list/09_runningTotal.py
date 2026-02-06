@@ -4,10 +4,10 @@
 
 nums = [2, 3, 4, 1]
 
-running = ____
-total = ____
-for n in ____:
-    total = ____
-    running.append(____)
+running = []
+total = 0
+for n in nums:
+    total += n 
+    running.append(total)
 
 print(running)
