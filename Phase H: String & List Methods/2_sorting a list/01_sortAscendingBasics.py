@@ -4,5 +4,5 @@
 nums = [5, 1, 4, 2, 3]
 
 # TODO: sort nums in-place in ascending order
-
+nums.sort()
 print(nums)

@@ -8,13 +8,42 @@
 # (Ben must stay before Dan; Ava must stay before Cara).
 
 def stable_sort_by_key(items, key_func):
-    # TODO: implement stable merge sort that uses key_func
-    # Do NOT mutate the input list.
-    pass
+    if len(items) <= 1:
+        return items[:]
+
+    mid = len(items) // 2
+
+    left = stable_sort_by_key(items[:mid], key_func)
+    right = stable_sort_by_key(items[mid:], key_func)
+
+    # Merge step (this is where stability is enforced)
+    result = []
+    i = j = 0
+
+    while i < len(left) and j < len(right):
+        if key_func(left[i]) <= key_func(right[j]):
+            # <= guarantees stability (left item wins ties)
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+
+    # Append remaining items
+    result.extend(left[i:])
+    result.extend(right[j:])
+
+    return result
+
 
 pairs = [('Ava', 3), ('Ben', 2), ('Cara', 3), ('Dan', 2)]
 
-# TODO: call stable_sort_by_key with key_func that extracts the score
-sorted_pairs = None
+sorted_pairs = stable_sort_by_key(pairs, key_func=lambda x: x[1])
 
 print(sorted_pairs)
+    # TODO: implement stable merge sort that uses key_func
+    # Do NOT mutate the input list.
+    
+
+# TODO: call stable_sort_by_key with key_func that extracts the score
+

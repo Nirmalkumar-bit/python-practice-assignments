@@ -6,4 +6,5 @@ results = [('Ava', 88), ('Ben', 75), ('Cara', 99), ('Dan', 75)]
 
 # TODO: sort results in-place by score descending using a key
 
+results.sort(key=lambda x: x[1], reverse=True)
 print(results)

@@ -6,6 +6,6 @@
 original = [3, 1, 2]
 
 # TODO: create new_list as a sorted version of original without changing original
-
+new_list = sorted(original)
 print(original)
 print(new_list)

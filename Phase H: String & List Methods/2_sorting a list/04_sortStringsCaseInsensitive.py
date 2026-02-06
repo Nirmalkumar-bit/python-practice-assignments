@@ -6,4 +6,6 @@ names = ['Bob', 'alice', 'Dave', 'carol']
 # TODO: sort names in-place, case-insensitive
 # Hint: use key=...
 
+names.sort(key=str.lower)
 print(names)
+

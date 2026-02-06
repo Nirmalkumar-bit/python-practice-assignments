@@ -13,5 +13,5 @@ people = [
 ]
 
 # TODO: sort people in-place by (last, age)
-
+people.sort(key=lambda p: (p['last'], p['age']))
 print(people)

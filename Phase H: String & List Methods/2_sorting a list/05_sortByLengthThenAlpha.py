@@ -4,5 +4,5 @@
 words = ['apple', 'bee', 'an', 'zoo', 'ant', 'to']
 
 # TODO: sort words with a key that sorts by (length, word)
-
+words.sort(key=lambda w: (len(w), w))
 print(words)

@@ -9,7 +9,11 @@ end_inclusive = 6
 
 # TODO:
 # 1) extract the sublist nums[start:end_inclusive+1]
+middle = nums[start:end_inclusive + 1]
+
 # 2) sort it ascending
+middle.sort()
 # 3) put it back into nums in the same positions
+nums[start:end_inclusive + 1] = middle
 
 print(nums)

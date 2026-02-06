@@ -4,5 +4,5 @@
 nums = [1, 9, 3, 7, 5]
 
 # TODO: sort nums in descending order (in-place or by creating a new list)
-
+nums.sort(reverse=True)
 print(nums)
