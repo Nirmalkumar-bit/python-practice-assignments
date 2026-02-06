@@ -9,5 +9,7 @@ indexes_to_delete = [1, 3, 4]
 
 # TODO: delete the specified indexes correctly
 # Constraint: Use del, and avoid deleting the wrong elements due to shifting.
+for i in sorted(indexes_to_delete, reverse=True):
+    del items[i]
 
 print('items:', items)

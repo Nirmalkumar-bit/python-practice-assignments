@@ -7,6 +7,6 @@
 data = [100, 200, 300, 400]
 
 # TODO: pop the item at index 1 into a variable named removed
-
+removed = data.pop(1)
 print('removed:', removed)
 print('data:', data)

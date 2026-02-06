@@ -6,5 +6,5 @@
 letters = ['a', 'b', 'c', 'd', 'e', 'f']
 
 # TODO: delete a slice so that b,c,d are removed
-
+del letters[1:4]
 print('letters:', letters)

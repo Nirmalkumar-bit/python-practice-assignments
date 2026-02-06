@@ -8,5 +8,9 @@ fruits = ['apple', 'banana', 'mango']
 
 # TODO: attempt to remove 'kiwi' without crashing
 # Constraint: Use try/except with list.remove
-
+# safely attempt to remove 'kiwi'
+try:
+    fruits.remove('kiwi')
+except ValueError:
+    pass
 print('fruits:', fruits)

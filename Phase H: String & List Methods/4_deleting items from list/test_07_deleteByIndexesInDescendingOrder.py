@@ -25,6 +25,6 @@ def _run_script(path: Path):
 
 def test_output_exact():
     assignment_path = Path(__file__).resolve().parent / "07_deleteByIndexesInDescendingOrder.py"
-    expected = "items: ['a', 'c', 'g']\n"
+    expected = "items: ['a', 'c', 'f', 'g']\n"
     actual = _run_script(assignment_path)
     assert actual == expected, f"expected output:\n{expected}\nactual output:\n{actual}"

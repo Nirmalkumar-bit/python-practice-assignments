@@ -6,5 +6,5 @@
 fruits = ['apple', 'banana', 'cherry', 'date']
 
 # TODO: delete the item at index 2 using del
-
+del fruits[2]
 print('fruits:', fruits)

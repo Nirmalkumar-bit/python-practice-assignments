@@ -7,5 +7,6 @@
 nums = [0, 1, 0, 2, 3, 0, 4]
 
 # TODO: while 0 is in nums, remove it
-
+while 0 in nums:
+    nums.remove(0)
 print('nums:', nums)

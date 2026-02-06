@@ -6,5 +6,5 @@
 nums = [10, 20, 30, 40]
 
 # TODO: delete the last item using del and a negative index
-
+del nums[-1]
 print('nums:', nums)

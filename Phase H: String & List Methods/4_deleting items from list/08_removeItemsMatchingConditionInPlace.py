@@ -8,5 +8,7 @@ nums = [3, -1, 0, -7, 2, 5, -2]
 
 # TODO: iterate safely and delete negatives in place
 # Tip: one safe approach is iterating backwards using indexes.
-
+for i in range(len(nums) - 1, -1, -1):
+    if nums[i] < 0:
+        del nums[i]
 print('nums:', nums)

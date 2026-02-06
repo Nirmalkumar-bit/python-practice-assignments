@@ -6,5 +6,5 @@
 colors = ['red', 'blue', 'red', 'green']
 
 # TODO: remove the first 'red' using remove
-
+colors.remove('red')
 print('colors:', colors)
