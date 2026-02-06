@@ -4,5 +4,6 @@
 items = ['a','b','c','d','e','f','g','h','i','j']
 
 # TODO: use a loop with range(start, stop, step) to replace every 3rd item with 'X'.
-
+for i in range(2, len(items), 3):
+    items[i] = 'X'
 print(items)

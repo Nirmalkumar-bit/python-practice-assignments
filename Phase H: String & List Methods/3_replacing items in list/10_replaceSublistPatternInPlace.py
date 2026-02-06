@@ -10,5 +10,11 @@ replacement = [1, 1]
 # Walk through the list and whenever you find 'pattern' starting at the current index,
 # replace that slice with 'replacement', then continue scanning from after the inserted replacement.
 # (Do not use .replace() since this is a list, not a string.)
-
+i = 0
+while i <= len(data) - len(pattern):
+    if data[i:i+len(pattern)] == pattern:
+        data[i:i+len(pattern)] = replacement
+        i += len(replacement)   # move past the inserted replacement
+    else:
+        i += 1
 print(data)

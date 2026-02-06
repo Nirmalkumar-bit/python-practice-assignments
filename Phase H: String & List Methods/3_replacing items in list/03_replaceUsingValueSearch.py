@@ -6,5 +6,5 @@ pets = ['cat', 'dog', 'bird']
 # TODO:
 # 1) find the index of 'bird'
 # 2) replace it with 'fish'
-
+pets[2] = 'fish'
 print(pets)

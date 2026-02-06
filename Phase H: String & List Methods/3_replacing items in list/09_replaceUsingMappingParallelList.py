@@ -10,4 +10,9 @@ new_names = ['banana']
 # For each element in basket, if it exists in old_names, replace it with the matching element in new_names.
 # Do this in place.
 
+for i in range(len(basket)):
+    if basket[i] in old_names:
+        idx = old_names.index(basket[i])
+        basket[i] = new_names[idx]
+
 print(basket)

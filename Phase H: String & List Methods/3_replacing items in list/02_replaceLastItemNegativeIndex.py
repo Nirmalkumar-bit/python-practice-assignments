@@ -4,5 +4,5 @@
 words = ['sun', 'moon', 'clouds']
 
 # TODO: replace the last element with 'stars' using a negative index.
-
+words[-1] = 'stars'
 print(words)

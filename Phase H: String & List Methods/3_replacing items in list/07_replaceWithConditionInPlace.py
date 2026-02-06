@@ -5,5 +5,7 @@
 scores = [88, 41, 73, 59, 60]
 
 # TODO: modify 'scores' in place by scanning indexes and applying the rule.
-
+for i in range(len(scores)):
+    if scores[i] < 60:
+        scores[i] = 0
 print(scores)
