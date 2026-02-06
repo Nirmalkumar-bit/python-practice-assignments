@@ -3,10 +3,11 @@
 # Expected outcome: prints {'name': 'Ada', 'lang': 'Python', 'year': '2026'}
 
 text = "name:Ada;lang:Python;year:2026"
-records = text.split(___)
+records = text.split(";")
 result = {}
 for rec in records:
-    key, value = rec.split(___)
+    key, value = rec.split(":")
     # store into result
-    ___
+    result[key] = value
+
 print(result)

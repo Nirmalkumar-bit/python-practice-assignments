@@ -2,6 +2,6 @@
 # Expected outcome: prints notes.txt
 
 path = "/home/alex/docs/notes.txt"
-parts = path.split(___)
-filename = ___
+parts = path.split("/")
+filename =parts[-1] 
 print(filename)

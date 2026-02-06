@@ -2,5 +2,5 @@
 # Expected outcome: prints ['Python', 'is', 'fun']
 
 sentence = "Python is fun"
-words = sentence.___()
+words = sentence.split()
 print(words)

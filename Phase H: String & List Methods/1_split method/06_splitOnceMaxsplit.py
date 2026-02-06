@@ -2,5 +2,5 @@
 # Expected outcome: prints header | a:b:c
 
 s = "header:a:b:c"
-left, right = s.split(___, ___)
+left, right = s.split(":",1)
 print(left, "|", right)

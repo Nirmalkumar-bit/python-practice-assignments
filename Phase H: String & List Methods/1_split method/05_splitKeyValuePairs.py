@@ -2,5 +2,5 @@
 # Expected outcome: prints mode -> debug
 
 pair = "mode=debug"
-key, value = pair.split(___)
+key, value = pair.split("=")
 print(f"{key} -> {value}")

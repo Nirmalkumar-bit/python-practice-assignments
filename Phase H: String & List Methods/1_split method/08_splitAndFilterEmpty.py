@@ -2,6 +2,6 @@
 # Expected outcome: prints ['a', 'b', 'c']
 
 s = "a,,b,,,c,"
-raw = s.split(___)
-filtered = [item for item in raw if ___]
+raw = s.split(",")
+filtered = [item for item in raw if item ]
 print(filtered)

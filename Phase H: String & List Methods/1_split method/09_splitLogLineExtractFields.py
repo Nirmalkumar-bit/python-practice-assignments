@@ -2,9 +2,7 @@
 # Expected outcome: prints 2026-02-02 WARNING Disk almost full
 
 log = "2026-02-02|WARNING|Disk almost full"
-parts = log.split(___)
+parts = log.split("|")
 # Assign date, level, message from parts
-date = ___
-level = ___
-message = ___
+date , level, message = parts
 print(date, level, message)

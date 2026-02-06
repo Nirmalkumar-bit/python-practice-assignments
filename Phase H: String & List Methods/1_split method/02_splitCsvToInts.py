@@ -2,7 +2,7 @@
 # Expected outcome: prints 60
 
 nums = "10,20,30"
-parts = nums.split(___)
+parts = nums.split(",")
 # Convert parts to integers and sum them
-total = ___
+total = sum(int(p) for p in parts)
 print(total)

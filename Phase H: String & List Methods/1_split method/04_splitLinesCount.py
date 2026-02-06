@@ -2,5 +2,5 @@
 # Expected outcome: prints 3
 
 data = "first line\nsecond line\nthird line"
-lines = data.split(___)
+lines = data.split("\n")
 print(len(lines))

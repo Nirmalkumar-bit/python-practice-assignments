@@ -2,5 +2,5 @@
 # Expected outcome: prints ['Too', 'many', 'spaces']
 
 text = "  Too   many   spaces  "
-words = text.___()
+words = text.split()
 print(words)
