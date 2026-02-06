@@ -4,5 +4,5 @@
 colors = ['red', 'black', 'green']
 
 # TODO: replace 'black' with 'blue' using an index assignment.
-
+colors[1] = 'blue'
 print(colors)
