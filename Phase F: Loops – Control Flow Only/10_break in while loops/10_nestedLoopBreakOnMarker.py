@@ -14,14 +14,25 @@ grand_total = 0
 
 while True:
     line = input().strip()
-    # TODO: if line == "END", break out of the outer loop
-
+    if line == "END":
+        break
     parts = line.split()
+    i = 0
+ # TODO: if line == "END", break out of the outer loop
+ # TODO: if num == 0, break out of the inner loop
+ # TODO: otherwise add num to grand_total   parts = line.split()
     i = 0
     while i < len(parts):
         num = int(parts[i])
-        # TODO: if num == 0, break out of the inner loop
-        # TODO: otherwise add num to grand_total
+        if num == 0:
+            break
+        else:
+            grand_total += num
         i += 1
 
 print(f"Total: {grand_total}")
+
+   
+   
+        
+    

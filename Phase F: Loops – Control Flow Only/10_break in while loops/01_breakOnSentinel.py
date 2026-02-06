@@ -5,8 +5,13 @@ count = 0
 
 while True:
     n = int(input())
+    if n == -1 :
+        break
+    else:
+        count +=1
+        
     # TODO: if n is -1, stop the loop using break
     # TODO: otherwise, increase count
-    pass
+    
 
 print(f"You entered {count} numbers")

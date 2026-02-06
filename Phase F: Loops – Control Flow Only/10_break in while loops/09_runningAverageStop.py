@@ -8,8 +8,17 @@ total = 0
 
 while True:
     s = input().strip()
+    if s == "done":
+        break
+    else:
+        n = int(s)
+        total += n
+        count += 1
+
+average = total / count
+print(f"Average: {average:.2f}")
+        
     # TODO: if s == "done", break
     # TODO: otherwise parse int, add to total, increment count
-    pass
 
 # TODO: compute average (assume count > 0) and print with 2 decimals

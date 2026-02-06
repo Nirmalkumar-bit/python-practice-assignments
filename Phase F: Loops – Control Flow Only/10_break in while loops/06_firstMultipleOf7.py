@@ -9,9 +9,14 @@ end = int(input())
 
 x = start
 result = None
-
+    
 while x <= end:
-    # TODO: if x is a multiple of 7, set result to x and break
+    if x % 7 == 0:
+        result = x
+        break
     x += 1
+
+    # TODO: if x is a multiple of 7, set result to x and break
+print(result) 
 
 # TODO: print result (prints "None" if no multiple was found)

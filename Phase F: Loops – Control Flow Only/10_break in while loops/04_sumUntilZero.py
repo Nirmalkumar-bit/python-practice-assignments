@@ -5,8 +5,12 @@ total = 0
 
 while True:
     n = int(input())
+    if n==0:
+        break
+    else:
+        total+= n
+    
     # TODO: if n is 0, break
     # TODO: otherwise add n to total
-    pass
 
 print(f"Sum: {total}")

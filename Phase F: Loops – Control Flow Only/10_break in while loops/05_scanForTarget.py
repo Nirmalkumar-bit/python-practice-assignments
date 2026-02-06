@@ -9,8 +9,18 @@ found = False
 
 while True:
     word = input()
+    if word == "STOP":
+        break
+    if word == target:
+        found = True
+        break
+
+if found:
+    print("Found target")
+else:
+    print("Not found")
     # TODO: if word is "STOP", break
     # TODO: if word matches target, set found True and break
-    pass
+    
 
 # TODO: print "Found target" if found else "Not found"

@@ -11,6 +11,12 @@ counter = 0
 
 while True:
     cmd = input().strip()
+    if cmd == "q":
+        break
+    elif cmd == "inc":
+        counter += 1
+    elif cmd == "dec":
+        counter -= 1
     # TODO: if cmd is "q", break
     # TODO: if cmd is "inc", update counter
     # TODO: if cmd is "dec", update counter

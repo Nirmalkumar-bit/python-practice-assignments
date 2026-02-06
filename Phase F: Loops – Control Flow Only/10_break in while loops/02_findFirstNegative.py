@@ -3,5 +3,9 @@
 
 while True:
     n = int(input())
+    if n < 0:
+        print(f"First negative: {n}")
+        break
+        
     # TODO: if n is negative, print "First negative: <n>" and break
-    pass
+    

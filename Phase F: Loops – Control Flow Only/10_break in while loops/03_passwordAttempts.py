@@ -9,8 +9,14 @@ attempts = 0
 
 while attempts < 3:
     guess = input()
+    if guess == "python":
+        print("Access granted")
+        break
+    else:
+        attempts +=1
     # TODO: if guess matches PASSWORD, print "Access granted" and break
     # TODO: otherwise, increment attempts
-    pass
+if attempts == 3:
+    print("Access denied")
 
 # TODO: if loop ended because attempts reached 3 (and no break happened), print "Access denied"

@@ -12,7 +12,15 @@ else:
     d = 2
     is_prime = True
     while d * d <= n:
+        if n % d == 0:
+            is_prime = False
+            break
+    
         # TODO: if n % d == 0, set is_prime False and break
         d += 1
 
+    if is_prime:
+        print("Prime")
+    else:
+        print("Not prime")
     # TODO: print "Prime" if is_prime else "Not prime"
