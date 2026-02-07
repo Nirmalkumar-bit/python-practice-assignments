@@ -8,10 +8,12 @@
 # 2) Define call_multiply(*args, **kwargs) that forwards to multiply and returns the result
 
 def multiply(a, b, c=1):
+       return a * b * c
     
 
 
 def call_multiply(*args, **kwargs):
+    return multiply(*args, **kwargs)
     
 
 print(call_multiply(2, 3))

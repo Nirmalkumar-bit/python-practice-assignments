@@ -12,6 +12,12 @@
 # - otherwise x
 
 def clamp(x, /, *, low=0, high=10):
+    if x < low:
+        return low
+    if x > high:
+        return high
+    return x
+
     
 
 print(clamp(7, low=0, high=10))

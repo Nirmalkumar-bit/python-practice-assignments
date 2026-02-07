@@ -5,6 +5,7 @@
 # TODO: Define pack(a, b, c) that returns a string "a, b, c" using the provided values
 
 def pack(a, b, c):
+    return f"{a}, {b}, {c}"
     
 
 print(pack(c=9, a=2, b=5))

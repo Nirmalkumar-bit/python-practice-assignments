@@ -5,6 +5,7 @@
 # TODO: Define a function greet(name) that returns "Hello, <name>!"
 
 def greet(name):
+    return "Hello, " + name + "!"
     
 
 print(greet("Ada"))

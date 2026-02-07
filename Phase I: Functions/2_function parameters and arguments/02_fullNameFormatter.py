@@ -5,6 +5,8 @@
 # TODO: Define format_name(first, last) that returns "<last>, <first>"
 
 def format_name(first, last):
+    return f"{last}, {first}"
+    
     
 
 print(format_name("Ada", "Lovelace"))

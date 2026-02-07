@@ -6,6 +6,7 @@
 # TODO: Define welcome(name, greeting="Hi", punctuation=".") returning "<greeting>, <name><punctuation>"
 
 def welcome(name, greeting="Hi", punctuation="."):
+    return f"{greeting}, {name}{punctuation}"
     
 
 print(welcome("Sam"))

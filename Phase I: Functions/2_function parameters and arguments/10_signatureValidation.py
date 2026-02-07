@@ -12,6 +12,7 @@
 # Return exactly: "user=<user>; role=<role>; active=<active>"
 
 def format_user(user, /, role="member", *, active=True, **extra):
+    return f"user={user}; role={role}; active={active}"
     
 
 print(format_user("ana", "admin", active=True, theme="dark"))

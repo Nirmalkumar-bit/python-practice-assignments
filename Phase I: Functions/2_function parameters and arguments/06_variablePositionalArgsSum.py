@@ -8,6 +8,7 @@
 # If no numbers are provided, return 0.
 
 def total(*nums):
+    return sum(nums)
     
 
 print(total())

@@ -6,6 +6,7 @@
 # TODO: Define add(a, b=5) that returns the sum of a and b
 
 def add(a, b=5):
+    return a + b
     
 
 print(add(2))
