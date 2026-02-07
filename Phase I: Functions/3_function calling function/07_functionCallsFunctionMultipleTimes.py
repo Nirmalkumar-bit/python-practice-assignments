@@ -4,13 +4,15 @@
 # Expected outcome: print(box_line(4)) outputs exactly: +----+
 
 def repeat_char(ch, times):
+    return ch * times
+
     # TODO
     pass
 
 
 def box_line(width):
+    return "+" + repeat_char("-", width) + "+"
     # TODO: call repeat_char('-', width)
-    pass
 
 
 print(box_line(4))

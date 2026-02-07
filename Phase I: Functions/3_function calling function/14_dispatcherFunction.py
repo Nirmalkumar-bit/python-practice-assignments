@@ -8,23 +8,35 @@
 # Expected outcome: print(calculate("*", 6, 7)) outputs exactly: 42
 
 def add(a, b):
+    return a + b
     # TODO
-    pass
+    
 
 
 def sub(a, b):
+    return a - b
     # TODO
-    pass
+    
 
 
 def mul(a, b):
+    return a * b
     # TODO
-    pass
+    
 
 
 def calculate(op, a, b):
+    if op == "+":
+        return add(a, b)
+    elif op == "-":
+        return sub(a, b)
+    elif op == "*":
+        return mul(a, b)
+    else:
+        return "unsupported"
+
     # TODO: dispatch to helper functions
-    pass
+    
 
 
 print(calculate("*", 6, 7))

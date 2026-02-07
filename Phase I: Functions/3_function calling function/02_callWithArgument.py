@@ -3,13 +3,16 @@
 # Expected outcome: print(shout("Ada")) outputs exactly: Hi, Ada!
 
 def exclaim(text):
+    return text + "!"
+
     # TODO: implement
-    pass
+    
 
 
 def shout(name):
+    return exclaim("Hi, " + name)
     # TODO: call exclaim() with the right base message
-    pass
+    
 
 
 print(shout("Ada"))

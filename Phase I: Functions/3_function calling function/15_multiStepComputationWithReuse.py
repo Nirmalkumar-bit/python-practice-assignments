@@ -13,21 +13,41 @@
 # Note: Use normal float arithmetic; do not round.
 
 def subtotal(prices):
+    return sum(prices)
+
     # TODO
     pass
 
 
 def discount_amount(subtotal_value, percent):
+    return subtotal_value * percent / 100
+
     # TODO
     pass
 
 
 def tax_amount(amount, percent):
+    return amount * percent / 100
+
     # TODO
-    pass
+    passsub = subtotal(prices)
+    disc = discount_amount(sub, discount_percent)
+    after_discount = sub - disc
+    tax = tax_amount(after_discount, tax_percent)
+    return after_discount + tax
+
+
 
 
 def final_total(prices, discount_percent, tax_percent):
+    sub = subtotal(prices)
+    disc = discount_amount(sub, discount_percent)
+    after_discount = sub - disc
+    tax = tax_amount(after_discount, tax_percent)
+    return after_discount + tax
+
+
+    
     # TODO: call the helpers in the specified order
     pass
 

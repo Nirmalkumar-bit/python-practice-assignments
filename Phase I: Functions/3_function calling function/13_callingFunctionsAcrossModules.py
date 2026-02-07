@@ -6,11 +6,19 @@
 # Expected outcome: After you also create utils_math.py, running this file prints exactly: 35
 
 # TODO: import multiply from utils_math
+def multiply(a, b):
+    return a * b
 
+
+    from utils_math import multiply
 
 def area_rectangle(w, h):
+    return multiply(w, h)
+
+
+
     # TODO: call multiply(w, h)
-    pass
+    
 
 
 print(area_rectangle(5, 7))

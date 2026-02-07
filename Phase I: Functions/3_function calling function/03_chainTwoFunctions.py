@@ -3,13 +3,15 @@
 # Expected outcome: print(normalize_name("  grace  ")) outputs exactly: GRACE
 
 def strip_spaces(s):
+    return s.strip()
     # TODO: return s without leading/trailing spaces
-    pass
+
 
 
 def normalize_name(s):
+    return strip_spaces(s).upper()
     # TODO: call strip_spaces(s) then uppercase
-    pass
+    
 
 
 print(normalize_name("  grace  "))

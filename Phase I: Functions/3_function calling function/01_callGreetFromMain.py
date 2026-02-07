@@ -3,13 +3,15 @@
 # Expected outcome: print(main()) outputs exactly: Hello
 
 def greet():
+    return "Hello"
     # TODO: return "Hello"
-    pass
+    
 
 
 def main():
+    return greet()
     # TODO: call greet() and return its value
-    pass
+    
 
 
 print(main())

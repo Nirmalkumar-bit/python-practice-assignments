@@ -3,13 +3,23 @@
 # Expected outcome: print(describe_parity(7)) outputs exactly: odd
 
 def is_even(n):
+    return n % 2 == 0
+
+    
     # TODO
-    pass
+    
 
 
 def describe_parity(n):
+    if is_even(n):
+        return "even"
+    else:
+        return "odd"
+    
+    
+    
     # TODO: call is_even(n)
-    pass
+    
 
 
 print(describe_parity(7))

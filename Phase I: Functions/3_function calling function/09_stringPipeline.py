@@ -4,18 +4,27 @@
 # Expected outcome: print(clean_sentence(" Hi,,  world!!  ")) outputs exactly: Hi world
 
 def remove_punctuation(s):
+     for ch in ",.!":
+        s = s.replace(ch, "")
+     return s
+
     # TODO
-    pass
+    
 
 
 def collapse_spaces(s):
-    # TODO
-    pass
+     return " ".join(s.split())
 
+    # TODO
+    
 
 def clean_sentence(s):
+    s = remove_punctuation(s)
+    s = collapse_spaces(s)
+    return s.strip()
+
     # TODO: call helpers in the correct order
-    pass
+    
 
 
 print(clean_sentence(" Hi,,  world!!  "))

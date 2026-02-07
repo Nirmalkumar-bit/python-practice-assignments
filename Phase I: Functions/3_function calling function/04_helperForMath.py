@@ -3,11 +3,13 @@
 # Expected outcome: print(sum_of_squares(3, 4)) outputs exactly: 25
 
 def square(n):
+    return n * n
     # TODO
     pass
 
 
 def sum_of_squares(a, b):
+    return square(a) + square(b)
     # TODO: use square(a) and square(b)
     pass
 
