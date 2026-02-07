@@ -4,6 +4,11 @@
 # Then print sum_all(1, 2, 3, 4) and sum_all() on separate lines.
 
 # TODO: define sum_all(*args)
+def sum_all(*args):
+    total = 0
+    for n in args:
+        total += n
+    return total
 
 print(sum_all(1, 2, 3, 4))
 print(sum_all())

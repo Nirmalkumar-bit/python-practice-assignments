@@ -7,7 +7,13 @@
 # Then print clamp(5, 0, 10), clamp(-3, 0, 10), clamp(99, 0, 10) each on its own line.
 
 # TODO: define clamp(x, low, high) with a docstring
-
+def clamp(x, low, high):
+    if x < low:
+        return low
+    if x > high:
+        return high
+    return x    
+    
 print(clamp(5, 0, 10))
 print(clamp(-3, 0, 10))
 print(clamp(99, 0, 10))

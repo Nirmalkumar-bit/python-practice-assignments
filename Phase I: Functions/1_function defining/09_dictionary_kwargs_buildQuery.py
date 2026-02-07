@@ -6,7 +6,12 @@
 # Then print the results of the two calls below on separate lines.
 
 # TODO: define build_query(**kwargs)
-
+def build_query(**kwargs):
+    parts = []
+    for key in sorted(kwargs):
+        value = str(kwargs[key])
+        parts.append(f"{key}={value}")
+    return "&".join(parts)
 print(build_query(page=2, q="python"))
 print(build_query(z=0, a=10, m=5))
 

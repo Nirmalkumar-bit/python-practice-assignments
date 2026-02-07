@@ -3,8 +3,12 @@
 # Then call it with "Ava" and print the result.
 
 # TODO: define greet(name)
+def greet(name):
+    return "Hello, " + name + "!"
 
 print(greet("Ava"))
+
+
 
 # Expected outcome (exact):
 # Hello, Ava!

@@ -2,7 +2,8 @@
 # Then call add(7, 5) and print the returned value.
 
 # TODO: define add(a, b)
-
+def add(a,b):
+    return a + b
 total = add(7, 5)
 print(total)
 

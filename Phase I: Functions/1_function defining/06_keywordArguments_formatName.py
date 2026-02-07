@@ -9,6 +9,13 @@
 
 # TODO: define format_name(first, last, middle="")
 
+def format_name(first, last, middle=""):
+    if middle == "":
+        return f"{last}, {first}"
+    else:
+        return f"{last}, {first} {middle}"
+
+
 print(format_name(first="Ada", last="Lovelace"))
 print(format_name(last="Turing", first="Alan", middle="Mathison"))
 

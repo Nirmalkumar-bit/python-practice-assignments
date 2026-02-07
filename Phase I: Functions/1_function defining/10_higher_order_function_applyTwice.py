@@ -6,8 +6,12 @@
 # Then print apply_twice(increment, 3).
 
 # TODO: define apply_twice(func, value)
+def apply_twice(func, value):
+    return func(func(value))
 
 # TODO: define increment(n)
+def increment(n):
+    return n + 1
 
 print(apply_twice(increment, 3))
 

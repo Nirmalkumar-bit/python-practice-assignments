@@ -6,7 +6,9 @@
 # Print repeat_word("go") and repeat_word("go", 3) on separate lines.
 
 # TODO: define repeat_word(word, times=...)
-
+def repeat_word(word, times=2):
+    return " ".join([word] * times)
+    
 print(repeat_word("go"))
 print(repeat_word("go", 3))
 

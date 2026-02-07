@@ -3,7 +3,12 @@
 # Then print absolute_value(-8) and absolute_value(5) on separate lines.
 
 # TODO: define absolute_value(n)
-
+def absolute_value(n):
+    if n < 0:
+        return -n
+    return n
+    
+    
 print(absolute_value(-8))
 print(absolute_value(5))
 
