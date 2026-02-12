@@ -11,9 +11,26 @@
 
 
 def sum_n(numbers, n):
-    # TODO
-    pass
+     if not isinstance(numbers, list):
+        raise TypeError("numbers must be a list of numbers")
+    
+    # Validate each element (no bool allowed)
+     for x in numbers:
+        if type(x) not in (int, float):
+            raise TypeError("numbers must be a list of numbers")
+    
+    # Validate n type (bool not allowed)
+     if type(n) is not int:
+        raise TypeError("n must be an int")
+    
+    # Validate range of n
+     if n < 0 or n > len(numbers):
+        raise ValueError("n out of allowed range")
+    
+     return sum(numbers[:n])
 
 
 if __name__ == "__main__":
     print(sum_n([1, 2, 3, 4], 2))
+
+    # TODO

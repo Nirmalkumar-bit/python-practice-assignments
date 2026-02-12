@@ -10,8 +10,18 @@
 
 
 def clamp_percentage(p):
+     if not (type(p) in (int, float)):
+        raise TypeError("p must be a number")
+    
+    # Range check
+     if p < 0 or p > 100:
+        raise ValueError("p must be between 0 and 100")
+    
+     return float(p)
+
+    
     # TODO
-    pass
+    
 
 
 if __name__ == "__main__":

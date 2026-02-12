@@ -21,6 +21,91 @@
 
 
 def validate_payload(payload):
+    if not isinstance(payload, dict):
+        raise TypeError("payload must be a dict")
+    
+    allowed_keys = {"action", "data", "meta"}
+    required_keys = {"action", "data"}
+    
+    # ---- missing keys ----
+    for key in required_keys:
+        if key not in payload:
+            raise KeyError(f"missing key: {key}")
+    
+    # ---- unexpected keys ----
+    for key in payload:
+        if key not in allowed_keys:
+            raise TypeError(f"unexpected key: {key}")
+    
+    action = payload["action"]
+    data = payload["data"]
+    
+    # ---- action validation ----
+    if action not in ("create", "update", "delete"):
+        raise ValueError("invalid action")
+    
+    # ---- data type ----
+    if not isinstance(data, dict):
+        raise TypeError("data must be a dict")
+    
+    # ---- meta validation ----
+    if "meta" in payload and not isinstance(payload["meta"], dict):
+        raise TypeError("meta must be a dict")
+    
+    # -------------------------
+    # CREATE
+    # -------------------------
+    if action == "create":
+        if set(data.keys()) != {"name", "price"}:
+            raise ValueError("invalid data keys")
+        
+        name = data.get("name")
+        price = data.get("price")
+        
+        if not isinstance(name, str) or name.strip() == "":
+            raise ValueError("invalid name")
+        
+        if type(price) not in (int, float) or price <= 0:
+            raise ValueError("invalid price")
+    
+    # -------------------------
+    # UPDATE
+    # -------------------------
+    elif action == "update":
+        if "id" not in data:
+            raise ValueError("invalid id")
+        
+        allowed_update_keys = {"id", "name", "price"}
+        if not set(data.keys()).issubset(allowed_update_keys):
+            raise ValueError("invalid data keys")
+        
+        id_val = data["id"]
+        if type(id_val) is not int or id_val <= 0:
+            raise ValueError("invalid id")
+        
+        if "name" in data:
+            if not isinstance(data["name"], str) or data["name"].strip() == "":
+                raise ValueError("invalid name")
+        
+        if "price" in data:
+            price = data["price"]
+            if type(price) not in (int, float) or price <= 0:
+                raise ValueError("invalid price")
+    
+    # -------------------------
+    # DELETE
+    # -------------------------
+    elif action == "delete":
+        if set(data.keys()) != {"id"}:
+            raise ValueError("invalid data keys")
+        
+        id_val = data["id"]
+        if type(id_val) is not int or id_val <= 0:
+            raise ValueError("invalid id")
+    
+    return True
+
+
     # TODO: validate payload and return True when valid
     pass
 

@@ -12,8 +12,27 @@
 
 
 def parse_int_strict(s):
+     if not isinstance(s, str):
+        raise TypeError("s must be a str")
+    
+     s = s.strip()
+    
+    # Check empty after stripping
+     if s == "":
+        raise ValueError("invalid integer literal")
+    
+    # Check optional sign
+     if s[0] in ("+", "-"):
+        if len(s) == 1 or not s[1:].isdigit():
+            raise ValueError("invalid integer literal")
+     else:
+        if not s.isdigit():
+            raise ValueError("invalid integer literal")
+    
+     return int(s)
+
+
     # TODO
-    pass
 
 
 if __name__ == "__main__":

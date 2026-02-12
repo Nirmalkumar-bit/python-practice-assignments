@@ -10,8 +10,20 @@
 
 
 def repeat(s, times):
+     if not isinstance(s, str):
+        raise TypeError("s must be a str")
+    
+    # Check times type (bool not allowed)
+     if type(times) is not int:
+        raise TypeError("times must be an int")
+    
+    # Check non-negative
+     if times < 0:
+        raise ValueError("times must be non-negative")
+    
+     return s * times
     # TODO
-    pass
+    
 
 
 if __name__ == "__main__":

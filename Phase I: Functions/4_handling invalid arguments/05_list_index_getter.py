@@ -11,9 +11,24 @@
 
 
 def get_item_at(seq, index):
-    # TODO
-    pass
+      if not isinstance(seq, (list, tuple)):
+        raise TypeError("seq must be a list or tuple")
+    
+    # Check index type (bool not allowed)
+      if type(index) is not int:
+        raise TypeError("index must be an int")
+    
+    # Check range
+      if index < 0 or index >= len(seq):
+        raise IndexError("index out of range")
+    
+      return seq[index]
 
 
 if __name__ == "__main__":
     print(get_item_at(["a", "b"], 1))
+
+    # TODO
+    pass
+
+

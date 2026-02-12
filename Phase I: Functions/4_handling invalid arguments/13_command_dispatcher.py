@@ -16,6 +16,49 @@
 
 
 def dispatch(command, *args):
+    if not isinstance(command, str):
+        raise TypeError("command must be a str")
+    
+    # ADD
+    if command == "add":
+        if len(args) != 2:
+            raise TypeError("wrong number of arguments")
+        
+        a, b = args
+        if type(a) not in (int, float) or type(b) not in (int, float):
+            raise TypeError("invalid argument type")
+        
+        return a + b
+    
+    # POW
+    elif command == "pow":
+        if len(args) != 2:
+            raise TypeError("wrong number of arguments")
+        
+        base, exp = args
+        
+        if type(base) not in (int, float) or type(exp) is not int:
+            raise TypeError("invalid argument type")
+        
+        if exp < 0:
+            raise ValueError("exponent must be a non-negative int")
+        
+        return base ** exp
+    
+    # ECHO
+    elif command == "echo":
+        if len(args) != 1:
+            raise TypeError("wrong number of arguments")
+        
+        value = args[0]
+        if not isinstance(value, str):
+            raise TypeError("invalid argument type")
+        
+        return value
+    
+    # UNKNOWN COMMAND
+    else:
+        raise ValueError("unknown command")
     # TODO
     pass
 

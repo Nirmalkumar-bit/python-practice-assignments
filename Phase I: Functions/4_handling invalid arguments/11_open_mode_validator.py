@@ -11,6 +11,19 @@
 
 
 def validate_open_args(path, mode):
+    if not isinstance(path, str) or path.strip() == "":
+        raise TypeError("path must be a non-empty string")
+    
+    # Validate mode
+    if mode not in ("r", "w", "a"):
+        raise ValueError("invalid mode")
+    
+    # Special rule for read mode
+    if mode == "r" and not path.endswith(".txt"):
+        raise ValueError("read mode requires .txt file")
+    
+    return (path, mode)
+
     # TODO
     pass
 

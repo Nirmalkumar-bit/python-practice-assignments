@@ -11,6 +11,27 @@
 
 
 def normalize_slice(seq_len, start=None, stop=None, step=1):
+    if type(seq_len) is not int or seq_len < 0:
+        raise ValueError("seq_len must be a non-negative int")
+    
+    # Validate start
+    if start is not None and type(start) is not int:
+        raise TypeError("start/stop must be int or None")
+    
+    # Validate stop
+    if stop is not None and type(stop) is not int:
+        raise TypeError("start/stop must be int or None")
+    
+    # Validate step
+    if type(step) is not int or step == 0:
+        raise ValueError("step must be a non-zero int")
+    
+    # Normalize using built-in logic
+    start_i, stop_i, step_i = slice(start, stop, step).indices(seq_len)
+    
+    return (start_i, stop_i, step_i)
+
+
     # TODO
     pass
 

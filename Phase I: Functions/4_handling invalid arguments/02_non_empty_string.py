@@ -10,9 +10,17 @@
 
 
 def require_non_empty_string(s):
+    if not isinstance(s, str):
+        raise TypeError("s must be a str")
+    stripped = s.strip()
     # TODO
-    pass
+    if stripped == "":
+        raise ValueError("s must be a non-empty string")
+    
+    return stripped
 
 
 if __name__ == "__main__":
     print(require_non_empty_string("  hi "))
+    
+

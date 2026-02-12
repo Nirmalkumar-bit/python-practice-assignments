@@ -11,8 +11,29 @@
 
 
 def validate_matrix(matrix):
+     if not isinstance(matrix, list) or len(matrix) == 0:
+        raise TypeError("matrix must be a non-empty list of non-empty lists")
+    
+    # Check each row is a non-empty list
+     for row in matrix:
+        if not isinstance(row, list) or len(row) == 0:
+            raise TypeError("matrix must be a non-empty list of non-empty lists")
+    
+    # Check all rows same length
+     cols = len(matrix[0])
+     for row in matrix:
+        if len(row) != cols:
+            raise ValueError("matrix rows must have the same length")
+    
+    # Check all elements are numbers (no bool)
+     for row in matrix:
+        for value in row:
+            if type(value) not in (int, float):
+                raise TypeError("matrix elements must be numbers")
+    
+     return (len(matrix), cols)
     # TODO
-    pass
+    
 
 
 if __name__ == "__main__":

@@ -11,6 +11,18 @@
 
 
 def divide(a, b):
+    if (
+        not isinstance(a, (int, float)) or isinstance(a, bool) or
+        not isinstance(b, (int, float)) or isinstance(b, bool)
+    ):
+        raise TypeError("a and b must be numbers")
+    
+    # Check division by zero
+    if b == 0:
+        raise ValueError("b must not be zero")
+    
+    return a / b
+
     # TODO
     pass
 

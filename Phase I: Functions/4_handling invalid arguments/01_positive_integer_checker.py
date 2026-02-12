@@ -10,8 +10,16 @@
 
 
 def validate_positive_int(n):
+     if type(n) is not int:
+        raise TypeError("n must be an int")
+     if n <= 0:
+        raise ValueError("n must be positive")
+    
+     return True
+    
+    
     # TODO: implement argument validation and return True for valid inputs
-    pass
+    
 
 
 # Quick checks (do not change):
